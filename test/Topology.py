@@ -7,6 +7,8 @@ __author__ = 'Administrator'
 class Topology(object):
     SETTINGS = 'settings'
 
+    SWITCH_NAME_PREFIX = 'sw'
+
     # common settings
     ESX_HOST = 'host'
     ESX_NAME = 'name'
@@ -20,9 +22,11 @@ class Topology(object):
     VM_DESCR = 'description'
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
+    VM_ISO = 'iso'
 
     host, networks, vms, vnc_port, name = None
-
+    vm_list = []
+    networks_list = []
     log = logging.getLogger(__name__)
     config = ConfigParser.RawConfigParser()
 
@@ -31,29 +35,7 @@ class Topology(object):
         self.log.setLevel(level)
 
 
-    def __str_to_list(str):
-        """
-        Converts string to list without whitespaces
 
-        :param str: some string for converting to list
-        :return: list of string values
-        """
-        return str.replace(' ', '').split(',')
-
-
-    def __get_config_param(section, option):
-        """
-        Get config option with some checks
-
-        :param section: section in ini-file
-        :param option: option in section
-        :return: some value from section.option
-        """
-        try:
-            return config.getint(host, option)
-        except ConfigParser.NoOptionError as e:
-            log.info("Using default value for %s.%s" % (section, option))
-            return None
 
 
     def __load(self, config_path):
@@ -81,6 +63,7 @@ class Topology(object):
 
 
     def __destroy_switch(self):
+        sw_name = self.SWITCH_NAME_PREFIX+'_'+self.name
         manager.destroy_virtual_switch(sw_name, hostname)
 
 
@@ -88,10 +71,11 @@ class Topology(object):
         """
         Destroy topology by stack_name
         """
-        self._destroy_switch()
+        self._destroy_switch(self)
+        self.__destroy_resource_pool()
 
 
-    def _destroy_resource_pool(self, resource_pool, hostname=None):
+    def __destroy_resource_pool(self, resource_pool, hostname=None):
         """
         Destroy a resource pool with vms
         :param resource_pool: name of resource which storing vms for the topology
@@ -107,17 +91,48 @@ class Topology(object):
         pass
 
 
-    def _create_vms(self):
+    def __create_vms(self):
+
+        for vm in self.vms:
+
+            try:
+                vm_networks = self.__str_to_list(self.__config.get(vm, self.VM_NETWORKS))
+
+                for i in range(len(vm_networks)):
+                    vm_networks[i] = ('%s_%s_%s') % (self.SWITCH_NAME_PREFIX, self.name, vm_networks[i])
+
+                vm_description = self.config.get(vm, self.VM_DESCR)
+
+                # VM_MEM, VM_SIZE, VM_CPU, VM_CONFIG - non-default parameter
+                vm_mem = self.get_config_param(vm, self.VM_MEM)
+                vm_cpu = self.get_config_param(vm, self.VM_CPU)
+                vm_disk_space = self.get_config_param(vm, self.VM_SIZE)
+
+                vm_config = self.config.get(vm, self.VM_CONFIG)
+                vm_iso = self.config.get(vm, self.VM_ISO)
+                vm_name = self.name + '_' + vm
+
+                manager.create_vm(vm_name, self.name, self.iso,
+                                      resource_pool='/' + options.stack_name,
+                                      networks=vm_networks,
+                                      annotation=vm_description,
+                                      memorysize=vm_memorysize,
+                                      cpucount=vm_cpucount,
+                                      disksize=vm_disksize)
+            except ConfigParser.Error as error:
+                self.log.critical("Cannot read option for " + vm, error.message)
+                raise error
+
+    def get_config_param(self, vm, VM_MEM):
         pass
 
 
-    def _create_vm(self, name, networks, iso, memory=512, cpu=2, size=1024, description=None):
-        vm = None
-        try:
-            vm = VM(name, networks, iso, memory, cpu, size, description)
-        except:
-
-        vms.append
+def __create_vm(self, name, networks, iso, memory=512, cpu=2, size=1024, description=None):
+    try:
+        return VM(name, networks, iso, memory, cpu, size, description)
+    except Exception as error:
+        self.log.critical(error.message)
+        raise error
 
 
 class Network:
