@@ -5,18 +5,12 @@ import json
 
 
 parser = OptionParser()
-parser.add_option("-c", "--create", dest="operation",
-                  help="Create topology")
-parser.add_option("-d", "--destroy", dest="operation",
-                  help="Destroy topology")
-parser.add_option("-n", "--name", dest="stack_name",
-                  help="Resource pool name")
-parser.add_option("-t", "--topology", dest="topology",
-                  help="INI file with topology configuration")
-parser.add_option("-u", "--user", dest="user",
-                  help="ESX server user")
-parser.add_option("-p", "--password", dest="password",
-                  help="ESX server password")
+parser.add_option("-c", "--create", dest="operation", help="Create topology")
+parser.add_option("-d", "--destroy", dest="operation", help="Destroy topology")
+parser.add_option("-n", "--name", dest="stack_name", help="Resource pool name")
+parser.add_option("-t", "--topology", dest="topology", help="INI file with topology configuration")
+parser.add_option("-u", "--user", dest="user", help="ESX server user")
+parser.add_option("-p", "--password", dest="password", help="ESX server password")
 parser.add_option("-a", "--address", dest="address",
                   help="ESX server address")
 
@@ -39,7 +33,7 @@ def create():
         pass
 
     for net in networks:
-        sw_name = 'sw_' + options.stack_name + '_' + net
+        switch_name = 'sw_' + options.stack_name + '_' + net
         num_ports = config.getint(net,'num_ports')
         promiscuous = config.getboolean(net,'promiscious')
         vlan = config.get(net,'vlan')
@@ -48,9 +42,11 @@ def create():
         except ValueError:
             vlan = 4095
 
-        manager.create_virtual_switch(sw_name, num_ports, hostname)
-        manager.add_port_group(sw_name, sw_name,
-                               esx_hostname = hostname, vlan_id = vlan,
+        manager.create_virtual_switch(switch_name, num_ports, hostname)
+        manager.add_port_group(vswitch=switch_name,
+                               name=switch_name,
+                               esx_hostname = hostname,
+                               vlan_id = vlan,
                                promiscuous = promiscuous)
 
 
