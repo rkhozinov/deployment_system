@@ -1,18 +1,24 @@
 from optparse import OptionParser
+import lib.pyshpere2 as vm_manager
 import ConfigParser
 import json
 
-import lib.pyshpere2 as vm_manager
-
 
 parser = OptionParser()
-parser.add_option("-c", "--create", dest="operation", help="Create topology")
-parser.add_option("-d", "--destroy", dest="operation", help="Destroy topology")
-parser.add_option("-n", "--name", dest="stack_name", help="Resource pool name")
-parser.add_option("-t", "--topology", dest="topology", help="INI file with topology configuration")
-parser.add_option("-u", "--user", dest="user", help="ESX server user")
-parser.add_option("-p", "--password", dest="password", help="ESX server password")
-parser.add_option("-a", "--address", dest="address", help="ESX server address")
+parser.add_option("-c", "--create", dest="operation",
+                  help="Create topology")
+parser.add_option("-d", "--destroy", dest="operation",
+                  help="Destroy topology")
+parser.add_option("-n", "--name", dest="stack_name",
+                  help="Resource pool name")
+parser.add_option("-t", "--topology", dest="topology",
+                  help="INI file with topology configuration")
+parser.add_option("-u", "--user", dest="user",
+                  help="ESX server user")
+parser.add_option("-p", "--password", dest="password",
+                  help="ESX server password")
+parser.add_option("-a", "--address", dest="address",
+                  help="ESX server address")
 
 (options, args) = parser.parse_args()
 
@@ -26,7 +32,6 @@ hosts = json.loads(config.get('topology', 'hosts'))
 
 manager = vm_manager.Creator(options.address, options.user, options.password)
 
-
 def create():
     try:
         manager.create_resource_pool(options.stack_name, esx_hostname=hostname)
@@ -35,9 +40,9 @@ def create():
 
     for net in networks:
         sw_name = 'sw_' + options.stack_name + '_' + net
-        num_ports = config.getint(net, 'num_ports')
-        promiscuous = config.getboolean(net, 'promiscious')
-        vlan = config.get(net, 'vlan')
+        num_ports = config.getint(net,'num_ports')
+        promiscuous = config.getboolean(net,'promiscious')
+        vlan = config.get(net,'vlan')
         try:
             vlan = int(vlan)
         except ValueError:
@@ -45,8 +50,9 @@ def create():
 
         manager.create_virtual_switch(sw_name, num_ports, hostname)
         manager.add_port_group(sw_name, sw_name,
-                               esx_hostname=hostname, vlan_id=vlan,
-                               promiscuous=promiscuous)
+                               esx_hostname = hostname, vlan_id = vlan,
+                               promiscuous = promiscuous)
+
 
     for host in hosts:
         vm_networks = json.loads(config.get(host, 'networks'))
@@ -60,13 +66,19 @@ def create():
 
         name = options.stack_name + '_' + host
         manager.create_vm(name, hostname, iso_path, \
-                          resource_pool='/' + options.stack_name, \
-                          networks=vm_networks, \
-                          annotation=vm_description, \
-                          memorysize=vm_memorysize, \
-                          cpucount=vm_cpucount, \
-                          disksize=vm_disksize)
+                          resource_pool = '/' + options.stack_name, \
+                          networks = vm_networks, \
+                          annotation = vm_description, \
+                          memorysize = vm_memorysize, \
+                          cpucount = vm_cpucount, \
+                          disksize = vm_disksize)
 
+        ### TO DO: add code with manual reconfiguration of the VM
+        ### need to add part with VNC port configuration.
+        ### add VNC port parameter to topology file for each VM
+
+        ### TO DO: run VM and perform configuration via VNC port.
+        ### we should use topology VM part 'configuration'
 
 def destroy():
     manager.destroy_resource_pool_with_vms(options.stack_name, hostname)
