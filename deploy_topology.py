@@ -7,6 +7,8 @@ import ConfigParser
 import logging
 
 import lib.pyshpere2 as vm_manager
+from lib.console import run_vnc_command as vnc_cmd
+from lib.console import get_telnet as telnet
 from lib.pyshpere2 import CreatorException
 
 
@@ -28,18 +30,18 @@ class Topology:
     Create a topology from ini file
 
     """
-    manager, iso, stack_name, esx_host, vms, networks, config, log = None
+    manager, iso, stack_name, esx_host, esx_user, esx_password, vms, networks, config, log, vnc_port = None
 
+    # common settings
     SETTINGS = 'settings'
     SW_PREFIX = 'sw_'
-    # common settings
     ESX_HOST = 'host'
-    ESX_USER = 'esx_user'
-    ESX_PASSWORD = 'esx_password'
+
     STACK_NAME = 'name'
     ISO_IMAGE = 'iso_path'
     NETWORKS = 'networks'
     VMS = 'vms'
+
 
     VM_MEM = 'memory'
     VM_CPU = 'cpu'
@@ -47,6 +49,9 @@ class Topology:
     VM_DESCR = 'description'
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
+    VM_VNC_PORT = 'vnc_port'
+    VM_LOGIN = 'login'
+    VM_PASSWORD = password'
 
     NET_PORTS = 'num_ports'
     NET_PROMISCUOUS = 'promiscuous'
@@ -72,6 +77,7 @@ class Topology:
 
         try:
             self.esx_host = self.config.get(self.SETTINGS, self.ESX_HOST)
+
             self.iso = self.config.get(self.SETTINGS, self.ISO_IMAGE)
             self.stack_name = self.config.get(self.SETTINGS, self.STACK_NAME)
             self.networks = self.__str_to_list(self.config.get(self.SETTINGS, self.NETWORKS))
@@ -102,7 +108,7 @@ class Topology:
         return str.replace(' ', '').split(',')
 
 
-    def create_networks(self):
+    def __create_networks(self):
         """
         Creates virtual switch with some ports and networks
 
@@ -153,15 +159,19 @@ class Topology:
                 self.log.debug("Cannot add ports to the virtual switch.", error.message)
                 raise error
 
-    def create_vms(self):
+    def __create_vms(self):
 
         """
          Creates virtual machines
 
+        :type self: Topology object
         :raise: ConfigParser.ParsingError, ConfigParser.NoOptionError, ConfigParser.Error
         """
-        vm_name, vm_description, vm_mem, vm_cpu, vm_size, vm_config = None
+
+        vm_name, vm_description, vm_mem, vm_cpu, vm_size, vm_config= None
+        vm_login, vm_password, vm_vnc_port = None
         for vm in self.vms:
+            # get config
             try:
                 vm_name = self.stack_name + '_' + vm
                 vm_description = self.config.get(vm, self.VM_DESCR)
@@ -170,6 +180,9 @@ class Topology:
                 vm_size = self.config.get(vm, self.VM_SIZE)
                 vm_config = self.config.get(vm, self.VM_CONFIG)
                 vm_networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
+                vm_vnc_port = self.config.getint(vm, self.VM_VNC_PORT)
+                vm_login = self.config.get(vm, self.VM_LOGIN)
+                vm_password = self.config.get(vm, self.VM_PASSWORD)
             except ConfigParser.ParsingError as error:
                 self.log.debug("Cannot parse option.", error.message)
                 raise error
@@ -184,14 +197,14 @@ class Topology:
             for i in range(len(vm_networks)):
                 vm_networks[i] = ('%s%s_%s') % (self.SW_PREFIX, self.stack_name, vm_networks[i])
 
-            # get a iso image for vm
+            # get a iso image for the vm
             vm_iso = None
             try:
                 vm_iso = self.config.get(vm, self.VM_NETWORKS)
                 self.log.info("For vm '%s' using specific iso image '%s'" % vm, vm_iso)
             except ConfigParser.Error:
                 self.log.debug("For vm '%s' using default iso image '%s'" % vm, vm_iso)
-                # get common iso
+                # get a common iso
                 vm_iso = self.iso
 
             try:
@@ -208,36 +221,65 @@ class Topology:
                 ### TODO: add code with manual reconfiguration of the VM
                 ### need to add part with VNC port configuration.
                 ### add VNC port parameter to topology file for each VM
+                # Start to work with VM using the VNC console.
+                # After the base configuration for net interfaces and
+                # telnet daemon switch to the telnet console
 
-                ### TODO: run VM and perform configuration via VNC port.
-                ### we should use topology VM part 'configuration'
+            # FIXME: change esx to vm credentials
+            # TODO: need to add vm credentials to ini-file
+            vnc_cmd(self.esx_host, vm_vnc_port, vm_login)
+            vnc_cmd(self.esx_host, vm_vnc_port, vm_password)
+            for option in vm_config:
+                vnc_cmd(self.esx_host, vm_vnc_port, option)
 
-    def create(self):
-        try:
-            # creates a resource pool for storing virtual machines
-            self.manager.create_resource_pool(name=self.stack_name, esx_hostname=self.esx_host)
-            # creates a virtual switch and networks
-            self.create_networks()
-            # creates and configure virtual machines
-            self.create_vms()
-        except CreatorException as creator_error:
-            self.log.critical(creator_error.message)
-            raise creator_error
-        except ConfigParser.Error as config_error:
-            self.log.critical("Error in the config file.", config_error.message)
-            raise config_error
+            # Start to work with telnet console
+            session = None
+            while session is None:
+                session = telnet(vm_ip_address, vm_login, vm_password)
+            conf_cmds = config.get(vm_name, 'telnet_commands').split('\n')
+            LOG.info(str(conf_cmds))
+            session.write('conf\n')
+            session.read_until('#', timeout=5)
+            for cmd in conf_cmds:
+                session.write('%s\n' % cmd)
+                LOG.info("Telnet cmd: %s" % cmd)
+                session.read_until('#', timeout=5)
+            session.write('commit\n')
+            session.read_until('#', timeout=5)
+            session.write('save\n')
+            session.read_until('#', timeout=5)
+            session.close()
+
+    ### TODO: run VM and perform configuration via VNC port.
+    ### we should use topology VM part 'configuration'
 
 
-    def destroy(self):
-        """
-        Destroy topology by stack_name
-        """
-        self.manager.destroy_resource_pool_with_vms(options.stack_name, self.esx_host)
-        sw_name = self.SW_PREFIX + options.stack_name
-        self.manager.destroy_virtual_switch(sw_name, self.esx_host)
+def create(self):
+    try:
+        # creates a resource pool for storing virtual machines
+        self.manager.create_resource_pool(name=self.stack_name, esx_hostname=self.esx_host)
+        # creates a virtual switch and networks
+        self.__create_networks()
+        # creates and configure virtual machines
+        self.__create_vms()
+    except CreatorException as creator_error:
+        self.log.critical(creator_error.message)
+        raise creator_error
+    except ConfigParser.Error as config_error:
+        self.log.critical("Error in the config file.", config_error.message)
+        raise config_error
 
 
-    if 'create' in options.operation:
-        create()
-    elif 'destroy' in options.operation:
-        destroy()
+def destroy(self):
+    """
+    Destroy topology by stack_name
+    """
+    self.manager.destroy_resource_pool_with_vms(options.stack_name, self.esx_host)
+    sw_name = self.SW_PREFIX + options.stack_name
+    self.manager.destroy_virtual_switch(sw_name, self.esx_host)
+
+
+if 'create' in options.operation:
+    create()
+elif 'destroy' in options.operation:
+    destroy()
