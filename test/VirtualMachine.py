@@ -1,5 +1,6 @@
 from test.Topology import Topology
 
+
 class VirtualMachine(Topology):
     def __init__(self, name, networks, memory=512, cpu=2, size=1024, iso=None, description=None, neighbours=None,
                  configuration=None):
