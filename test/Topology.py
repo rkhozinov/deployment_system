@@ -1,13 +1,11 @@
 import ConfigParser
-from copy import _EmptyClass
-from test.TopologyConfigReader import TopologyConfigReader
+from test.TopologyReader import TopologyReader
+import lib.pyshpere2 as vm_manager
+from lib.pyshpere2 import CreatorException
 
 
 class Topology(object):
-
     # TODO: create VM class in ConfigParserReader then create list of vms
-    vms = None
-    networks = None
 
     def __init__(self, config_path, resource_pool):
         """
@@ -15,8 +13,16 @@ class Topology(object):
         :param config_path: configuration file
         :param resource_pool: stack name for topology
         """
-        self.config = TopologyConfigReader(config_path)
+        self.config = TopologyReader(config_path)
         self.resource_pool = resource_pool
+        self.vms = None
+        self.networks = None
+
+        try:
+            self.manager = vm_manager.Creator(self.esx_host, self.esx_login, self.esx_password)
+        except CreatorException as error:
+            self.log.critical(error.message)
+            raise error
 
     def create(self):
         try:
@@ -34,19 +40,21 @@ class Topology(object):
             raise config_error
 
     def destroy(self, resource_pool=None):
-            """
-            Destroy topology by stack_name
-            :param resource_pool: name of a ESXi resource pool
-            """
-            if resource_pool is None:
-                resource_pool = self.resource_pool
+        """
+        Destroy topology by stack_name
+        :param resource_pool: name of a ESXi resource pool
+        """
+        if resource_pool is None:
+            resource_pool = self.resource_pool
 
-            self.__destroy_switch()
-            self.__destroy_resource_pool(resource_pool)
+        self.__destroy_switch()
+        self.__destroy_resource_pool(resource_pool)
 
-    def __destroy_switch(self):
-        sw_name = self.config.SWITCH_NAME_PREFIX + '_' + self.resource_pool
-        manager.destroy_virtual_switch(sw_name, self.config.esx_host)
+    def __destroy_switch(self, switch):
+        try:
+            self.manager.destroy_virtual_switch(switch.name, self.config.esx_host)
+        except CreatorException as error:
+            raise error
 
     def __destroy_resource_pool(self, resource_pool, esx_host=None):
         """
@@ -120,7 +128,7 @@ class Topology(object):
         :raise: ConfigParser.ParsingError, ConfigParser.NoOptionError, ConfigParser.Error
         """
 
-        vm_name, vm_description, vm_mem, vm_cpu, vm_size, vm_config= None
+        vm_name, vm_description, vm_mem, vm_cpu, vm_size, vm_config = None
         vm_login, vm_password, vm_vnc_port = None
         for vm in self.vms:
             # get config
@@ -201,28 +209,3 @@ class Topology(object):
             session.write('save\n')
             session.read_until('#', timeout=5)
             session.close()
-
-
-
-
-
-
-class Network(object):
-    def __init__(self, name, vlan):
-        """
-        Create network with specific vlan
-        :param name: a network name
-        :param vlan: a vlan name
-        """
-        self.name = name
-        self.vlan = vlan
-
-
-class VM:
-    def __init__(self, name, networks, iso, memory=512, cpu=2, size=1024, description=None):
-        self.name = name
-        self.iso = iso
-        self.memory = memory
-        self.cpu = cpu
-        self.size = size * 1024
-        self.description = description
