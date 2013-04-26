@@ -1,8 +1,9 @@
 import logging
 import ConfigParser
+from test import VirtualMachine
 
 
-class TopologyConfigReader(object):
+class TopologyReader(object):
     SETTINGS = 'settings'
     SWITCH_NAME_PREFIX = 'sw'
 
@@ -50,12 +51,6 @@ class TopologyConfigReader(object):
             self.log.critical(error.message)
             raise error
 
-        try:
-            self.manager = vm_manager.Creator(options.address, options.user, options.password)
-        except CreatorException as error:
-            self.log.critical(error.message)
-            raise error
-
     def __str_to_list(self, str):
         """
         Converts string to list without whitespaces
@@ -65,29 +60,43 @@ class TopologyConfigReader(object):
         """
         return str.replace(' ', '').split(',')
 
-    def __load_vm(self, name, networks, iso, memory=512, cpu=2, size=1024, description=None):
-        try:
-            return VM(name, networks, iso, memory, cpu, size, description)
-        except Exception as error:
-            self.log.critical(error.message)
-            raise error
+    def __read_vm(self, vm_name):
+        for vm in self.vms:
+            try:
+                vm_description = self.config.get(vm, self.VM_DESCR)
+                vm_mem = self.config.get(vm, self.VM_MEM)
+                vm_cpu = self.config.get(vm, self.VM_CPU)
+                vm_size = self.config.get(vm, self.VM_SIZE)
+                vm_config = self.config.get(vm, self.VM_CONFIG)
+                vm_networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
+                vm_login = self.config.get(vm, self.VM_LOGIN)
+                vm_password = self.config.get(vm, self.VM_PASSWORD)
+            except ConfigParser.ParsingError as error:
+                self.log.debug("Cannot parse option.", error.message)
+                raise error
+            except ConfigParser.NoOptionError as error:
+                self.log.debug("Cannot find option.", error.message)
+                raise error
+            except ConfigParser.Error as error:
+                self.log.debug("Error in the config file.", error.message)
+                raise error
+            try:
 
-    class Network:
-        def __init__(self, name, vlan):
-                """
-                Create network with specific vlan
-                :param name: a network name
-                :param vlan: a vlan name
-                """
-                self.name = name
-                self.vlan = vlan
+                return VirtualMachine(name, networks, iso, memory, cpu, size, description)
+            except Exception as error:
+                self.log.critical(error.message)
+                raise error
+
+    class Network(object):
+        def __init__(self, ports, vlan=4095, promiscuous=False):
+            """
+            Create network with specific vlan and mode
+
+            """
+            self.ports = ports
+            self.vlan = vlan
+            self.promiscuous = promiscuous
 
 
-        class VM:
-            def __init__(self, name, networks, iso, memory=512, cpu=2, size=1024, description=None):
-                self.name = name
-                self.iso = iso
-                self.memory = memory
-                self.cpu = cpu
-                self.size = size * 1024
-                self.description = description
+
+
