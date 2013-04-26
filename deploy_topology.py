@@ -51,7 +51,7 @@ class Topology:
     VM_NETWORKS = 'networks'
     VM_VNC_PORT = 'vnc_port'
     VM_LOGIN = 'login'
-    VM_PASSWORD = password'
+    VM_PASSWORD = 'password'
 
     NET_PORTS = 'num_ports'
     NET_PROMISCUOUS = 'promiscuous'
@@ -250,33 +250,29 @@ class Topology:
             session.read_until('#', timeout=5)
             session.close()
 
-    ### TODO: run VM and perform configuration via VNC port.
-    ### we should use topology VM part 'configuration'
+    def create(self):
+        try:
+            # creates a resource pool for storing virtual machines
+            self.manager.create_resource_pool(name=self.stack_name, esx_hostname=self.esx_host)
+            # creates a virtual switch and networks
+            self.__create_networks()
+            # creates and configure virtual machines
+            self.__create_vms()
+        except CreatorException as creator_error:
+            self.log.critical(creator_error.message)
+            raise creator_error
+        except ConfigParser.Error as config_error:
+            self.log.critical("Error in the config file.", config_error.message)
+            raise config_error
 
 
-def create(self):
-    try:
-        # creates a resource pool for storing virtual machines
-        self.manager.create_resource_pool(name=self.stack_name, esx_hostname=self.esx_host)
-        # creates a virtual switch and networks
-        self.__create_networks()
-        # creates and configure virtual machines
-        self.__create_vms()
-    except CreatorException as creator_error:
-        self.log.critical(creator_error.message)
-        raise creator_error
-    except ConfigParser.Error as config_error:
-        self.log.critical("Error in the config file.", config_error.message)
-        raise config_error
-
-
-def destroy(self):
-    """
-    Destroy topology by stack_name
-    """
-    self.manager.destroy_resource_pool_with_vms(options.stack_name, self.esx_host)
-    sw_name = self.SW_PREFIX + options.stack_name
-    self.manager.destroy_virtual_switch(sw_name, self.esx_host)
+    def destroy(self):
+        """
+        Destroy topology by stack_name
+        """
+        self.manager.destroy_resource_pool_with_vms(options.stack_name, self.esx_host)
+        sw_name = self.SW_PREFIX + options.stack_name
+        self.manager.destroy_virtual_switch(sw_name, self.esx_host)
 
 
 if 'create' in options.operation:
