@@ -1,141 +1,213 @@
 import ConfigParser
-import logging
-
-__author__ = 'Administrator'
+from copy import _EmptyClass
+from test.TopologyConfigReader import TopologyConfigReader
 
 
 class Topology(object):
-    SETTINGS = 'settings'
 
-    SWITCH_NAME_PREFIX = 'sw'
+    # TODO: create VM class in ConfigParserReader then create list of vms
+    vms = None
+    networks = None
 
-    # common settings
-    ESX_HOST = 'host'
-    ESX_NAME = 'name'
-    ISO = 'iso_path'
-    NETWORKS = 'networks'
-    VMS = 'vms'
-
-    VM_MEM = 'memory'
-    VM_CPU = 'cpu'
-    VM_SIZE = 'disk_space'
-    VM_DESCR = 'description'
-    VM_CONFIG = 'configuration'
-    VM_NETWORKS = 'networks'
-    VM_ISO = 'iso'
-
-    host, networks, vms, vnc_port, name = None
-    vm_list = []
-    networks_list = []
-    log = logging.getLogger(__name__)
-    config = ConfigParser.RawConfigParser()
-
-    def __init_log(self, level=logging.INFO):
-        logging.basicConfig()
-        self.log.setLevel(level)
-
-
-
-
-
-    def __load(self, config_path):
+    def __init__(self, config_path, resource_pool):
         """
-        Load configuration from a ini-file
-        :param config_path:
-        :raise: ConfigParser.Error
+        Initialize a topology
+        :param config_path: configuration file
+        :param resource_pool: stack name for topology
         """
-        try:
-            self.config.read(config_path)
-            self.host = self.config.get(self.SETTINGS, self.ESX_HOST)
-            self.name = self.config.get(self.SETTINGS, self.ESX_NAME)
-            self.networks = self.str_to_list(self.config.get(self.SETTINGS, self.NETWORKS))
-            self.vms = self.__str_to_list(self.config.get(self.SETTINGS, self.VMS))
-        except ConfigParser.Error as error:
-            raise error
-
-    def __init__(self, config_path):
-        self.__load(config_path)
-
+        self.config = TopologyConfigReader(config_path)
+        self.resource_pool = resource_pool
 
     def create(self):
-        self.__create_networks(self)
-        self._create_vms(self)
+        try:
+            # creates a resource pool for storing virtual machines
+            self.manager.create_resource_pool(name=self.stack_name, esx_hostname=self.esx_host)
+            # creates a virtual switch and networks
+            self.__create_networks()
+            # creates and configure virtual machines
+            self.__create_vms()
+        except CreatorException as creator_error:
+            self.log.critical(creator_error.message)
+            raise creator_error
+        except ConfigParser.Error as config_error:
+            self.log.critical("Error in the config file.", config_error.message)
+            raise config_error
 
+    def destroy(self, resource_pool=None):
+            """
+            Destroy topology by stack_name
+            :param resource_pool: name of a ESXi resource pool
+            """
+            if resource_pool is None:
+                resource_pool = self.resource_pool
+
+            self.__destroy_switch()
+            self.__destroy_resource_pool(resource_pool)
 
     def __destroy_switch(self):
-        sw_name = self.SWITCH_NAME_PREFIX+'_'+self.name
-        manager.destroy_virtual_switch(sw_name, hostname)
+        sw_name = self.config.SWITCH_NAME_PREFIX + '_' + self.resource_pool
+        manager.destroy_virtual_switch(sw_name, self.config.esx_host)
 
-
-    def destroy(self, stack_name):
+    def __destroy_resource_pool(self, resource_pool, esx_host=None):
         """
-        Destroy topology by stack_name
-        """
-        self._destroy_switch(self)
-        self.__destroy_resource_pool()
-
-
-    def __destroy_resource_pool(self, resource_pool, hostname=None):
-        """
-        Destroy a resource pool with vms
+        Destroy a resource pool with created vms
         :param resource_pool: name of resource which storing vms for the topology
-        :param hostname: ESXi host
+        :param esx_host: ESXi host
         """
-        if hostname is None:
-            hostname = self.name
+        if esx_host is None:
+            esx_host = self.name
 
-        manager.destroy_resource_pool_with_vms(resource_pool, hostname)
+        manager.destroy_resource_pool_with_vms(resource_pool, esx_host)
 
 
     def __create_networks(self):
-        pass
+        """
+        Creates virtual switch with some ports and networks
 
+        :raise: CreatorException, ConfigParser.Error
+        """
+        for net in self.networks:
+
+            # read config
+            num_ports, promiscuous, vlan = None
+            try:
+                num_ports = self.config.getint(net, self.NET_PORTS)
+                promiscuous = self.config.getboolean(net, self.NET_PROMISCUOUS)
+                vlan = self.config.get(net, 'vlan')
+            except ConfigParser.ParsingError as error:
+                self.log.debug("Cannot parse option.", error.message)
+                raise error
+            except ConfigParser.NoOptionError as error:
+                self.log.debug("Cannot find option.", error.message)
+                raise error
+            except ConfigParser.Error as error:
+                self.log.debug("Error in the config file.", error.message)
+                raise error
+
+            try:
+                vlan = int(vlan)
+            except ValueError:
+                vlan = 4095
+
+            # create switch
+            switch_name = None
+            try:
+                switch_name = self.SW_PREFIX + self.stack_name + '_' + net
+                self.manager.create_virtual_switch(switch_name, num_ports, self.esx_host)
+                self.log.info("ESXi virtual switch '%s' was created " % switch_name)
+            except CreatorException as error:
+                self.log.debug("Cannot create the virtual switch with name " + switch_name, error.message)
+                raise error
+
+            # add ports to the created switch
+            try:
+                self.manager.add_port_group(vswitch=switch_name,
+                                            name=switch_name,
+                                            esx_hostname=self.esx_host,
+                                            vlan_id=vlan,
+                                            promiscuous=promiscuous)
+                self.log.info("%s ports were added to ESXi virtual switch '%s' successfully" % num_ports, switch_name)
+            except CreatorException as error:
+                self.log.debug("Cannot add ports to the virtual switch.", error.message)
+                raise error
 
     def __create_vms(self):
 
+        """
+         Creates virtual machines
+
+        :type self: Topology object
+        :raise: ConfigParser.ParsingError, ConfigParser.NoOptionError, ConfigParser.Error
+        """
+
+        vm_name, vm_description, vm_mem, vm_cpu, vm_size, vm_config= None
+        vm_login, vm_password, vm_vnc_port = None
         for vm in self.vms:
-
+            # get config
             try:
-                vm_networks = self.__str_to_list(self.__config.get(vm, self.VM_NETWORKS))
-
-                for i in range(len(vm_networks)):
-                    vm_networks[i] = ('%s_%s_%s') % (self.SWITCH_NAME_PREFIX, self.name, vm_networks[i])
-
+                vm_name = self.stack_name + '_' + vm
                 vm_description = self.config.get(vm, self.VM_DESCR)
-
-                # VM_MEM, VM_SIZE, VM_CPU, VM_CONFIG - non-default parameter
-                vm_mem = self.get_config_param(vm, self.VM_MEM)
-                vm_cpu = self.get_config_param(vm, self.VM_CPU)
-                vm_disk_space = self.get_config_param(vm, self.VM_SIZE)
-
+                vm_mem = self.config.get(vm, self.VM_MEM)
+                vm_cpu = self.config.get(vm, self.VM_CPU)
+                vm_size = self.config.get(vm, self.VM_SIZE)
                 vm_config = self.config.get(vm, self.VM_CONFIG)
-                vm_iso = self.config.get(vm, self.VM_ISO)
-                vm_name = self.name + '_' + vm
-
-                manager.create_vm(vm_name, self.name, self.iso,
-                                      resource_pool='/' + options.stack_name,
-                                      networks=vm_networks,
-                                      annotation=vm_description,
-                                      memorysize=vm_memorysize,
-                                      cpucount=vm_cpucount,
-                                      disksize=vm_disksize)
+                vm_networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
+                vm_vnc_port = self.config.getint(vm, self.VM_VNC_PORT)
+                vm_login = self.config.get(vm, self.VM_LOGIN)
+                vm_password = self.config.get(vm, self.VM_PASSWORD)
+            except ConfigParser.ParsingError as error:
+                self.log.debug("Cannot parse option.", error.message)
+                raise error
+            except ConfigParser.NoOptionError as error:
+                self.log.debug("Cannot find option.", error.message)
+                raise error
             except ConfigParser.Error as error:
-                self.log.critical("Cannot read option for " + vm, error.message)
+                self.log.debug("Error in the config file.", error.message)
                 raise error
 
-    def get_config_param(self, vm, VM_MEM):
-        pass
+            # rename networks
+            for i in range(len(vm_networks)):
+                vm_networks[i] = ('%s%s_%s') % (self.SW_PREFIX, self.stack_name, vm_networks[i])
+
+            # get a iso image for the vm
+            vm_iso = None
+            try:
+                vm_iso = self.config.get(vm, self.VM_NETWORKS)
+                self.log.info("For vm '%s' using specific iso image '%s'" % vm, vm_iso)
+            except ConfigParser.Error:
+                self.log.debug("For vm '%s' using default iso image '%s'" % vm, vm_iso)
+                # get a common iso
+                vm_iso = self.iso
+
+            try:
+                self.manager.create_vm(vm_name, self.esx_host, vm_iso,
+                                       resource_pool='/' + self.stack_name,
+                                       networks=vm_networks,
+                                       annotation=vm_description,
+                                       memorysize=vm_mem,
+                                       cpucount=vm_cpu,
+                                       disksize=vm_size)
+            except CreatorException as error:
+                raise error
+
+                ### TODO: add code with manual reconfiguration of the VM
+                ### need to add part with VNC port configuration.
+                ### add VNC port parameter to topology file for each VM
+                # Start to work with VM using the VNC console.
+                # After the base configuration for net interfaces and
+                # telnet daemon switch to the telnet console
+
+            # FIXME: change esx to vm credentials
+            # TODO: need to add vm credentials to ini-file
+            vnc_cmd(self.esx_host, vm_vnc_port, vm_login)
+            vnc_cmd(self.esx_host, vm_vnc_port, vm_password)
+            for option in vm_config:
+                vnc_cmd(self.esx_host, vm_vnc_port, option)
+
+            # Start to work with telnet console
+            session = None
+            while session is None:
+                session = telnet(vm_ip_address, vm_login, vm_password)
+            conf_cmds = config.get(vm_name, 'telnet_commands').split('\n')
+            LOG.info(str(conf_cmds))
+            session.write('conf\n')
+            session.read_until('#', timeout=5)
+            for cmd in conf_cmds:
+                session.write('%s\n' % cmd)
+                LOG.info("Telnet cmd: %s" % cmd)
+                session.read_until('#', timeout=5)
+            session.write('commit\n')
+            session.read_until('#', timeout=5)
+            session.write('save\n')
+            session.read_until('#', timeout=5)
+            session.close()
 
 
-def __create_vm(self, name, networks, iso, memory=512, cpu=2, size=1024, description=None):
-    try:
-        return VM(name, networks, iso, memory, cpu, size, description)
-    except Exception as error:
-        self.log.critical(error.message)
-        raise error
 
 
-class Network:
+
+
+class Network(object):
     def __init__(self, name, vlan):
         """
         Create network with specific vlan
