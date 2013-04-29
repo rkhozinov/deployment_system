@@ -3,7 +3,8 @@ from lib.pyshpere2 import CreatorException as exception
 
 
 class VirtualMachine(object):
-    def __init__(self, name, connected_networks, memory=512, cpu=2, size=1024, iso=None, description=None,
+
+    def __init__(self, name, connected_networks=None, memory=512, cpu=2, size=1024, iso=None, description=None,
                  neighbours=None,
                  configuration=None):
         """
