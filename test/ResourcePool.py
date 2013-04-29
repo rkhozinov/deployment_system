@@ -1,33 +1,44 @@
-from test.Topology import Topology
+from lib.pyshpere2 import Creator as manager
+from lib.pyshpere2 import CreatorException as exception
 
-__author__ = 'Administrator'
 
-
-class ResourcePool(Topology):
-    def __init__(self, name):
+class ResourcePool(object):
+    def __init__(self, name, esx_host):
+        """
+        ESXi resource pool instance
+        :param name: ESXi name of a resource pool
+        :param esx_host: ESXi host address
+        :raise:
+        """
         if name is None:
             raise Exception('Do not specify the name of the resource pool')
-        else:
-            self.name = name
+        if esx_host is None:
+            raise Exception('Do not specify the esx host of the resource pool')
+        self.name = name
+        self.esx_host = esx_host
 
     def create(self):
+        """
+        Creates a ESXi resource pool
+        :raise: CreationException
+        """
         try:
-            self.manager.create_resource_pool(name=self.name,
-                                              esx_hostname=self.esx_host)
-        except self.exception as error:
+            manager.create_resource_pool(name=self.name,
+                                         esx_hostname=self.esx_host)
+        except exception as error:
             raise error
 
-    def destroy(self, save_vms=False):
+    def destroy(self, with_vms=False):
         """
         Destroys the resource pool
-        :param save_vms: if True  - deletes all vms in this resource pool
+        :param with_vms: if True  - deletes all vms in this resource pool
                          if False - save vms and move its to the up resource pool
         :raise: CreatorException
         """
         try:
-            if save_vms is True:
-                self.manager.destroy_resource_pool(self.name, self.config.esx_host)
+            if with_vms:
+                manager.destroy_resource_pool_with_vms(self.name, self.config.esx_host)
             else:
-                self.manager.destroy_resource_pool_with_vms(self.name, self.config.esx_host)
-        except self.exception as error:
+                manager.destroy_resource_pool(self.name, self.config.esx_host)
+        except exception as error:
             raise error
