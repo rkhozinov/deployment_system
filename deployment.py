@@ -2,7 +2,6 @@ import os
 import sys
 import logging
 import time
-#import xlrd        # for work with the XLS files
 import re
 import ConfigParser
 from pysphere import VIServer
@@ -10,7 +9,6 @@ from pysphere import VIServer
 lib_path = os.path.abspath('./')
 sys.path.append(lib_path)
 from lib.console import *
-#from lib.TestLinkClient import *
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig()

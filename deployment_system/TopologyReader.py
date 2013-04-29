@@ -93,14 +93,14 @@ class TopologyReader(object):
                 iso = self.iso
 
             return VirtualMachine(name=vm,
+                                  login=login,
+                                  password=password,
                                   description=description,
                                   memory=memory,
                                   cpu=cpu,
                                   size=size,
                                   configuration=config,
                                   connected_networks=connected_networks,
-                                  login=login,
-                                  password=password,
                                   neighbours=neighbours,
                                   iso=iso)
 
@@ -131,6 +131,11 @@ class TopologyReader(object):
         return Network(name=net, vlan=vlan, promiscuous=promiscuous, isolated=isolated)
 
     def get_virtual_machines(self):
+        """
+        Gets the virtual machines list from the configuration file
+        :return:  list of virtual machines
+        :raise: ConfigParser.NoSectionError, ConfigParser.Error, ConfigParser.ParsingError
+        """
         try:
             vm_lst = []
             for vm in self.vms:
@@ -145,8 +150,7 @@ class TopologyReader(object):
 
     def get_networks(self):
         """
-
-
+        Gets networks from the configuration file
         :return: list of networks
         :raise: ConfigParser.Error, ConfigParser.NoSectionError, ConfigParser.ParsingError
         """

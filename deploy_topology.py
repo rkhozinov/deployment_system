@@ -30,18 +30,19 @@ class Topology:
     Create a topology from ini file
 
     """
-    manager, iso, stack_name, esx_host, esx_user, esx_password, vms, networks, config, log, vnc_port = None
 
     # common settings
     SETTINGS = 'settings'
     SW_PREFIX = 'sw_'
     ESX_HOST = 'host'
+    ESX_USER = 'host'
+    ESX_PASSWORD = 'host'
+
 
     STACK_NAME = 'name'
     ISO_IMAGE = 'iso_path'
     NETWORKS = 'networks'
     VMS = 'vms'
-
 
     VM_MEM = 'memory'
     VM_CPU = 'cpu'
@@ -59,8 +60,7 @@ class Topology:
     def __init__(self, config_path):
         """
 
-        :param config_path:
-        :raise:
+        :param config_path: topology configuration file
         """
         self.log = logging.getLogger(__name__)
         logging.basicConfig()
@@ -168,8 +168,6 @@ class Topology:
         :raise: ConfigParser.ParsingError, ConfigParser.NoOptionError, ConfigParser.Error
         """
 
-        vm_name, vm_description, vm_mem, vm_cpu, vm_size, vm_config= None
-        vm_login, vm_password, vm_vnc_port = None
         for vm in self.vms:
             # get config
             try:

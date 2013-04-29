@@ -3,12 +3,17 @@ from lib.pyshpere2 import CreatorException as exception
 
 
 class VirtualMachine(object):
-
-    def __init__(self, name, connected_networks=None, memory=512, cpu=2, size=1024, iso=None, description=None,
-                 neighbours=None,
-                 configuration=None):
+    
+    def __init__(self, name, login, password, connected_networks=None, memory=512, cpu=2, size=1024, iso=None,
+                 description=None, neighbours=None, configuration=None):
         """
 
+
+
+        :rtype : VirtualMachine
+        :param login: 
+        :param password: 
+        :param configuration: 
         :param name: virtual machine name
         :param connected_networks:
         :param iso:
@@ -18,6 +23,14 @@ class VirtualMachine(object):
         :param description:
         :param neighbours:
         """
+
+        if not name:
+            raise ValueError('Virtual machine name is not exist')
+        if not login:
+            raise ValueError('Virtual machine login is not exist')
+        if not password:
+            raise ValueError('Resource pool name is not exist')
+
         self.name = name
         self.memory = memory
         self.cpu = cpu
@@ -27,11 +40,14 @@ class VirtualMachine(object):
         self.connected_networks = connected_networks
         self.configuration = configuration
         self.iso = iso
+        self.login = login
+        self.password = password
 
-    def create(self, resource_pool=None, esx_host=None, vm_iso=None):
-
-        if resource_pool is None:
-            raise Exception('Resource pool name is not exist')
+    def create(self, resource_pool, esx_host):
+        if not resource_pool:
+            raise ValueError('Resource pool name is not exist')
+        if not esx_host:
+            raise ValueError('Resource pool name is not exist')
 
         try:
             manager.create_vm(self.name, esx_host, self.iso,
@@ -44,10 +60,17 @@ class VirtualMachine(object):
         except exception as error:
             raise error
 
-    def destroy(self, name):
-        if name is None:
-            raise Exception('Virtual machine name is not exist')
+    def add_network(self, network):
+        if not network:
+            raise ValueError('Network is not exist')
+        self.connected_networks.append(network)
+
+    def destroy(self):
         try:
             manager.destroy_vm(self.name)
         except exception as error:
             raise error
+
+    def configure(self):
+        #TODO: add configure source
+        pass

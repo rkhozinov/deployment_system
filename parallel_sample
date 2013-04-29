@@ -123,7 +123,7 @@ class TestSuite(unittest2.TestCase):
 
         self.headers.update({'Content-Type': 'application/json'})
 
-        body = '{"name": "test"}'
+        body = '{"name": "deployment_system"}'
 
         response = requests.request('POST', self.url, headers=self.headers,
 
@@ -131,7 +131,7 @@ class TestSuite(unittest2.TestCase):
 
         environment = json.loads(response._content)
 
-        assert environment['name'] == 'test'
+        assert environment['name'] == 'deployment_system'
 
 
     def test_04_delete_environment(self):
@@ -147,7 +147,7 @@ class TestSuite(unittest2.TestCase):
 
         for env in environments:
 
-            if env['name'] == 'test':
+            if env['name'] == 'deployment_system':
                 id = '/' + env['id']
 
         assert id is not None
