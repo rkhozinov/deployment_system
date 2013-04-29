@@ -1,13 +1,15 @@
-from test.Topology import Topology
+from lib.pyshpere2 import Creator as manager
+from lib.pyshpere2 import CreatorException as exception
 
 
-class VirtualMachine(Topology):
-    def __init__(self, name, networks, memory=512, cpu=2, size=1024, iso=None, description=None, neighbours=None,
+class VirtualMachine(object):
+    def __init__(self, name, connected_networks, memory=512, cpu=2, size=1024, iso=None, description=None,
+                 neighbours=None,
                  configuration=None):
         """
 
-        :param name:
-        :param networks:
+        :param name: virtual machine name
+        :param connected_networks:
         :param iso:
         :param memory:
         :param cpu:
@@ -15,37 +17,36 @@ class VirtualMachine(Topology):
         :param description:
         :param neighbours:
         """
-        if iso is None:
-            self.iso = self.config.iso
-
         self.name = name
         self.memory = memory
         self.cpu = cpu
         self.size = size * 1024
         self.description = description
         self.neighbours = neighbours
-        self.networks = networks
+        self.connected_networks = connected_networks
         self.configuration = configuration
+        self.iso = iso
 
     def create(self, resource_pool=None, esx_host=None, vm_iso=None):
-        if esx_host is None:
-            esx_host = self.config.esx_host
+
         if resource_pool is None:
-            resource_pool = self.resource_pool
+            raise Exception('Resource pool name is not exist')
 
         try:
-            self.manager.create_vm(self.name, esx_host, self.iso,
-                                   resource_pool='/' + resource_pool,
-                                   networks=self.networks,
-                                   annotation=self.description,
-                                   memorysize=self.memory,
-                                   cpucount=self.cpu,
-                                   disksize=self.size)
-        except Exception as error:
+            manager.create_vm(self.name, esx_host, self.iso,
+                              resource_pool='/' + resource_pool,
+                              networks=self.connected_networks,
+                              annotation=self.description,
+                              memorysize=self.memory,
+                              cpucount=self.cpu,
+                              disksize=self.size)
+        except exception as error:
             raise error
 
-    def destroy(self, resource_pool=None):
+    def destroy(self, name):
+        if name is None:
+            raise Exception('Virtual machine name is not exist')
         try:
-            self.manager.destroy_vm(self.name)
-        except Exception as error:
+            manager.destroy_vm(self.name)
+        except exception as error:
             raise error
