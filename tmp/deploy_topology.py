@@ -6,10 +6,10 @@ import ConfigParser
 
 import logging
 
-import lib.pyshpere2 as vm_manager
+import lib.Hatchery as vm_manager
 from lib.console import run_vnc_command as vnc_cmd
 from lib.console import get_telnet as telnet
-from lib.pyshpere2 import CreatorException
+from lib.Hatchery import CreatorException
 
 
 parser = OptionParser()

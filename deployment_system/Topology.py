@@ -2,8 +2,8 @@ import ConfigParser
 from test.ResourcePool import ResourcePool
 from test.Switch import Switch
 from test.TopologyReader import TopologyReader
-import lib.pyshpere2 as vm_manager
-from lib.pyshpere2 import CreatorException
+import lib.Hatchery as vm_manager
+from lib.Hatchery import CreatorException
 from test.VirtualMachine import VirtualMachine
 
 

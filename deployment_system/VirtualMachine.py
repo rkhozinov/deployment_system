@@ -1,5 +1,5 @@
-from lib.pyshpere2 import Creator as manager
-from lib.pyshpere2 import CreatorException as exception
+from lib.Hatchery import Creator as manager
+from lib.Hatchery import CreatorException as exception
 
 
 class VirtualMachine(object):
