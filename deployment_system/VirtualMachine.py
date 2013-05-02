@@ -1,9 +1,9 @@
+from VMController import VMController
 from lib.Hatchery import Creator as manager
 from lib.Hatchery import CreatorException as exception
 
 
 class VirtualMachine(object):
-    
     def __init__(self, name, login, password, connected_networks=None, memory=512, cpu=2, size=1024, iso=None,
                  description=None, neighbours=None, configuration=None):
         """
@@ -42,6 +42,7 @@ class VirtualMachine(object):
         self.iso = iso
         self.login = login
         self.password = password
+        self.serial_port_path = None
 
     def create(self, resource_pool, esx_host):
         if not resource_pool:
@@ -65,12 +66,23 @@ class VirtualMachine(object):
             raise ValueError('Network is not exist')
         self.connected_networks.append(network)
 
+    def add_serial_port(self):
+        self.se
+        pass
+
     def destroy(self):
         try:
             manager.destroy_vm(self.name)
         except exception as error:
             raise error
 
-    def configure(self):
+    def configure(self, esx_host, esx_login, esx_password):
         #TODO: add configure source
-        pass
+        vm_ctrl = VMController(vm=self,
+                               esx_host=esx_host,
+                               esx_login=esx_login,
+                               esx_password=esx_password)
+
+
+        for option in self.configuration:
+            vm_ctrl.cmd(option)
