@@ -26,7 +26,6 @@ class CreatorException(Exception):
     def __str__(self):
         return repr(self.value)
 
-
 class Creator:
     def __init__(self,esx_address,esx_user,esx_password):
         self.esx_server = VIServer()
@@ -50,7 +49,7 @@ class Creator:
             self.esx_server.disconnect()
 
     # resources:
-    # 0:share level ('low' 'normal' 'hight' 'custom')
+    # 0:share level ('low' 'normal' 'high' 'custom')
     # 1:share value - 'custom' share value
     # 2:reservation - reserved CPU/Memory
     # 3:expandable reservation - True/False
