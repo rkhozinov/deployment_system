@@ -1,7 +1,7 @@
 import logging
 import ConfigParser
-from test.Network import Network
-from test.VirtualMachine import VirtualMachine
+from deployment_system.Network import Network
+from deployment_system.VirtualMachine import VirtualMachine
 
 
 class TopologyReader(object):
@@ -44,7 +44,9 @@ class TopologyReader(object):
             self.config = ConfigParser.RawConfigParser()
             self.config.read(config_path)
         except ConfigParser.Error as error:
-            self.log.critical(error.message)
+            # self.log.critical(error.message)
+            raise error
+
 
         # read main config
         try:
@@ -79,6 +81,7 @@ class TopologyReader(object):
             raise error
 
         try:
+
             description = self.config.get(vm, self.VM_DESCR)
             memory = self.config.get(vm, self.VM_MEM)
             cpu = self.config.get(vm, self.VM_CPU)
@@ -92,22 +95,26 @@ class TopologyReader(object):
             if not iso:
                 iso = self.iso
 
+
             return VirtualMachine(name=vm,
                                   login=login,
                                   password=password,
-                                  description=description,
                                   memory=memory,
                                   cpu=cpu,
                                   size=size,
-                                  configuration=config,
                                   connected_networks=connected_networks,
+                                  iso=iso,
+                                  description=description,
                                   neighbours=neighbours,
-                                  iso=iso)
+                                  configuration=config)
 
         except ConfigParser.NoSectionError as no_section:
-            raise no_section
+            pass
         except ConfigParser.ParsingError as parsing_error:
             raise parsing_error
+        except ConfigParser.Error as error:
+            pass
+
 
     def __get_network(self, net):
         """
@@ -117,18 +124,25 @@ class TopologyReader(object):
         :raise:  ConfigParser.ParsingError, ConfigParser.NoOptionError
         :rtype: Network
         """
+        vlan = None
         try:
             vlan = self.config.get(net, self.NET_VLAN)
         except ConfigParser.Error as error:
             raise error
+
+        promiscuous = None
+        isolated = None
+        ports = None
         try:
             promiscuous = self.config.getboolean(net, self.NET_PROMISCUOUS)
             isolated = self.config.getboolean(net, self.NET_ISOLATED)
+            ports = self.config.getint(net, self.NET_PORTS)
         except ConfigParser.NoOptionError:
             pass
         except ConfigParser.ParsingError as error:
             raise error
-        return Network(name=net, vlan=vlan, promiscuous=promiscuous, isolated=isolated)
+
+        return Network(name=net, vlan=vlan, ports=ports,promiscuous=promiscuous, isolated=isolated)
 
     def get_virtual_machines(self):
         """
@@ -141,10 +155,6 @@ class TopologyReader(object):
             for vm in self.vms:
                 vm_lst.append(self.__get_vm(vm))
             return vm_lst
-        except ConfigParser.NoSectionError as no_section:
-            raise no_section
-        except ConfigParser.ParsingError as parsing_error:
-            raise parsing_error
         except ConfigParser.Error as error:
             raise error
 
