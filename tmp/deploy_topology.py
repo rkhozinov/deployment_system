@@ -98,14 +98,14 @@ class Topology:
             self.log.critical(error.message)
             raise error
 
-    def __str_to_list(self, str):
+    def __str_to_list(self, string):
         """
         Converts string to list without whitespaces
 
-        :param str: some string for converting to list
+        :param string: some string for converting to list
         :return: list of string values
         """
-        return str.replace(' ', '').split(',')
+        return string.replace(' ', '').split(',')
 
 
     def __create_networks(self):
@@ -142,7 +142,7 @@ class Topology:
             try:
                 switch_name = self.SW_PREFIX + self.stack_name + '_' + net
                 self.manager.create_virtual_switch(switch_name, num_ports, self.esx_host)
-                self.log.info("ESXi virtual switch '%s' was created " % switch_name)
+                self.log.info("ESXi virtual switch '%tests' was created " % switch_name)
             except CreatorException as error:
                 self.log.debug("Cannot create the virtual switch with name " + switch_name, error.message)
                 raise error
@@ -154,7 +154,7 @@ class Topology:
                                             esx_hostname=self.esx_host,
                                             vlan_id=vlan,
                                             promiscuous=promiscuous)
-                self.log.info("%s ports were added to ESXi virtual switch '%s' successfully" % num_ports, switch_name)
+                self.log.info("%tests ports were added to ESXi virtual switch '%tests' successfully" % num_ports, switch_name)
             except CreatorException as error:
                 self.log.debug("Cannot add ports to the virtual switch.", error.message)
                 raise error
@@ -193,15 +193,15 @@ class Topology:
 
             # rename networks
             for i in range(len(vm_networks)):
-                vm_networks[i] = ('%s%s_%s') % (self.SW_PREFIX, self.stack_name, vm_networks[i])
+                vm_networks[i] = ('%tests%s_%tests') % (self.SW_PREFIX, self.stack_name, vm_networks[i])
 
             # get a iso image for the vm
             vm_iso = None
             try:
                 vm_iso = self.config.get(vm, self.VM_NETWORKS)
-                self.log.info("For vm '%s' using specific iso image '%s'" % vm, vm_iso)
+                self.log.info("For vm '%tests' using specific iso image '%tests'" % vm, vm_iso)
             except ConfigParser.Error:
-                self.log.debug("For vm '%s' using default iso image '%s'" % vm, vm_iso)
+                self.log.debug("For vm '%tests' using default iso image '%tests'" % vm, vm_iso)
                 # get a common iso
                 vm_iso = self.iso
 
@@ -239,8 +239,8 @@ class Topology:
             session.write('conf\n')
             session.read_until('#', timeout=5)
             for cmd in conf_cmds:
-                session.write('%s\n' % cmd)
-                LOG.info("Telnet cmd: %s" % cmd)
+                session.write('%tests\n' % cmd)
+                LOG.info("Telnet cmd: %tests" % cmd)
                 session.read_until('#', timeout=5)
             session.write('commit\n')
             session.read_until('#', timeout=5)
