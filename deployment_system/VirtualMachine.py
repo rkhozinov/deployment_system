@@ -4,14 +4,12 @@ from lib.Hatchery import CreatorException as exception
 
 
 class VirtualMachine(object):
-    def __init__(self, name, login, password, connected_networks=None, memory=512, cpu=2, size=1024, iso=None,
+    def __init__(self, name, login, password,  memory=512, cpu=2, size=1024, connected_networks=None, iso=None,
                  description=None, neighbours=None, configuration=None):
         """
-
-
-
+        ESXi virtual machine
         :rtype : VirtualMachine
-        :param login: 
+        :param login:
         :param password: 
         :param configuration: 
         :param name: virtual machine name
@@ -67,7 +65,6 @@ class VirtualMachine(object):
         self.connected_networks.append(network)
 
     def add_serial_port(self):
-        self.se
         pass
 
     def destroy(self):
