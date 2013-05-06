@@ -1,21 +1,18 @@
-from lib.Hatchery import Creator as manager
 from lib.Hatchery import CreatorException as exception
 
 
 class ResourcePool(object):
-    def __init__(self, name, esx_host):
+    def __init__(self, manager, name):
         """
         ESXi resource pool instance
         :param name: ESXi name of a resource pool
         :param esx_host: ESXi host address
         :raise:
         """
-        if name is None:
+        if not name:
             raise Exception('Do not specify the name of the resource pool')
-        if esx_host is None:
-            raise Exception('Do not specify the esx host of the resource pool')
         self.name = name
-        self.esx_host = esx_host
+        self.manager= manager
 
     def create(self):
         """
@@ -23,8 +20,7 @@ class ResourcePool(object):
         :raise: CreationException
         """
         try:
-            manager.create_resource_pool(name=self.name,
-                                         esx_hostname=self.esx_host)
+            self.manager.create_resource_pool(self.name)
         except exception as error:
             raise error
 
@@ -37,8 +33,8 @@ class ResourcePool(object):
         """
         try:
             if with_vms:
-                manager.destroy_resource_pool_with_vms(self.name, self.config.esx_host)
+                self.manager.destroy_resource_pool_with_vms(self.name)
             else:
-                manager.destroy_resource_pool(self.name, self.config.esx_host)
+                self.manager.destroy_resource_pool(self.name)
         except exception as error:
             raise error
