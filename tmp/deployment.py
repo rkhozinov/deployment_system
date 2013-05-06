@@ -78,12 +78,12 @@ def deploy(data_file, iso_file=''):
 
     # Download ISO file to the ESX server
     session = ssh_connect(ftp_ip, ftp_user, ftp_pass)
-    res = remote_exec(session, "sshpass -p '%s' scp %s%s"
-                               " %s@%s:%s%s"
+    res = remote_exec(session, "sshpass -p '%tests' scp %tests%tests"
+                               " %tests@%tests:%tests%tests"
                                % (esx_pass, ftp_folder, str(build),
                                   esx_user, esx_ip, esx_folder, esx_iso))
-    print ("sshpass -p '%s' scp %s%s"
-           " %s@%s:%s%s"
+    print ("sshpass -p '%tests' scp %tests%tests"
+           " %tests@%tests:%tests%tests"
            % (esx_pass, ftp_folder, str(build),
               esx_user, esx_ip, esx_folder, esx_iso))
     session.close()
@@ -127,7 +127,7 @@ def deploy(data_file, iso_file=''):
         run_vnc_command(esx_ip, vm_vnc_port, 'conf')
         config_str = 'se i e eth0 a ' + vm_ip_address + vm_ip_mask
         run_vnc_command(esx_ip, vm_vnc_port, config_str)
-        config_str = 'se pr s route 0.0.0.0/0 n ' + vm_gw
+        config_str = 'se pr tests route 0.0.0.0/0 n ' + vm_gw
         run_vnc_command(esx_ip, vm_vnc_port, config_str)
         config_str = 'se se t l ' + vm_ip_address
         run_vnc_command(esx_ip, vm_vnc_port, config_str)
@@ -144,8 +144,8 @@ def deploy(data_file, iso_file=''):
         session.write('conf\n')
         session.read_until('#', timeout=5)
         for cmd in conf_cmds:
-            session.write('%s\n' % cmd)
-            LOG.info("Telnet cmd: %s" % cmd)
+            session.write('%tests\n' % cmd)
+            LOG.info("Telnet cmd: %tests" % cmd)
             session.read_until('#', timeout=5)
         session.write('commit\n')
         session.read_until('#', timeout=5)
@@ -229,8 +229,8 @@ def deploy_and_install(data_file, iso_file=''):
 
     # Download ISO file to the ESX server
     session = ssh_connect(ftp_ip, ftp_user, ftp_pass)
-    res = remote_exec(session, "sshpass -p '%s' scp %s%s"
-                               " %s@%s:%s%s"
+    res = remote_exec(session, "sshpass -p '%tests' scp %tests%tests"
+                               " %tests@%tests:%tests%tests"
                                % (esx_pass, ftp_folder, str(build),
                                   esx_user, esx_ip, esx_folder, esx_iso))
     session.close()
@@ -245,7 +245,7 @@ def deploy_and_install(data_file, iso_file=''):
 
         session = ssh_connect(esx_ip, esx_user, esx_pass)
         res = remote_exec(session,
-                          'sed -i \'s/ide1:0.startConnected = "FALSE"/ide1:0.startConnected = "TRUE"/\' /vmfs/volumes/datastore1/' + vm_name + '/' + vm_name + '.vmx')
+                          'sed -i \'tests/ide1:0.startConnected = "FALSE"/ide1:0.startConnected = "TRUE"/\' /vmfs/volumes/datastore1/' + vm_name + '/' + vm_name + '.vmx')
         session.close()
 
         LOG.info("Start Virtual Machine " + vm_name)
@@ -343,7 +343,7 @@ def deploy_and_install(data_file, iso_file=''):
 
         session = ssh_connect(esx_ip, esx_user, esx_pass)
         res = remote_exec(session,
-                          'sed -i \'s/ide1:0.startConnected = "TRUE"/ide1:0.startConnected = "FALSE"/\' /vmfs/volumes/datastore1/' + vm_name + '/' + vm_name + '.vmx')
+                          'sed -i \'tests/ide1:0.startConnected = "TRUE"/ide1:0.startConnected = "FALSE"/\' /vmfs/volumes/datastore1/' + vm_name + '/' + vm_name + '.vmx')
         session.close()
 
         time.sleep(3)
@@ -379,7 +379,7 @@ def deploy_and_install(data_file, iso_file=''):
         config_str = 'se i e eth0 a ' + vm_ip_address + vm_ip_mask
         run_vnc_command(
             esx_ip, vm_vnc_port, config_str)
-        config_str = 'se pr s route 0.0.0.0/0 n ' + vm_gw
+        config_str = 'se pr tests route 0.0.0.0/0 n ' + vm_gw
         run_vnc_command(
             esx_ip, vm_vnc_port, config_str)
         config_str = 'se se t l ' + vm_ip_address
@@ -401,8 +401,8 @@ def deploy_and_install(data_file, iso_file=''):
         session.write('conf\n')
         session.read_until('#', timeout=5)
         for cmd in conf_cmds:
-            session.write('%s\n' % cmd)
-            LOG.info("Telnet cmd: %s" % cmd)
+            session.write('%tests\n' % cmd)
+            LOG.info("Telnet cmd: %tests" % cmd)
             session.read_until('#', timeout=5)
         session.write('commit\n')
         session.read_until('#', timeout=5)

@@ -47,7 +47,7 @@ for host in hosts:
     vm_networks = get_list(config.get(host, 'networks'))
 
     for i in range(len(vm_networks)):
-        vm_networks[i] = ('sw_%s_%s') % (stack_name, vm_networks[i])
+        vm_networks[i] = ('sw_%s_%tests') % (stack_name, vm_networks[i])
 
     vm_description = config.get(host, DESCR)
     log.info(vm_description)

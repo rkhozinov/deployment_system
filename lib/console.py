@@ -39,14 +39,14 @@ def remote_exec(ssh, cmd, ignore_output=False):
             result += line + '\n'
         for line in stderr.read().splitlines():
             result += line + '\n'
-        #LOG.info('ssh remote execute out:%s' % result)
+        #LOG.info('ssh remote execute out:%tests' % result)
         return result
 
 
 def get_telnet(host, user, password):
     # This function returns the telnet session instance.
     session = None
-    LOG.info("Start to connect to test host via telnet")
+    LOG.info("Start to connect to tests host via telnet")
     try:
         session = telnetlib.Telnet(host, timeout=5)
         session.read_until('login:')
@@ -72,7 +72,7 @@ def run_vnc_command(vm_host, port, command):
             vncdotool = True
     if not vncdotool:
         raise Exception("You want working with VNC, but vncdotool not found !")
-    cmd = ['vncdotool', '-s', vm_host + '::' + str(port)]
+    cmd = ['vncdotool', '-tests', vm_host + '::' + str(port)]
     for i in str(command):
         if i == '@':
             ncmd = ['key', 'shift-2']
