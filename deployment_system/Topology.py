@@ -1,10 +1,10 @@
 import ConfigParser
-from test.ResourcePool import ResourcePool
-from test.Switch import Switch
-from test.TopologyReader import TopologyReader
+from ResourcePool import ResourcePool
+from Switch import Switch
+from TopologyReader import TopologyReader
 import lib.Hatchery as vm_manager
 from lib.Hatchery import CreatorException
-from test.VirtualMachine import VirtualMachine
+from VirtualMachine import VirtualMachine
 
 
 class Topology(object):
@@ -76,36 +76,3 @@ class Topology(object):
         except CreatorException as error:
             raise error
 
-
-
-            ### TODO: add code with manual reconfiguration of the VM
-            ### need to add part with VNC port configuration.
-            ### add VNC port parameter to topology file for each VM
-            # Start to work with VM using the VNC console.
-            # After the base configuration for net interfaces and
-            # telnet daemon switch to the telnet console
-            #
-            # # FIXME: change esx to vm credentials
-            # # TODO: need to add vm credentials to ini-file
-            # vnc_cmd(self.esx_host, vm_vnc_port, vm_login)
-            # vnc_cmd(self.esx_host, vm_vnc_port, vm_password)
-            # for option in vm_config:
-            #     vnc_cmd(self.esx_host, vm_vnc_port, option)
-            #
-            # # Start to work with telnet console
-            # session = None
-            # while session is None:
-            #     session = telnet(vm_ip_address, vm_login, vm_password)
-            # conf_cmds = config.get(vm_name, 'telnet_commands').split('\n')
-            # LOG.info(str(conf_cmds))
-            # session.write('conf\n')
-            # session.read_until('#', timeout=5)
-            # for cmd in conf_cmds:
-            #     session.write('%s\n' % cmd)
-            #     LOG.info("Telnet cmd: %s" % cmd)
-            #     session.read_until('#', timeout=5)
-            # session.write('commit\n')
-            # session.read_until('#', timeout=5)
-            # session.write('save\n')
-            # session.read_until('#', timeout=5)
-            # session.close()
