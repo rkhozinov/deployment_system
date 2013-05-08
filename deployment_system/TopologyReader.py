@@ -71,6 +71,9 @@ class TopologyReader(object):
         """
         return string.replace(' ', '').split(',')
 
+    def __str_to_list_strip(self,string):
+       return [str.strip(x) for x in string.split(',')]
+
     def __get_vm(self, vm):
 
         # Required params
@@ -86,7 +89,7 @@ class TopologyReader(object):
             memory = self.config.get(vm, self.VM_MEM)
             cpu = self.config.get(vm, self.VM_CPU)
             size = self.config.get(vm, self.VM_SIZE)
-            config = self.__str_to_list(self.config.get(vm, self.VM_CONFIG))
+            config = self.__str_to_list_strip(self.config.get(vm, self.VM_CONFIG))
             connected_networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
             neighbours = self.__str_to_list(self.config.get(vm, self.VM_NEIGHBOURS))
             iso = self.config.get(vm, self.VM_ISO)
