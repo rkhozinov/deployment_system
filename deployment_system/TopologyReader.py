@@ -62,6 +62,7 @@ class TopologyReader(object):
             self.log.critical(error.message)
             raise error
 
+
     def __str_to_list(self, string):
         """
         Converts string to list without whitespaces
@@ -71,8 +72,10 @@ class TopologyReader(object):
         """
         return string.replace(' ', '').split(',')
 
-    def __str_to_list_strip(self,string):
-       return [str.strip(x) for x in string.split(',')]
+
+    def __str_to_list_strip(self, string):
+        return [str.strip(x) for x in string.split(',')]
+
 
     def __get_vm(self, vm):
 
@@ -80,43 +83,60 @@ class TopologyReader(object):
         try:
             password = self.config.get(vm, self.VM_PASSWORD)
             login = self.config.get(vm, self.VM_LOGIN)
-        except ConfigParser.Error as error:
-            raise error
+        except ConfigParser.NoOptionError as noop:
+            raise noop
+        except ConfigParser.ParsingError as pe:
+            raise pe
 
         try:
-
             description = self.config.get(vm, self.VM_DESCR)
+        except:
+            description = None
+        try:
             memory = self.config.get(vm, self.VM_MEM)
+        except:
+            memory = None
+        try:
             cpu = self.config.get(vm, self.VM_CPU)
+        except:
+            cpu = None
+        try:
             size = self.config.get(vm, self.VM_SIZE)
+        except:
+            size = None
+        try:
             config = self.__str_to_list_strip(self.config.get(vm, self.VM_CONFIG))
+        except:
+            config = None
+        try:
             connected_networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
+        except:
+            connected_networks = None
+        try:
             neighbours = self.__str_to_list(self.config.get(vm, self.VM_NEIGHBOURS))
+        except:
+            neighbours = None
+
+        try:
             iso = self.config.get(vm, self.VM_ISO)
+        except:
+            iso = None
 
-            # if not specific a iso-image for this vm then will be used the common iso-image
-            if not iso:
-                iso = self.iso
+        # if not specific a iso-image for this vm then will be used the common iso-image
+        if not iso:
+            iso = self.iso
 
-
-            return VirtualMachine(name=vm,
-                                  login=login,
-                                  password=password,
-                                  memory=memory,
-                                  cpu=cpu,
-                                  size=size,
-                                  connected_networks=connected_networks,
-                                  iso=iso,
-                                  description=description,
-                                  neighbours=neighbours,
-                                  configuration=config)
-
-        except ConfigParser.NoSectionError as no_section:
-            pass
-        except ConfigParser.ParsingError as parsing_error:
-            raise parsing_error
-        except ConfigParser.Error as error:
-            pass
+        return VirtualMachine(name=vm,
+                              login=login,
+                              password=password,
+                              memory=memory,
+                              cpu=cpu,
+                              size=size,
+                              connected_networks=connected_networks,
+                              iso=iso,
+                              description=description,
+                              neighbours=neighbours,
+                              configuration=config)
 
 
     def __get_network(self, net):
@@ -145,7 +165,8 @@ class TopologyReader(object):
         except ConfigParser.ParsingError as error:
             raise error
 
-        return Network(name=net, vlan=vlan, ports=ports,promiscuous=promiscuous, isolated=isolated)
+        return Network(name=net, vlan=vlan, ports=ports, promiscuous=promiscuous, isolated=isolated)
+
 
     def get_virtual_machines(self):
         """
@@ -158,8 +179,11 @@ class TopologyReader(object):
             for vm in self.vms:
                 vm_lst.append(self.__get_vm(vm))
             return vm_lst
-        except ConfigParser.Error as error:
+        except ConfigParser.ParsingError as error:
             raise error
+        except ConfigParser.NoSectionError as error:
+            raise error
+
 
     def get_networks(self):
         """
