@@ -32,8 +32,8 @@ class TestResoursePool(unittest.TestCase):
         try:
             manager = vm_manager.Creator(treader.esx_host, treader.esx_login, treader.esx_password)
             rpool = ResourcePool(manager, self.name)
-        except:
-            self.log.critical("Problem with vm manager")
+        except Exception as e:
+            self.log.critical(e.message)
             self.assertTrue(False)
 
         try:
