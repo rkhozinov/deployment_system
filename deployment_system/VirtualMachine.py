@@ -4,7 +4,7 @@ from lib.Hatchery import CreatorException as exception
 
 
 class VirtualMachine(object):
-    def __init__(self, name, login, password,  memory=512, cpu=2, size=1024, connected_networks=None, iso=None,
+    def __init__(self, name, login, password, memory=512, cpu=2, size=1024, connected_networks=None, iso=None,
                  description=None, neighbours=None, configuration=None):
         """
         ESXi virtual machine
@@ -24,22 +24,28 @@ class VirtualMachine(object):
 
         if not name:
             raise ValueError('Virtual machine name is not exist')
+        else:
+            self.name = name
         if not login:
             raise ValueError('Virtual machine login is not exist')
+        else:
+            self.login = login
         if not password:
             raise ValueError('Resource pool name is not exist')
+        else:
+            self.password = password
 
-        self.name = name
         self.memory = memory
         self.cpu = cpu
-        self.size = size * 1024
+        if size:
+            self.size = int(size) * 1024
+        else:
+            self.size = 1024 * 1024
         self.description = description
         self.neighbours = neighbours
         self.connected_networks = connected_networks
         self.configuration = configuration
         self.iso = iso
-        self.login = login
-        self.password = password
         self.serial_port_path = None
 
     def create(self, resource_pool, esx_host):
@@ -49,13 +55,14 @@ class VirtualMachine(object):
             raise ValueError('Resource pool name is not exist')
 
         try:
-            manager.create_vm(self.name, esx_host, self.iso,
-                              resource_pool='/' + resource_pool,
-                              networks=self.connected_networks,
-                              annotation=self.description,
-                              memorysize=self.memory,
-                              cpucount=self.cpu,
-                              disksize=self.size)
+            pass
+            # manager.create_vm(self.name, esx_host, self.iso,
+            #                   resource_pool='/' + resource_pool,
+            #                   networks=self.connected_networks,
+            #                   annotation=self.description,
+            #                   memorysize=self.memory,
+            #                   cpucount=self.cpu,
+            #                   disksize=self.size)
         except exception as error:
             raise error
 
@@ -69,7 +76,7 @@ class VirtualMachine(object):
 
     def destroy(self):
         try:
-            manager.destroy_vm(self.name)
+            manager.destroy_vm(vmname=self.name)
         except exception as error:
             raise error
 
@@ -79,7 +86,6 @@ class VirtualMachine(object):
                                esx_host=esx_host,
                                esx_login=esx_login,
                                esx_password=esx_password)
-
 
         for option in self.configuration:
             vm_ctrl.cmd(option)
