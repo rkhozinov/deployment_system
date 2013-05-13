@@ -6,13 +6,12 @@ class ResourcePool(object):
         """
         ESXi resource pool instance
         :param name: ESXi name of a resource pool
-        :param esx_host: ESXi host address
         :raise:
         """
         if not name:
             raise Exception('Do not specify the name of the resource pool')
         self.name = name
-        self.manager= manager
+        self.manager = manager
 
     def create(self, manager):
         """
@@ -21,7 +20,7 @@ class ResourcePool(object):
         """
         try:
             if not self.manager:
-                if manager :
+                if manager:
                     self.manager = manager
                 else:
                     raise AttributeError("Manager cannot be None")
