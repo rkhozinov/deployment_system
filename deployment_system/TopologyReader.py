@@ -44,7 +44,7 @@ class TopologyReader(object):
             self.config = ConfigParser.RawConfigParser()
             self.config.read(config_path)
         except ConfigParser.Error as error:
-            # self.log.critical(error.message)
+            # self.logger.critical(error.message)
             raise error
 
 
