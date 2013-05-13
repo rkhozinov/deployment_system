@@ -3,7 +3,7 @@ from lib.Hatchery import CreatorException as exception
 
 
 class VirtualMachine(object):
-    def __init__(self, name, login, password, resource_pool, manager, esx_host, memory=512, cpu=2, size=1024,
+    def __init__(self, name, login, password, memory=512, cpu=2, size=1024,
                  connected_networks=None, iso=None,
                  description=None, neighbours=None, configuration=None):
 
@@ -22,21 +22,6 @@ class VirtualMachine(object):
         else:
             raise ValueError('Virtual machine password is not exist')
 
-        if resource_pool:
-            self.resource_pool = resource_pool
-        else:
-            raise AttributeError('Resource pool is not exist')
-
-        if esx_host:
-            self.esx_host = esx_host
-        else:
-            raise AttributeError('ESX host address is not exist')
-
-        if manager:
-            self.manager = manager
-        else:
-            raise AttributeError('ESX manager address is not exist')
-
         self.memory = memory
         self.cpu = cpu
         if size:
@@ -50,15 +35,25 @@ class VirtualMachine(object):
         self.iso = iso
         self.serial_port_path = None
 
-    def create(self):
+    def create(self, manager, esx_host, resource_pool_name):
+
+        if not esx_host:
+            raise AttributeError('ESX host does not exist')
+
+        if not manager:
+            raise AttributeError('ESX manager address does not exist')
+
+        if not resource_pool_name:
+            raise AttributeError('Resource pool name does not exist')
+
         try:
-            self.manager.create_vm(self.name, self.esx_host, self.iso,
-                                   resource_pool='/' + self.resource_pool.name,
-                                   networks=self.connected_networks,
-                                   annotation=self.description,
-                                   memorysize=self.memory,
-                                   cpucount=self.cpu,
-                                   disksize=self.size)
+            manager.create_vm_old(self.name, esx_host, self.iso,
+                                  resource_pool='/' + resource_pool_name,
+                                  networks=self.connected_networks,
+                                  annotation=self.description,
+                                  memorysize=self.memory,
+                                  cpucount=self.cpu,
+                                  disksize=self.size)
         except exception as error:
             raise error
 
@@ -70,9 +65,14 @@ class VirtualMachine(object):
     def add_serial_port(self):
         pass
 
-    def destroy(self):
+    def destroy(self, manager, esx_host):
+        if not esx_host:
+            raise AttributeError('ESX host address is not exist')
+
+        if not manager:
+            raise AttributeError('ESX manager address is not exist')
         try:
-            self.manager.destroy_vm(self.name)
+            manager.destroy_vm(self.name)
         except exception as error:
             raise error
 
