@@ -19,33 +19,31 @@ class TestResoursePool(unittest.TestCase):
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
 
-    def testCreateInstance(self):
+    def test_create_instance(self):
         try:
-            rpool = ResourcePool(self.rpname, self.manager)
+            rpool = ResourcePool(self.rpname)
             self.assertIsInstance(rpool, ResourcePool)
             self.assertEqual(rpool.name, self.rpname)
         except AttributeError as e:
-            self.logger.critical(e.message)
-            self.assertTrue(False)
+            self.fail(e.message)
 
-    def testCreateResourcePool(self):
+    def test_create_resource_pool(self):
         try:
-            ResourcePool(self.rpname, self.manager).create()
+            ResourcePool(self.rpname).create(self.manager)
         except Exception as e:
-            self.logger.critical(e.message)
-            self.assertTrue(False)
+            self.fail(e.message)
 
-    def test_destroy_resourse_pool(self):
+    def test_destroy_only_resource_pool(self):
         try:
-            ResourcePool(self.rpname, self.manager).destroy()
+            ResourcePool(self.rpname).destroy(self.manager)
         except Exception as e:
-            self.logger.critical(e.message)
+            self.fail(e.message)
 
     def test_destroy_resource_pool_with_vms(self):
         try:
-            ResourcePool(self.rpname, self.manager).destroy(with_vms=True)
+            ResourcePool(self.rpname).destroy(self.manager, with_vms=True)
         except Exception as e:
-            self.logger.critical(e.message)
+            self.fail(e.message)
 
 
 if __name__ == "__main__":
