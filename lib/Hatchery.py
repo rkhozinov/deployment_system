@@ -262,7 +262,6 @@ class Creator:
 
         # Get/check host name
         try:
-            hostname = None
             if esx_hostname:
                 hostname = [v for k, v in self.esx_server.get_hosts().items()
                             if v == esx_hostname][0]
