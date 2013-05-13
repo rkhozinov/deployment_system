@@ -2,7 +2,7 @@ from lib.Hatchery import CreatorException as exception
 
 
 class ResourcePool(object):
-    def __init__(self, manager, name):
+    def __init__(self, name, manager=None):
         """
         ESXi resource pool instance
         :param name: ESXi name of a resource pool
@@ -14,12 +14,18 @@ class ResourcePool(object):
         self.name = name
         self.manager= manager
 
-    def create(self):
+    def create(self, manager):
         """
         Creates a ESXi resource pool
         :raise: CreationException
         """
         try:
+            if not self.manager:
+                if manager :
+                    self.manager = manager
+                else:
+                    raise AttributeError("Manager cannot be None")
+
             self.manager.create_resource_pool(self.name)
         except exception as error:
             raise error
