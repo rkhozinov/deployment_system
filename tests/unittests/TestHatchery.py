@@ -33,7 +33,7 @@ class TestHatchery(unittest2.TestCase):
         try:
             manager = self.__get_manager()
             manager.create_resource_pool(self.rpname, parent_rp='/', esx_hostname=self.host_name)
-        except Manager.ResourcePoolExistanceException:
+        except Manager.ResourcePoolExistException:
             pass
         except Manager.CreatorException as error:
             self.fail(error.message)
@@ -47,25 +47,27 @@ class TestHatchery(unittest2.TestCase):
             self.fail(error.message)
 
 
-    def test_create_virtual_machine_old_method(self):
+    def test_create_virtual_machine(self):
 
         self.test_create_resource_pool()
 
         try:
             manager = self.__get_manager()
             manager.create_vm_old(self.vmname, self.host_name)
-        except Exception as error:
+        except Manager.VirtualMachineExistException as e:
+            pass
+        except Manager.CreatorException as error:
             self.fail(error.message)
 
-    def test_create_virtual_machine_new_method(self):
 
+    def test_destroy_virtual_machine(self):
         self.test_create_resource_pool()
-
         try:
             manager = self.__get_manager()
-            manager.create_vm_old(self.vmname, self.host_name)
-        except Exception as error:
-            self.fail(error.message)
+            manager.destroy_vm(self.vmname)
+        except Manager.CreatorException as e:
+            raise e
+
 
     def __get_manager(self):
         try:
