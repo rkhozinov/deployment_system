@@ -27,7 +27,13 @@ class CreatorException(Exception):
 class ResourcePoolException(Exception): pass
 
 
-class ResourcePoolExistanceException(ResourcePoolException): pass
+class ResourcePoolExistException(ResourcePoolException): pass
+
+
+class VirtualMachineException(Exception): pass
+
+
+class VirtualMachineExistException(VirtualMachineException): pass
 
 
 class Creator:
@@ -146,7 +152,7 @@ class Creator:
             message = ''
             if "already exist" in inst:
                 message = "- '" + name + "'" + "already exist"
-                raise ResourcePoolExistanceException("Couldn't create resource pool " + message)
+                raise ResourcePoolExistException("Couldn't create resource pool " + message)
             else:
                 message = inst
                 raise CreatorException("Couldn't create the resource pool with name '%s'" % name)
