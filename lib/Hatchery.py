@@ -237,7 +237,10 @@ class Creator:
 
         try:
             vm = self.esx_server.get_vm_by_name(vmname)
+        except Exception:
+            raise VirtualMachineExistException("Couldn't find VM")
 
+        try:
             request = VI.Destroy_TaskRequestMsg()
             _this = request.new__this(vm._mor)
             _this.set_attribute_type(vm._mor.get_attribute_type())
