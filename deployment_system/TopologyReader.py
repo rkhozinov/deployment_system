@@ -5,23 +5,37 @@ from deployment_system.VirtualMachine import VirtualMachine
 
 
 class TopologyReader(object):
+
+    # sections describe
+    ESX_MANAGER = 'esx_manager'
+    ESX_HOST = 'esx_host_address'
     SETTINGS = 'settings'
+
+    # esx manager settings
+    MANAGER_ADDRESS = 'address'
+    MANAGER_USER = 'user'
+    MANAGER_PASSWORD = 'password'
+
     SWITCH_PREFIX = 'sw'
 
-    # common settings
-    ESX_HOST = 'esx_host'
-    ESX_LOGIN = 'esx_login'
-    ESX_PASSWORD = 'esx_password'
+    # esx host settings
+    ESX_HOST_NAME = 'name'
+    ESX_HOST_ADDRESS = 'address'
+    ESX_HOST_USER = 'user'
+    ESX_HOST_PASSWORD = 'password'
 
+    # common settings
     ISO = 'iso'
     NETWORKS = 'networks'
     VMS = 'vms'
 
+    # network settings
     NET_VLAN = 'vlan'
     NET_PORTS = 'ports'
     NET_PROMISCUOUS = 'promiscuous'
     NET_ISOLATED = 'isolated'
 
+    # virtual machine settings
     VM_MEM = 'memory'
     VM_CPU = 'cpu'
     VM_SIZE = 'disk_space'
@@ -30,7 +44,7 @@ class TopologyReader(object):
     VM_NETWORKS = 'networks'
     VM_ISO = 'iso'
     VM_NEIGHBOURS = 'neighbours'
-    VM_LOGIN = 'login'
+    VM_USER = 'user'
     VM_PASSWORD = 'password'
     VM_NEIGHBOURS = 'neighbours'
 
@@ -50,9 +64,18 @@ class TopologyReader(object):
 
         # read main config
         try:
-            self.esx_host = self.config.get(self.SETTINGS, self.ESX_HOST)
-            self.esx_login = self.config.get(self.SETTINGS, self.ESX_LOGIN)
-            self.esx_password = self.config.get(self.SETTINGS, self.ESX_PASSWORD)
+            # esx manager settings
+            self.manager_address = self.config.get(self.ESX_MANAGER, self.MANAGER_ADDRESS)
+            self.manager_user = self.config.get(self.ESX_MANAGER, self.MANAGER_USER)
+            self.manager_password = self.config.get(self.ESX_MANAGER, self.MANAGER_PASSWORD)
+
+            # esx host settings
+            # esx_host_address need for virtual machine configuration
+            self.esx_host_address = self.config.get(self.ESX_HOST, self.ESX_HOST_ADDRESS)
+            self.esx_host_name = self.config.get(self.ESX_HOST, self.ESX_HOST_NAME)
+            self.esx_user = self.config.get(self.ESX_HOST, self.ESX_HOST_USER)
+            self.esx_password = self.config.get(self.ESX_HOST, self.ESX_HOST_PASSWORD)
+
             self.iso = self.config.get(self.SETTINGS, self.ISO)
             # list of networks
             self.networks = self.__str_to_list(self.config.get(self.SETTINGS, self.NETWORKS))
@@ -82,11 +105,11 @@ class TopologyReader(object):
         # Required params
         try:
             password = self.config.get(vm, self.VM_PASSWORD)
-            login = self.config.get(vm, self.VM_LOGIN)
-        except ConfigParser.NoOptionError as noop:
-            raise noop
-        except ConfigParser.ParsingError as pe:
-            raise pe
+            login = self.config.get(vm, self.VM_USER)
+        except ConfigParser.NoOptionError as e:
+            raise e
+        except ConfigParser.ParsingError as e:
+            raise e
 
         try:
             description = self.config.get(vm, self.VM_DESCR)
