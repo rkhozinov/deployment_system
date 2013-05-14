@@ -268,6 +268,9 @@ class Creator:
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
         self._connect_to_esx()
 
+        if self.esx_server.get_vm_by_name(vmname):
+            raise VirtualMachineExistException('VM "%s" already exists' % vmname)
+
         # if string in parameter networks
         networks = list(networks)
 
@@ -538,7 +541,7 @@ class Creator:
             vmname = str(vm_options['vm_name'])
             vm_temp = self.esx_server.get_vm_by_name(vmname)
             if vm_temp:
-                raise CreatorException('VM already exists')
+                raise VirtualMachineExistException('VM already exists')
         except KeyError:
             raise CreatorException('Must specify VM name')
         except pysphere.VIException as inst:
