@@ -24,6 +24,12 @@ class CreatorException(Exception):
         return repr(self.value)
 
 
+class ResourcePoolException(Exception): pass
+
+
+class ResourcePoolExistanceException(ResourcePoolException): pass
+
+
 class Creator:
     def __init__(self, esx_address, esx_user, esx_password):
         self.esx_server = VIServer()
@@ -66,7 +72,7 @@ class Creator:
             except IndexError:
                 raise CreatorException("Couldn't find parent resource pool")
             if len(rp_mor_temp) == 0:
-                raise CreatorException("Couldn't find parent recource pool")
+                raise CreatorException("Couldn't find parent resource pool")
 
             if esx_hostname:
                 for rp in rp_mor_temp:
@@ -140,25 +146,25 @@ class Creator:
             message = ''
             if "already exist" in inst:
                 message = "- '" + name + "'" + "already exist"
+                raise ResourcePoolExistanceException("Couldn't create resource pool " + message)
             else:
-                mesage = inst
-
-            raise CreatorException("Couldn't create resource pool " + message)
+                message = inst
+                raise CreatorException("Couldn't create the resource pool with name '%s'" % name)
 
         self._disconnect_from_esx()
 
 
     def destroy_resource_pool(self, name, esx_hostname=None):
         self._connect_to_esx()
-        name = '/Resources' + name
+        name = '/Resources/' + name
 
         try:
             rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
                            if v == name]
         except IndexError:
-            raise CreatorException("Couldn't find recource pool")
+            raise CreatorException("Couldn't find resource pool")
         if len(rp_mor_temp) == 0:
-            raise CreatorException("Couldn't find recource pool " + name)
+            raise CreatorException("Couldn't find resource pool " + name)
 
         rpmor = ''
         if esx_hostname:
@@ -970,6 +976,7 @@ class Creator:
     def _fetch_computer_resource(self, datacenter_props, host):
         host_folder = datacenter_props.hostFolder._obj
 
+
         #get computer resources
         computer_resources = self.esx_server._retrieve_properties_traversal(
             property_names=['name', 'host'],
@@ -991,3 +998,5 @@ class Creator:
                         break
         return VIProperty(self.esx_server, crmor)
 
+    def is_connected(self):
+        return self.esx_server.is_connected()
