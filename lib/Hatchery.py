@@ -271,8 +271,8 @@ class Creator:
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
         self._connect_to_esx()
 
-        if self.esx_server.get_vm_by_name(vmname):
-            raise VirtualMachineExistException('VM "%s" already exists' % vmname)
+        if self._is_vm_exist(vmname):
+            raise VirtualMachineExistException("VM '%s' already exist" % vmname)
 
         # if string in parameter networks
         networks = list(networks)
@@ -945,11 +945,12 @@ class Creator:
         self._disconnect_from_esx()
         raise CreatorException("Couldn't find portgroup")
 
-    def _check_vm_existance(self, name):
+    def _is_vm_exist(self, name):
         self._connect_to_esx()
         exist = None
         try:
-            exist = self.esx_server.get_vm_by_name(name)
+            self.esx_server.get_vm_by_name(name)
+            exist = True
         except:
             pass
         self._disconnect_from_esx()
