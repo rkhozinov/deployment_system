@@ -6,7 +6,6 @@
 #
 #TODO
 # Optional waiting for creation vm
-# Add floppy drive to vm
 # Add serial port
 
 
