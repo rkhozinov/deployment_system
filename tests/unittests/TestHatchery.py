@@ -58,6 +58,15 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
+    def test_destroy_resource_pool_with_vms(self):
+        try:
+            manager = self.__get_manager()
+            manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+        except Manager.ExistenceException as error:
+            self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+
 
     def test_create_virtual_machine(self):
         self.test_create_resource_pool()
@@ -133,14 +142,6 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-
-    def test_fetch_resource_pool(self):
-        try:
-            manager = self.__get_manager()
-            rp = manager._fetch_resource_pool(rp_name=self.rpname, esx_hostname=self.host_name)
-            self.assertEqual(rp, '/Resources' + self.rpname)
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
 
     def __get_manager(self):
         try:
