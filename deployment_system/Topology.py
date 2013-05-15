@@ -4,7 +4,6 @@ from Switch import Switch
 from TopologyReader import TopologyReader
 import lib.Hatchery as vm_manager
 from lib.Hatchery import CreatorException
-from VirtualMachine import VirtualMachine
 
 
 class Topology(object):
@@ -20,8 +19,8 @@ class Topology(object):
             self.vm_lst = self.config.get_virtual_machines()
             self.networks_lst = self.config.get_networks()
             self.manager = vm_manager.Creator(self.resource_pool,
-                                              self.config.esx_login,
-                                              self.config.esx_password)
+                                              self.config.host_user,
+                                              self.config.host_password)
         except CreatorException as error:
             raise error
         except ConfigParser.Error as error:
@@ -31,7 +30,7 @@ class Topology(object):
     def create(self):
         try:
             # creates a resource pool for store virtual machines
-            ResourcePool(self.resource_pool, self.config.esx_host).create()
+            ResourcePool(self.resource_pool).create(self.manager)
 
             # creates networks and switches
             for net in self.networks_lst:
@@ -40,14 +39,14 @@ class Topology(object):
                 else:
                     switch_name = self.config.SWITCH_PREFIX + '_' + self.resource_pool
 
-                switch = Switch(switch_name, self.config.esx_host, net.ports)
-                switch.create()
-                switch.add_network(net)
+                switch = Switch(switch_name, self.config.host_address, net.ports)
+                switch.create(self.manager, self.config.host_name)
+                switch.add_network(network=net, manager=self.manager, host_name=self.config.host_name)
 
             # creates virtual machines
             for vm in self.vm_lst:
                 vm.create(resource_pool=self.resource_pool,
-                          esx_host=self.config.esx_host)
+                          host_name=self.config.host_address)
 
         except CreatorException as error:
             raise error
@@ -57,7 +56,7 @@ class Topology(object):
     def destroy(self, destroy_virtual_machines=False):
         try:
             # destroys resource pool
-            ResourcePool(self.resource_pool, self.config.esx_host).destroy(destroy_virtual_machines)
+            ResourcePool(self.resource_pool).destroy(destroy_virtual_machines)
 
             # destroys networks and switches
             for net in self.networks_lst:
@@ -66,7 +65,7 @@ class Topology(object):
                 else:
                     switch_name = self.config.SWITCH_PREFIX + '_' + self.resource_pool
 
-                switch = Switch(switch_name, self.config.esx_host)
+                switch = Switch(switch_name, self.config.host_address)
                 switch.destroy()
 
             # destroys virtual machines
