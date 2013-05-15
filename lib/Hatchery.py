@@ -29,11 +29,11 @@ class ExistenceException(Exception): pass
 
 
 class Creator:
-    def __init__(self, esx_address, esx_user, esx_password):
+    def __init__(self, manager_address, manager_user, manager_password):
         self.esx_server = VIServer()
-        self.esx_address = esx_address
-        self.esx_user = esx_user
-        self.esx_password = esx_password
+        self.esx_address = manager_address
+        self.esx_user = manager_user
+        self.esx_password = manager_password
 
     def __del__(self):
         self._disconnect_from_esx()
