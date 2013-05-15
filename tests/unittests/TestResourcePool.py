@@ -1,8 +1,6 @@
 import unittest
-import logging
 from deployment_system.ResourcePool import ResourcePool
-import lib.Hatchery as vm_manager
-from deployment_system.TopologyReader import TopologyReader
+import lib.Hatchery as Manager
 
 
 __author__ = 'rkhozinov'
@@ -10,14 +8,11 @@ __author__ = 'rkhozinov'
 
 class TestResoursePool(unittest.TestCase):
     def setUp(self):
-        self.config_path = '../etc/topology.ini'
         self.rpname = 'test_pool'
-        self.treader = TopologyReader(self.config_path)
-        self.manager = vm_manager.Creator(self.treader.esx_host,
-                                          self.treader.esx_login,
-                                          self.treader.esx_password)
-        self.logger = logging.getLogger(__name__)
-        logging.basicConfig()
+        self.host_name = '172.18.93.30'
+        self.manager = Manager.Creator('172.18.93.40',
+                                       'root',
+                                       'vmware')
 
     def test_create_instance(self):
         try:
@@ -30,20 +25,27 @@ class TestResoursePool(unittest.TestCase):
     def test_create_resource_pool(self):
         try:
             ResourcePool(self.rpname).create(self.manager)
-        except Exception as e:
-            self.fail(e.message)
+        except Manager.ExistenceException as error:
+            self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
 
     def test_destroy_only_resource_pool(self):
         try:
             ResourcePool(self.rpname).destroy(self.manager)
-        except Exception as e:
-            self.fail(e.message)
+        except Manager.ExistenceException as error:
+            self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
 
     def test_destroy_resource_pool_with_vms(self):
+        self.test_create_resource_pool()
         try:
             ResourcePool(self.rpname).destroy(self.manager, with_vms=True)
-        except Exception as e:
-            self.fail(e.message)
+        except Manager.ExistenceException as error:
+            self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
 
 
 if __name__ == "__main__":
