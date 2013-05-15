@@ -18,15 +18,15 @@ class TestVirtualMachine(unittest.TestCase):
         self.vmlogin = 'vyatta'
         self.vmpassword = 'vyatta'
         self.treader = TopologyReader(self.config_path)
-        self.manager = vm_manager.Creator(self.treader.esx_host,
-                                          self.treader.esx_login,
-                                          self.treader.esx_password)
+        self.manager = vm_manager.Creator(self.treader.host_address,
+                                          self.treader.host_user,
+                                          self.treader.host_password)
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
 
     def test_create_instance(self):
         try:
-            vm = VirtualMachine(self.vmname, login='login', password='password')
+            vm = VirtualMachine(self.vmname, user='login', password='password')
             self.assertIsInstance(vm, VirtualMachine)
             self.assertEqual(vm.name, self.vmname)
         except AttributeError as e:
@@ -41,7 +41,7 @@ class TestVirtualMachine(unittest.TestCase):
             esx_host = 'vaytta-dell-1'
 
             vm = VirtualMachine(name=self.vmname,
-                                login=self.vmlogin,
+                                user=self.vmlogin,
                                 password=self.vmpassword,
                                 iso=iso,
                                 connected_networks=networks)
@@ -53,7 +53,7 @@ class TestVirtualMachine(unittest.TestCase):
     def test_destroy_virtual_machine(self):
         try:
             vm = VirtualMachine(self.vmname, self.rpname, 'login', 'password')
-            vm.destroy(self.manager, self.treader.esx_host)
+            vm.destroy(self.manager, self.treader.host_address)
         except Exception as e:
             self.logger.critical(e.message)
             self.fail(e.message)
