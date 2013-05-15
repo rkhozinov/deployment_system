@@ -232,6 +232,11 @@ class Creator:
         self._disconnect_from_esx()
 
     def destroy_vm(self, vmname):
+        """
+        Destroys virtual machine by name
+        :param vmname: virtual machine name
+        :raise:
+        """
         self._connect_to_esx()
 
         try:
