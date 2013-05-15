@@ -16,24 +16,16 @@ from pysphere.vi_task import VITask
 
 
 # An object of class Creator contain esx address and user credentials
-class CreatorException(Exception):
-    def __init__(self, value):
-        self.value = value
+class CreatorException(Exception): pass
 
-    def __str__(self):
-        return repr(self.value)
-
-
-class ResourcePoolException(Exception): pass
+# def __init__(self, value):
+#     self.value = value
+#
+# def __str__(self):
+#     return repr(self.value)
 
 
-class ResourcePoolExistException(ResourcePoolException): pass
-
-
-class VirtualMachineException(Exception): pass
-
-
-class VirtualMachineExistException(VirtualMachineException): pass
+class ExistenceException(Exception): pass
 
 
 class Creator:
@@ -152,7 +144,7 @@ class Creator:
             message = ''
             if "already exist" in inst:
                 message = "- '" + name + "'" + "already exist"
-                raise ResourcePoolExistException("Couldn't create resource pool " + message)
+                raise ExistenceException("Couldn't create resource pool " + message)
             else:
                 message = inst
                 raise CreatorException("Couldn't create the resource pool with name '%s'" % name)
@@ -206,9 +198,9 @@ class Creator:
             rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
                            if v == rp_name]
         except IndexError:
-            raise CreatorException("Couldn't find recource pool")
+            raise CreatorException("Couldn't find resource pool")
         if len(rp_mor_temp) == 0:
-            raise CreatorException("Couldn't find recource pool")
+            raise CreatorException("Couldn't find resource pool")
 
         rpmor = ''
         if esx_hostname:
@@ -238,7 +230,8 @@ class Creator:
         try:
             vm = self.esx_server.get_vm_by_name(vmname)
         except Exception:
-            raise VirtualMachineExistException("Couldn't find VM")
+            self._disconnect_from_esx()
+            raise ExistenceException("Couldn't find VM '%s'" % vmname)
 
         try:
             request = VI.Destroy_TaskRequestMsg()
@@ -272,7 +265,8 @@ class Creator:
         self._connect_to_esx()
 
         if self._is_vm_exist(vmname):
-            raise VirtualMachineExistException("VM '%s' already exist" % vmname)
+            self._disconnect_from_esx()
+            raise ExistenceException("VM '%s' already exist" % vmname)
 
         # if string in parameter networks
         networks = list(networks)
@@ -544,7 +538,7 @@ class Creator:
             vmname = str(vm_options['vm_name'])
             vm_temp = self.esx_server.get_vm_by_name(vmname)
             if vm_temp:
-                raise VirtualMachineExistException('VM already exists')
+                raise ExistenceException('VM "%s" already exists' % vmname)
         except KeyError:
             raise CreatorException('Must specify VM name')
         except pysphere.VIException as inst:
@@ -818,7 +812,8 @@ class Creator:
 
         for vs in prop.configManager.networkSystem.networkInfo.vswitch:
             if vs.name == name:
-                raise CreatorException("Switch already exist")
+                self._disconnect_from_esx()
+                raise ExistenceException("Switch '%s' already exist" % name)
 
         request = VI.AddVirtualSwitchRequestMsg()
         _this = request.new__this(network_system)
@@ -833,7 +828,7 @@ class Creator:
         try:
             self.esx_server._proxy.AddVirtualSwitch(request)
         except Exception:
-            raise CreatorException("Couldn't create vswitch")
+            raise CreatorException("Couldn't create Switch")
 
         self._disconnect_from_esx()
 
@@ -867,16 +862,22 @@ class Creator:
             try:
                 self.esx_server._proxy.RemoveVirtualSwitch(request)
             except Exception:
-                raise CreatorException("Couldn'n remove vswitch")
+                raise CreatorException("Couldn't remove virtual switch '%s'" % name)
         else:
-            raise CreatorException("Couldn't find virtual switch")
+            raise ExistenceException("Couldn't find virtual switch %s" % name)
         self._disconnect_from_esx()
 
-    # This function works only if a switch is created
-    # name - name of VLan
-    # vswitch - name of switch which will be reconfigured
-    def add_port_group(self, vswitch, name, esx_hostname=None,
+    def add_port_group(self, switch_name, vlan_name, esx_hostname=None,
                        vlan_id=4095, promiscuous=False):
+        """
+        Add new network to exist switch
+        :param switch_name: vlan_name of switch which will be reconfigured
+        :param vlan_name: vlan_name of VLAN
+        :param esx_hostname: ESX hostname
+        :param vlan_id: id for VLAN
+        :param promiscuous: promiscuous mode
+        :raise: ExistenceException, CreatorException
+        """
         self._connect_to_esx()
 
         vlan_id = int(vlan_id)
@@ -899,9 +900,9 @@ class Creator:
         request.set_element__this(_this)
 
         portgrp = request.new_portgrp()
-        portgrp.set_element_name(name)
+        portgrp.set_element_name(vlan_name)
         portgrp.set_element_vlanId(vlan_id)
-        portgrp.set_element_vswitchName(vswitch)
+        portgrp.set_element_vswitchName(switch_name)
 
         policy = portgrp.new_policy()
         security = policy.new_security()
@@ -916,8 +917,10 @@ class Creator:
         except Exception as inst:
             message = str(inst)
             if 'already exist' in message:
-                message = ' - The specified key, name, or identifier already exists.'
-            raise CreatorException("Error with creation port group" + message)
+                message = ' - The specified key, vlan_name, or identifier already exists.'
+                raise ExistenceException("Error with creation port group" + message)
+            else:
+                raise CreatorException("Error with creation port group" + message)
 
         self._disconnect_from_esx()
 
@@ -943,7 +946,7 @@ class Creator:
                 return real_name
 
         self._disconnect_from_esx()
-        raise CreatorException("Couldn't find portgroup")
+        return None
 
     def _is_vm_exist(self, name):
         self._connect_to_esx()
@@ -958,6 +961,12 @@ class Creator:
 
     def _fetch_resource_pool(self, rp_name, esx_hostname):
 
+        """
+
+        :param rp_name: resource pool name
+        :param esx_hostname: esx hostname
+        :return:
+        """
         rpmor = None
 
         if rp_name == '/':
