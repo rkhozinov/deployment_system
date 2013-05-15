@@ -5,10 +5,9 @@ from deployment_system.VirtualMachine import VirtualMachine
 
 
 class TopologyReader(object):
-
-    # sections describe
-    ESX_MANAGER = 'esx_manager'
-    ESX_HOST = 'esx_host_address'
+    # describe of sections
+    MANAGER = 'esx_manager'
+    HOST = 'esx_host'
     SETTINGS = 'settings'
 
     # esx manager settings
@@ -19,10 +18,10 @@ class TopologyReader(object):
     SWITCH_PREFIX = 'sw'
 
     # esx host settings
-    ESX_HOST_NAME = 'name'
-    ESX_HOST_ADDRESS = 'address'
-    ESX_HOST_USER = 'user'
-    ESX_HOST_PASSWORD = 'password'
+    HOST_NAME = 'name'
+    HOST_ADDRESS = 'address'
+    HOST_USER = 'user'
+    HOST_PASSWORD = 'password'
 
     # common settings
     ISO = 'iso'
@@ -49,32 +48,32 @@ class TopologyReader(object):
     VM_NEIGHBOURS = 'neighbours'
 
     def __init__(self, config_path):
-
-        self.log = logging.getLogger(__name__)
+        """
+        Reads and parse config with topology
+        :param config_path: topology configuration file
+        :raise: ConfigParser.Error,
+        """
+        self.logger = logging.getLogger(__name__)
         logging.basicConfig()
 
-        # init config
         try:
+            # init config
             self.config = ConfigParser.RawConfigParser()
             self.config.read(config_path)
-        except ConfigParser.Error as error:
-            # self.logger.critical(error.message)
-            raise error
 
-
-        # read main config
-        try:
             # esx manager settings
-            self.manager_address = self.config.get(self.ESX_MANAGER, self.MANAGER_ADDRESS)
-            self.manager_user = self.config.get(self.ESX_MANAGER, self.MANAGER_USER)
-            self.manager_password = self.config.get(self.ESX_MANAGER, self.MANAGER_PASSWORD)
+            self.manager_address = self.config.get(self.MANAGER, self.MANAGER_ADDRESS)
+            self.manager_user = self.config.get(self.MANAGER, self.MANAGER_USER)
+            self.manager_password = self.config.get(self.MANAGER, self.MANAGER_PASSWORD)
 
             # esx host settings
-            # esx_host_address need for virtual machine configuration
-            self.esx_host_address = self.config.get(self.ESX_HOST, self.ESX_HOST_ADDRESS)
-            self.esx_host_name = self.config.get(self.ESX_HOST, self.ESX_HOST_NAME)
-            self.esx_user = self.config.get(self.ESX_HOST, self.ESX_HOST_USER)
-            self.esx_password = self.config.get(self.ESX_HOST, self.ESX_HOST_PASSWORD)
+            # need for creating esx entities
+            self.host_name = self.config.get(self.HOST, self.HOST_NAME)
+
+            # esx address and credentials need for virtual machine configuration
+            self.host_address = self.config.get(self.HOST, self.HOST_ADDRESS)
+            self.host_user = self.config.get(self.HOST, self.HOST_USER)
+            self.host_password = self.config.get(self.HOST, self.HOST_PASSWORD)
 
             self.iso = self.config.get(self.SETTINGS, self.ISO)
             # list of networks
@@ -82,7 +81,7 @@ class TopologyReader(object):
             # list of virtual machines
             self.vms = self.__str_to_list(self.config.get(self.SETTINGS, self.VMS))
         except ConfigParser.Error as error:
-            self.log.critical(error.message)
+            self.logger.critical(error.message)
             raise error
 
 
@@ -97,12 +96,22 @@ class TopologyReader(object):
 
 
     def __str_to_list_strip(self, string):
+        """
+         Converts string to list. Each string without whitespaces
+        :param string: string for convert
+        :return: list of strings
+        """
         return [str.strip(x) for x in string.split(',')]
 
 
     def __get_vm(self, vm):
 
-        # Required params
+        """
+        Get vm by name from config and parse it data
+        :param vm: virtual machine name
+        :return: VirtualMachine instance
+        :raise:  ConfigParser.NoOptionError, ConfigParser.ParsingError
+        """
         try:
             password = self.config.get(vm, self.VM_PASSWORD)
             login = self.config.get(vm, self.VM_USER)
@@ -150,7 +159,7 @@ class TopologyReader(object):
             iso = self.iso
 
         return VirtualMachine(name=vm,
-                              login=login,
+                              user=login,
                               password=password,
                               memory=memory,
                               cpu=cpu,
@@ -212,17 +221,13 @@ class TopologyReader(object):
         """
         Gets networks from the configuration file
         :return: list of networks
-        :raise: ConfigParser.Error, ConfigParser.NoSectionError, ConfigParser.ParsingError
+        :raise: ConfigParser.Error
         """
         try:
             networks = []
             for net in self.networks:
                 networks.append(self.__get_network(net))
             return networks
-        except ConfigParser.NoSectionError as no_section:
-            raise no_section
-        except ConfigParser.ParsingError as parsing_error:
-            raise parsing_error
         except ConfigParser.Error as error:
             raise error
 
