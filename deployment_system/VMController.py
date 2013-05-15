@@ -5,30 +5,29 @@ import pexpect
 
 
 class VMController(object):
-    def __init__(self, vm, esx_host, esx_login, esx_password):
-        # TODO: VMController creation
+    def __init__(self, vm, host_address, host_user, host_password):
         self.vm = vm
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
         self.esx_session = None
 
         try:
-            self.esx_session = self.__connect_to_esx(esx_host, esx_login, esx_password)
+            self.esx_session = self.__connect_to_host(host_address, host_user, host_password)
             self.vm_session = self.__connect_to_vm()
         except pexpect.ExceptionPexpect as error:
             raise error
         except Exception as error:
             raise error
 
-    def __connect_to_esx(self, esx_host, esx_login, esx_password):
+    def __connect_to_host(self, host_address, host_user, host_password):
         try:
-            connection_str = 'ssh %s@%s' % (esx_login, esx_host)
+            connection_str = 'ssh %s@%s' % (host_user, host_address)
             #
             # session = pexpect.spawn(connection_str)
             # session.expect('.*assword:')
             # self.logger.info(session.after)
             #
-            # self.cmd(esx_password, expect='.*\#')
+            # self.cmd(host_password, expect='.*\#')
 
             child = pexpect.spawn(connection_str)
             child.expect(".*assword:")
@@ -47,8 +46,6 @@ class VMController(object):
 
     def __connect_to_vm(self):
         try:
-            # TODO: check work with path
-            # TODO: add to vm a vm_path or get_path()
             #connection_str = 'nc -U ' + os.path.normpath(self.vm.path + self.vm.name)
             connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.vm.name, self.vm.name)
 
@@ -72,7 +69,6 @@ class VMController(object):
         if not configuration:
             configuration = self.vm.configuration
         try:
-            #TODO: need to use 'expect' for each option
             for option in configuration:
                 self.cmd(option)
 
