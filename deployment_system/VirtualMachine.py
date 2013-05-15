@@ -3,7 +3,7 @@ from lib.Hatchery import CreatorException as exception
 
 
 class VirtualMachine(object):
-    def __init__(self, name, login, password, memory=512, cpu=2, size=1024,
+    def __init__(self, name, user, password, memory=512, cpu=2, size=1024,
                  connected_networks=None, iso=None,
                  description=None, neighbours=None, configuration=None):
 
@@ -12,10 +12,10 @@ class VirtualMachine(object):
         else:
             raise ValueError('Virtual machine name is not exist')
 
-        if login:
-            self.login = login
+        if user:
+            self.login = user
         else:
-            raise ValueError('Virtual machine login is not exist')
+            raise ValueError('Virtual machine user is not exist')
 
         if password:
             self.password = password
@@ -35,9 +35,9 @@ class VirtualMachine(object):
         self.iso = iso
         self.serial_port_path = None
 
-    def create(self, manager, esx_host, resource_pool_name):
+    def create(self, manager, host_name, resource_pool_name):
 
-        if not esx_host:
+        if not host_name:
             raise AttributeError('ESX host does not exist')
 
         if not manager:
@@ -47,7 +47,7 @@ class VirtualMachine(object):
             raise AttributeError('Resource pool name does not exist')
 
         try:
-            manager.create_vm_old(self.name, esx_host, self.iso,
+            manager.create_vm_old(self.name, host_name, self.iso,
                                   resource_pool='/' + resource_pool_name,
                                   networks=self.connected_networks,
                                   annotation=self.description,
@@ -65,10 +65,7 @@ class VirtualMachine(object):
     def add_serial_port(self):
         pass
 
-    def destroy(self, manager, esx_host):
-        if not esx_host:
-            raise AttributeError('ESX host address is not exist')
-
+    def destroy(self, manager):
         if not manager:
             raise AttributeError('ESX manager address is not exist')
         try:
@@ -76,13 +73,12 @@ class VirtualMachine(object):
         except exception as error:
             raise error
 
-    def configure(self, esx_host, esx_login, esx_password):
-        #TODO: add configure source
+    def configure(self, host_address, host_user, user_password):
         try:
             vm_ctrl = VMController(vm=self,
-                                   esx_host=esx_host,
-                                   esx_login=esx_login,
-                                   esx_password=esx_password)
+                                   host_address=host_address,
+                                   host_user=host_user,
+                                   host_password=user_password)
 
             for option in self.configuration:
                 vm_ctrl.cmd(option)
