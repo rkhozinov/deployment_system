@@ -14,9 +14,9 @@ class TestVMController(unittest.TestCase):
         self.vmlogin = 'vyatta'
         self.vmpassword = 'vyatta'
         self.config = TopologyReader(self.config_path)
-        self.manager = vmmanager.Creator(self.config.esx_host,
-                                         self.config.esx_login,
-                                         self.config.esx_password)
+        self.manager = vmmanager.Creator(self.config.host_address,
+                                         self.config.host_user,
+                                         self.config.host_password)
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
 
@@ -24,9 +24,9 @@ class TestVMController(unittest.TestCase):
         try:
             vms = self.config.get_virtual_machines()
             vm_ctrl = VMController(vm=vms[0],
-                                   esx_host=self.config.esx_host,
-                                   esx_login=self.config.esx_login,
-                                   esx_password=self.config.esx_password)
+                                   host_address=self.config.host_address,
+                                   host_user=self.config.host_user,
+                                   host_password=self.config.host_password)
             self.assertEqual(vm_ctrl.vm, vms[0])
             self.assertIsInstance(vm_ctrl.vm, VirtualMachine)
             self.assertIsInstance(vm_ctrl, VMController)
