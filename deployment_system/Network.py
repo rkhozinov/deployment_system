@@ -1,5 +1,5 @@
 class Network(object):
-    def __init__(self, name, vlan, ports, isolated,  promiscuous=False,):
+    def __init__(self, name, vlan, isolated=False, promiscuous=False, ):
         """
         Create network with specific vlan and mode
 
@@ -8,11 +8,17 @@ class Network(object):
         :param ports: numbers of ports
         :param promiscuous: promiscuous mode
         """
-        self.name = name
+        if name:
+            self.name = name
+        else:
+            raise AttributeError("Couldn't specify network name")
         self.promiscuous = promiscuous
-        self.ports = ports
         self.isolated = isolated
-        try:
-            self.vlan = int(vlan)
-        except ValueError:
-            self.vlan = 4095
+
+        if vlan:
+            try:
+                self.vlan = int(vlan)
+            except ValueError:
+                self.vlan = 4095
+        else:
+            raise AttributeError("Couldn't specify VLAN number")
