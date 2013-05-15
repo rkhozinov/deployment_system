@@ -22,7 +22,7 @@ class VMController(object):
     def __connect_to_host(self, host_address, host_user, host_password):
         try:
             connection_str = 'ssh %s@%s' % (host_user, host_address)
-            #
+
             # session = pexpect.spawn(connection_str)
             # session.expect('.*assword:')
             # self.logger.info(session.after)
