@@ -12,12 +12,12 @@ import lib.Hatchery as Manager
 class TestSwitch(unittest2.TestCase):
     def setUp(self):
         self.logger = logging.getLogger(__name__)
-        self.config_path = '../etc/topology.ini'
+        logging.basicConfig()
         self.host_name = '172.18.93.30'
         self.manager = Manager.Creator('172.18.93.40',
                                        'root',
                                        'vmware')
-        logging.basicConfig()
+
         self.switch_name = 'test_switch2'
         self.switch_ports = 8
         self.network_name = 'test_net2'
