@@ -189,8 +189,12 @@ class Creator:
 
     def destroy_resource_pool_with_vms(self, name, esx_hostname=None):
         self._connect_to_esx()
+
+        if not name:
+            raise CreatorException("Couldn't specify resource pool name")
+
         if name[0] != '/':
-            rp_name = '/Resources' + name
+            rp_name = '/Resources/' + name
         else:
             rp_name = '/Resources' + name
 
