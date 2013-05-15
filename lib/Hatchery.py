@@ -154,7 +154,10 @@ class Creator:
 
     def destroy_resource_pool(self, name, esx_hostname=None):
         self._connect_to_esx()
-        name = '/Resources/' + name
+        if name[0] != '/':
+            rp_name = '/Resources/' + name
+        else:
+            rp_name = '/Resources' + name
 
         try:
             rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
