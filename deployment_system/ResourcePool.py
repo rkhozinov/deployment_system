@@ -1,4 +1,4 @@
-from lib.Hatchery import CreatorException as exception
+import lib.Hatchery as Manager
 
 
 class ResourcePool(object):
@@ -7,25 +7,25 @@ class ResourcePool(object):
         ESXi resource pool instance
         :param manager: ESXi manager
         :param name: ESXi name of a resource pool
-        :raise:
+        :raise: AttributeException
         """
         if name and isinstance(name, str):
             self.name = name
         else:
-            raise AttributeError('Do not specify the name of the resource pool')
+            raise AttributeError("Couldn't specify the name of the resource pool")
 
 
     def create(self, manager):
         """
         Creates a ESXi resource pool
-        :raise: AttributeExcpetion, CreatorExcpetion
+        :raise: AttributeException, CreatorException
         """
         if not manager:
-            raise AttributeError('Do not specify the ESX manager')
+            raise AttributeError("Couldn't specify the esx manager")
         try:
 
             manager.create_resource_pool(self.name)
-        except exception as error:
+        except Manager.CreatorException as error:
             raise error
 
     def destroy(self, manager, with_vms=False):
@@ -35,13 +35,13 @@ class ResourcePool(object):
                          if False - save vms and move its to the up resource pool
         :raise: CreatorException
         """
-        if not manager:
-            raise AttributeError('Do not specify the ESX manager')
+        if not manager or isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the esx manager")
 
         try:
             if with_vms:
                 manager.destroy_resource_pool_with_vms(self.name)
             else:
                 manager.destroy_resource_pool(self.name)
-        except exception as error:
+        except Manager.CreatorException as error:
             raise error
