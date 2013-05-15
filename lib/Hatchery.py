@@ -190,7 +190,7 @@ class Creator:
     def destroy_resource_pool_with_vms(self, name, esx_hostname=None):
         self._connect_to_esx()
         if name[0] != '/':
-            rp_name = '/Resources/' + name
+            rp_name = '/Resources' + name
         else:
             rp_name = '/Resources' + name
 
