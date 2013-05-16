@@ -1,6 +1,7 @@
+import pexpect
+
 from VMController import VMController
 import lib.Hatchery as Manager
-import pexpect
 
 
 class VirtualMachine(object):
@@ -62,33 +63,41 @@ class VirtualMachine(object):
             raise error
 
     def add_serial_port(self, manager, host_address, host_user, host_password,
-                serial_file_dir = 'serial_ports'):
-        manager._connect_to_esx()
-        vm = manager.esx_server.get_vm_by_name(name)
-        path = vm.get_property('path')
-        manager._disconnect_from_esx()
+                        serial_ports_dir='serial_ports'):
+
+        path = None
+        try:
+            path = manager.get_vm_path(self.name)
+        except Manager.ExistenceException as error:
+            raise error
+        except Manager.CreatorException as error:
+            raise error
 
         path_temp = path.split(' ')
         datastore = path_temp[0][1:-1]
-        vm_folder = path_temp[1].split('/')[0]
-        way_to_serial_dir = '/vmfs/volumes/' + datastore + '/' + serial_dir
-        way_to_serial = way_to_serial_dir + '/' + self.name
-        way_to_vmx = '/vmfs/volumes/' + datastore + '/' + path_temp[1]
-
+        serial_ports_dir_path = '/vmfs/volumes/' + datastore + '/' + serial_ports_dir
+        serial_port_path = serial_ports_dir_path + '/' + self.name
+        vmx_config_path = '/vmfs/volumes/' + datastore + '/' + path_temp[1]
 
         commands = []
-        commands.append('mrdir -p ' + way_to_serial_dir)
-        commands.append('touch ' + way_to_serial)
-        commands.append('sed -i \'$ a serial0.present = "TRUE"\' ' + way_to_vmx)
-        commands.append('sed -i \'$ a serial0.yieldOnMsrRead = "TRUE" \' ' + way_to_vmx)
-        commands.append('sed -i \'$ a serial0.fileType = "pipe" \' ' + way_to_vmx)
-        commands.append('sed -i \'$ a serial0.fileName = \"' + way_to_serial + '\" \' ' + way_to_vmx)
-        commands.append('sed -i \'$ a serial0.pipe.endPoint = "server" \' ' + way_to_vmx)
+        commands.append('mkdir -p ' + serial_ports_dir_path)
+        commands.append('touch ' + serial_port_path)
+        commands.append('sed -i \'$ a serial0.present = "TRUE"\' ' + vmx_config_path)
+        commands.append('sed -i \'$ a serial0.yieldOnMsrRead = "TRUE" \' ' + vmx_config_path)
+        commands.append('sed -i \'$ a serial0.fileType = "pipe" \' ' + vmx_config_path)
+        commands.append('sed -i \'$ a serial0.fileName = \"' + serial_port_path + '\" \' ' + vmx_config_path)
+        commands.append('sed -i \'$ a serial0.pipe.endPoint = "server" \' ' + vmx_config_path)
 
-        child = pexpect.spawn("ssh root@" + host_address)
+        # TODO: add check for existence
+        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
         child.expect(".*assword:")
         child.sendline(host_password + "\r")
         child.expect(".*\# ")
+
+        # delete existence serial port options from the configuration file
+        child.sendline("sed -e '/^serial0/d' %s > tmp && cat tmp > %s && rm tmp"
+                       % (vmx_config_path, vmx_config_path))
+
         for cmd in commands:
             child.sendline(cmd)
 
