@@ -1,8 +1,8 @@
 # _Deployment System_
 
-_Deployment System for ESXi.
+_Deployment System for ESXi_
 
-Based on PySphere (https://code.google.com/p/pysphere/) sources_
+Based on PySphere (https://code.google.com/p/pysphere/) sources
 
 ## Project Setup
 
