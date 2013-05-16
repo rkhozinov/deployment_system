@@ -161,7 +161,7 @@ class Creator:
 
         try:
             rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
-                           if v == name]
+                           if v == rp_name]
         except IndexError:
             raise CreatorException("Couldn't find resource pool")
         if len(rp_mor_temp) == 0:
@@ -272,269 +272,22 @@ class Creator:
     # dicksize - hard disk in Kb
     def create_vm_old(self, vmname, esx_hostname=None, cd_iso_location=None,
                       datacenter=None, resource_pool='/', networks=[], datastore=None,
-                      annotation="1",
+                      annotation="Description of %s"%vmname,
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
-        self._connect_to_esx()
-
-        if self._is_vm_exist(vmname):
-            self._disconnect_from_esx()
-            raise ExistenceException("VM '%s' already exist" % vmname)
-
-        # if string in parameter networks
-        networks = list(networks)
-
-        # Get/check host name
-        try:
-            if esx_hostname:
-                hostname = [v for k, v in self.esx_server.get_hosts().items()
-                            if v == esx_hostname][0]
-            else:
-                hostname = self.esx_server.get_hosts().items()[0][1]
-        except IndexError:
-            raise CreatorException('Host not found or not avaliable')
-
-        # Get datacenter name or check whether datacenter
-        #datacentername = "ha-datacenter"
-        try:
-            if datacenter:
-                datacentername = [v for k, v in self.esx_server.get_datacenters().items()
-                                  if v == datacenter][0]
-            else:
-                datacentername = self.esx_server.get_datacenters().items()[0][1]
-        except IndexError:
-            raise CreatorException('Datacenter not found')
-
-
-            # get host resource
-        hostmor = [k for k, v in self.esx_server.get_hosts().items() if v == hostname][0]
-
-        try:
-            datastorename = None
-            hostprop = VIProperty(self.esx_server, hostmor)
-            ds_list = hostprop.datastore
-            if len(ds_list) == 0:
-                raise CreatorException("Couldn't find datastore")
-
-            if datastore:
-                if len(ds_list) != 1:
-                    datastorename = [k for k in ds_list if k.name == datastore][0].name
-            else:
-                datastorename = ds_list[0].name
-        except IndexError:
-            raise CreatorException("Couldn't find datastore")
-
-            # get datacenter resource
-        dcmor = [k for k, v in self.esx_server.get_datacenters().items() if v == datacentername][0]
-        dcprops = VIProperty(self.esx_server, dcmor)
-        # het host folder resource
-        hfmor = dcprops.hostFolder._obj
-
-        crmors = self.esx_server._retrieve_properties_traversal(property_names=['name', 'host'],
-                                                                from_node=hfmor, obj_type='ComputeResource')
-
-        # get computer resource
-        crmor = None
-        for cr in crmors:
-            if crmor:
-                break
-            for p in cr.PropSet:
-                if p.Name == "host":
-                    for h in p.Val.get_element_ManagedObjectReference():
-                        if h == hostmor:
-                            crmor = cr.Obj
-                            break
-                    if crmor:
-                        break
-        crprops = VIProperty(self.esx_server, crmor)
-
-        # get resource pool
-        if resource_pool == '/':
-            rpmor = None
-            try:
-                rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
-                               if v == '/Resources']
-            except IndexError:
-                raise CreatorException("Couldn't find parent resource pool")
-            if len(rp_mor_temp) == 0:
-                raise CreatorException("Couldn't find parent recource pool")
-
-            if esx_hostname:
-                for rp in rp_mor_temp:
-                    prop = VIProperty(self.esx_server, rp)
-                    if prop.parent.name == esx_hostname:
-                        rpmor = rp
-                        break
-                if not rpmor:
-                    raise CreatorException("Couldn't find host")
-            elif len(rp_mor_temp) == 1:
-                rpmor = rp_mor_temp[0]
-            else:
-                raise CreatorException("More than 1 host - must specify esx hostname")
-        else:
-            resource_pool = '/Resources' + resource_pool
-            rpmor = None
-            try:
-                rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
-                               if v == resource_pool]
-            except IndexError:
-                raise CreatorException("Couldn't find parent resource pool")
-            if len(rp_mor_temp) == 0:
-                raise CreatorException("Couldn't find parent recource pool")
-
-            if esx_hostname:
-                for rp in rp_mor_temp:
-                    prop = VIProperty(self.esx_server, rp)
-                    while prop.parent.name != "host":
-                        prop = prop.parent
-                        if prop.name == esx_hostname:
-                            rpmor = rp
-                            break
-                    if rp:
-                        break
-            elif len(rp_mor_temp) == 1:
-                rpmor = rp_mor_temp[0]
-            else:
-                raise CreatorException("ESX Hostname must be specified")
-
-
-
-                # get vm folder
-        vmfmor = dcprops.vmFolder._obj
-
-        #CREATE VM CONFIGURATION
-        #get config target
-        request = VI.QueryConfigTargetRequestMsg()
-        _this = request.new__this(crprops.environmentBrowser._obj)
-        _this.set_attribute_type(crprops.environmentBrowser._obj.get_attribute_type())
-        request.set_element__this(_this)
-        h = request.new_host(hostmor)
-        h.set_attribute_type(hostmor.get_attribute_type())
-        request.set_element_host(h)
-        config_target = self.esx_server._proxy.QueryConfigTarget(request)._returnval
-
-        #get default devices
-        request = VI.QueryConfigOptionRequestMsg()
-        _this = request.new__this(crprops.environmentBrowser._obj)
-        _this.set_attribute_type(crprops.environmentBrowser._obj.get_attribute_type())
-        request.set_element__this(_this)
-        h = request.new_host(hostmor)
-        h.set_attribute_type(hostmor.get_attribute_type())
-        request.set_element_host(h)
-        config_option = self.esx_server._proxy.QueryConfigOption(request)._returnval
-        defaul_devs = config_option.DefaultDevice
-
-        #get network name
-        _networks = []
-        for n in config_target.Network:
-            if (n.Network.Accessible and networks.count(n.Network.Name)):
-                _networks.append(n.Network.Name)
-        if not _networks and len(networks) != 0:
-            raise CreatorException("Couldn't find network")
-
-            #get datastore
-        ds = None
-        for d in config_target.Datastore:
-            if (d.Datastore.Accessible and d.Datastore.Name == datastorename):
-                ds = d.Datastore.Datastore
-                datastorename = d.Datastore.Name
-                break
-        if not ds:
-            raise CreatorException("Datastore is not avaliable")
-        volume_name = "[%s]" % datastorename
-
-        #add parameters to the create vm task
-        create_vm_request = VI.CreateVM_TaskRequestMsg()
-        config = create_vm_request.new_config()
-        vmfiles = config.new_files()
-        vmfiles.set_element_vmPathName(volume_name)
-        config.set_element_files(vmfiles)
-        config.set_element_name(vmname)
-        config.set_element_annotation(annotation)
-        config.set_element_memoryMB(memorysize)
-        config.set_element_numCPUs(cpucount)
-        config.set_element_guestId(guestosid)
-        devices = []
-
-        #add a scsi controller
-        disk_ctrl_key = 1
-        scsi_ctrl_spec = config.new_deviceChange()
-        scsi_ctrl_spec.set_element_operation('add')
-        scsi_ctrl = VI.ns0.VirtualLsiLogicController_Def("scsi_ctrl").pyclass()
-        scsi_ctrl.set_element_busNumber(0)
-        scsi_ctrl.set_element_key(disk_ctrl_key)
-        scsi_ctrl.set_element_sharedBus("noSharing")
-        scsi_ctrl_spec.set_element_device(scsi_ctrl)
-        devices.append(scsi_ctrl_spec)
-        #find ide controller
-        ide_ctlr = None
-        for dev in defaul_devs:
-            if dev.typecode.type[1] == "VirtualIDEController":
-                ide_ctlr = dev
-                #add a cdrom based on a physical device
-        if ide_ctlr:
-            cd_spec = config.new_deviceChange()
-            cd_spec.set_element_operation('add')
-            cd_ctrl = VI.ns0.VirtualCdrom_Def("cd_ctrl").pyclass()
-            cd_device_backing = VI.ns0.VirtualCdromIsoBackingInfo_Def("cd_device_backing").pyclass()
-            ds_ref = cd_device_backing.new_datastore(ds)
-            ds_ref.set_attribute_type(ds.get_attribute_type())
-            cd_device_backing.set_element_datastore(ds_ref)
-            cd_device_backing.set_element_fileName("%s %s" % (volume_name, cd_iso_location))
-            cd_ctrl.set_element_backing(cd_device_backing)
-            cd_ctrl.set_element_key(20)
-            cd_ctrl.set_element_controllerKey(ide_ctlr.get_element_key())
-            cd_ctrl.set_element_unitNumber(0)
-            cd_spec.set_element_device(cd_ctrl)
-            devices.append(cd_spec)
-            # create a new disk - file based - for the vm
-        disk_spec = config.new_deviceChange()
-        disk_spec.set_element_fileOperation("create")
-        disk_spec.set_element_operation("add")
-        disk_ctlr = VI.ns0.VirtualDisk_Def("disk_ctlr").pyclass()
-        disk_backing = VI.ns0.VirtualDiskFlatVer2BackingInfo_Def("disk_backing").pyclass()
-        disk_backing.set_element_fileName(volume_name)
-        disk_backing.set_element_diskMode("persistent")
-        disk_ctlr.set_element_key(0)
-        disk_ctlr.set_element_controllerKey(disk_ctrl_key)
-        disk_ctlr.set_element_unitNumber(0)
-        disk_ctlr.set_element_backing(disk_backing)
-        disk_ctlr.set_element_capacityInKB(disksize)
-        disk_spec.set_element_device(disk_ctlr)
-        devices.append(disk_spec)
-        #add a NIC. the network Name must be set as the device name to create the NIC.
-
-
-        for network_name in _networks:
-            nic_spec = config.new_deviceChange()
-            nic_spec.set_element_operation("add")
-            nic_ctlr = VI.ns0.VirtualPCNet32_Def("nic_ctlr").pyclass()
-            nic_backing = VI.ns0.VirtualEthernetCardNetworkBackingInfo_Def("nic_backing").pyclass()
-            nic_backing.set_element_deviceName(network_name)
-            nic_ctlr.set_element_addressType("generated")
-            nic_ctlr.set_element_backing(nic_backing)
-            nic_ctlr.set_element_key(4)
-            nic_spec.set_element_device(nic_ctlr)
-            devices.append(nic_spec)
-
-        config.set_element_deviceChange(devices)
-        create_vm_request.set_element_config(config)
-        folder_mor = create_vm_request.new__this(vmfmor)
-        folder_mor.set_attribute_type(vmfmor.get_attribute_type())
-        create_vm_request.set_element__this(folder_mor)
-        rp_mor = create_vm_request.new_pool(rpmor)
-        rp_mor.set_attribute_type(rpmor.get_attribute_type())
-        create_vm_request.set_element_pool(rp_mor)
-        host_mor = create_vm_request.new_host(hostmor)
-        host_mor.set_attribute_type(hostmor.get_attribute_type())
-        create_vm_request.set_element_host(host_mor)
-        #CREATE THE VM - add option "wait"
-        taskmor = self.esx_server._proxy.CreateVM_Task(create_vm_request)._returnval
-        task = VITask(taskmor, self.esx_server)
-        task.wait_for_state([task.STATE_SUCCESS, task.STATE_ERROR])
-        if task.get_state() == task.STATE_ERROR:
-            raise CreatorException("Error creating vm: %s" % task.get_error_message())
-
-        self._disconnect_from_esx()
+        parameter = {}
+        parameter['vm_name'] = vmname
+        parameter['esx_hostname'] = esx_hostname
+        parameter['cd_iso_location'] = cd_iso_location
+        parameter['datacenter_name'] = datacenter
+        parameter['datastore_name'] = datastore
+        parameter['resource_pool_name'] = resource_pool
+        parameter['networks'] = networks
+        parameter['annotation'] = annotation
+        parameter['guestosid'] = guestosid
+        parameter['memory_size'] = memorysize
+        parameter['cpu_count'] = cpucount
+        parameter['disk_size'] = disksize
+        self.create_vm(parameter)
 
 
     #################################################
@@ -545,12 +298,12 @@ class Creator:
         #parse vm_options
 
         #VM NAME
-        vmname = None
+        vm_name = None
         try:
-            vmname = str(vm_options['vm_name'])
-            vm_temp = self.esx_server.get_vm_by_name(vmname)
+            vm_name = str(vm_options['vm_name'])
+            vm_temp = self.esx_server.get_vm_by_name(vm_name)
             if vm_temp:
-                raise ExistenceException('VM "%s" already exists' % vmname)
+                raise ExistenceException('VM "%s" already exists' % vm_name)
         except KeyError:
             raise CreatorException('Must specify VM name')
         except pysphere.VIException as inst:
@@ -609,7 +362,7 @@ class Creator:
         # RESOURCE POOL
         resource_pool_name = ''
         try:
-            resource_pool_name = vm_options['resource_pool']
+            resource_pool_name = vm_options['resource_pool_name']
             if resource_pool_name == '/':
                 pass
             elif resource_pool_name[0] != '/':
@@ -638,7 +391,7 @@ class Creator:
         try:
             annotation = vm_options['annotation']
         except KeyError:
-            annotation = "Description for VM %s" % vmname
+            annotation = "Description for VM %s" % vm_name
 
         # Guest ID - http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html
         try:
@@ -715,7 +468,7 @@ class Creator:
         vmfiles = config.new_files()
         vmfiles.set_element_vmPathName(volume_name)
         config.set_element_files(vmfiles)
-        config.set_element_name(vmname)
+        config.set_element_name(vm_name)
         config.set_element_annotation(annotation)
         config.set_element_memoryMB(memory_size)
         config.set_element_numCPUs(cpu_count)
