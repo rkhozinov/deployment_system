@@ -143,6 +143,16 @@ class TestHatchery(unittest2.TestCase):
             self.assertTrue(False, error.message)
 
 
+    def test_get_vm_path(self):
+        try:
+            manager = self.__get_manager()
+            manager.get_vm_path(self.vmname)
+        except Manager.ExistenceException as error:
+            self.assertTrue(False, error.message)
+        except Exception as error:
+            self.assertTrue(False, error.message)
+
+
     def __get_manager(self):
         try:
             manager = Manager.Creator(self.manager_address,

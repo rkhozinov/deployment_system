@@ -6,6 +6,14 @@ import pexpect
 
 class VMController(object):
     def __init__(self, vm, host_address, host_user, host_password):
+        """
+        Controller for configure the virtual machine
+        :param vm: VirtualMachine instance
+        :param host_address: esx host address
+        :param host_user:  esx user
+        :param host_password: esx password
+        :raise: pexpect.ExceptionPexpect, Exception
+        """
         self.vm = vm
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
@@ -20,6 +28,13 @@ class VMController(object):
             raise error
 
     def __connect_to_host(self, host_address, host_user, host_password):
+        """
+        Connects to ESX host for configure virtual machine
+        :param host_address:
+        :param host_user:
+        :param host_password:
+        :return: :raise:
+        """
         try:
             connection_str = 'ssh %s@%s' % (host_user, host_address)
 
