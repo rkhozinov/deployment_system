@@ -276,12 +276,18 @@ class Creator:
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
         parameter = {}
         parameter['vm_name'] = vmname
-        parameter['esx_hostname'] = esx_hostname
-        parameter['cd_iso_location'] = cd_iso_location
-        parameter['datacenter_name'] = datacenter
-        parameter['datastore_name'] = datastore
-        parameter['resource_pool_name'] = resource_pool
-        parameter['networks'] = networks
+        if esx_hostname:
+            parameter['esx_hostname'] = esx_hostname
+        if cd_iso_location:
+            parameter['cd_iso_location'] = cd_iso_location
+        if datacenter:
+            parameter['datacenter_name'] = datacenter
+        if datastore:
+           parameter['datastore_name'] = datastore
+        if resource_pool:
+            parameter['resource_pool_name'] = resource_pool
+        if networks:
+            parameter['networks'] = networks
         if not annotation:
             parameter['annotation'] = "Description of %s" % vmname
         else:
