@@ -1,12 +1,10 @@
 # This class developed for management ESXi-server using pySphere
 # Main features:
 # - Create/destroy virtual switch
-# - Create/destroy virtual mashine with specified parameters
+# - Create/destroy virtual machine with specified parameters
 # - Create/destroy resource pool
-#
-#TODO
-# Optional waiting for creation vm
-# Add serial port
+
+
 
 
 import pysphere
@@ -263,17 +261,33 @@ class Creator:
 
         self._disconnect_from_esx()
 
-    # If resource_pool_path is not defined, VM will created in root of inventory
-    # If network_name is not defined, VM will created with random network
-    # If datastorename is not defined, VM's files will be placed in
-    #   first avaliable datstore
-    # guestosid - parameter for PySphere, contains type of guest OS
-    # memorysize - RAM size ib Mb
-    # dicksize - hard disk in Kb
+
     def create_vm_old(self, vmname, esx_hostname=None, cd_iso_location=None,
                       datacenter=None, resource_pool='/', networks=[], datastore=None,
                       annotation=None,
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
+        """
+        Creates virtual machine
+        # If resource_pool_path is not defined, VM will created in root of inventory
+        # If network_name is not defined, VM will created with random network
+        # If datastorename is not defined, VM's files will be placed in
+        #   first avaliable datstore
+        # guestosid - parameter for PySphere, contains type of guest OS
+        # memorysize - RAM size ib Mb
+        # dicksize - hard disk in Kb
+        :param vmname:
+        :param esx_hostname:
+        :param cd_iso_location:
+        :param datacenter:
+        :param resource_pool:
+        :param networks:
+        :param datastore:
+        :param annotation:
+        :param guestosid:
+        :param memorysize:
+        :param cpucount:
+        :param disksize:
+        """
         parameter = {}
         parameter['vm_name'] = vmname
         if esx_hostname:
@@ -283,7 +297,7 @@ class Creator:
         if datacenter:
             parameter['datacenter_name'] = datacenter
         if datastore:
-           parameter['datastore_name'] = datastore
+            parameter['datastore_name'] = datastore
         if resource_pool:
             parameter['resource_pool_name'] = resource_pool
         if networks:
@@ -725,7 +739,7 @@ class Creator:
 
     def _is_vm_exist(self, name):
         self._connect_to_esx()
-        exist = None
+        exist = False
         try:
             self.esx_server.get_vm_by_name(name)
             exist = True
@@ -798,8 +812,83 @@ class Creator:
     def is_connected(self):
         return self.esx_server.is_connected()
 
+    def vm_power_on(self, vmname):
+        """
+        Turns power on for the virtual machine
+        :param vmname: virtual machine name
+        :raise: ExistenceException, AttributeError, Exception
+        """
+        if not vmname:
+            raise AttributeError("Couldn't specify the virtual machine name")
+
+        if not self._is_vm_exist(vmname):
+            raise ExistenceException("Couldn't find the virtual machine '%s'" % vmname)
+
+        try:
+            self._connect_to_esx()
+            vm = self.esx_server.get_vm_by_name(vmname)
+            if not vm.is_powered_on() and not vm.is_powering_on():
+                vm.power_on()
+            self._disconnect_from_esx()
+        except Exception as error:
+            self._disconnect_from_esx()
+            raise CreatorException(error)
+
+    def vm_power_off(self, vmname):
+        """
+        Turns power off for the virtual machine
+        :param vmname: virtual machine name
+        :raise: ExistenceException, AttributeError, Exception
+        """
+        if not vmname:
+            raise AttributeError("Couldn't specify the virtual machine name")
+
+        if not self._is_vm_exist(vmname):
+            raise ExistenceException("Couldn't find the virtual machine '%s'" % vmname)
+
+        try:
+            self._connect_to_esx()
+            vm = self.esx_server.get_vm_by_name(vmname)
+            if not vm.is_powered_off() and not vm.is_powering_off():
+                vm.power_off()
+            self._disconnect_from_esx()
+        except Exception as error:
+            self._disconnect_from_esx()
+            raise CreatorException(error)
+
+    def vm_reset(self, vmname):
+        """
+        Resets a virtual machine.
+        If the virtual machine is powered off, then turns the power on for this virtual machine
+        :param vmname: virtual machine name
+        :raise: AttributeError, ExistenceException, Exception
+        """
+        if not vmname:
+            raise AttributeError("Couldn't specify the virtual machine name")
+
+        if not self._is_vm_exist(vmname):
+            raise ExistenceException("Couldn't find the virtual machine '%s'" % vmname)
+
+        try:
+            self._connect_to_esx()
+            vm = self.esx_server.get_vm_by_name(vmname)
+            if not vm.is_powered_off():
+                vm.reset()
+            else:
+                vm.power_on()
+            self._disconnect_from_esx()
+        except Exception as error:
+            self._disconnect_from_esx()
+            raise CreatorException(error)
+
     def get_vm_path(self, vmname):
 
+        """
+        Gets a virtual machine path on ESX server
+        :param vmname: virtual machine name
+        :return: virtual machine path
+        :raise: CreatorException
+        """
         if not vmname:
             raise AttributeError("Couldn't specify the virtual machine name")
 
