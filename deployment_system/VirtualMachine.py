@@ -1,5 +1,5 @@
 from VMController import VMController
-from lib.Hatchery import CreatorException as exception
+import lib.Hatchery as Manager
 
 
 class VirtualMachine(object):
@@ -10,17 +10,17 @@ class VirtualMachine(object):
         if name:
             self.name = name
         else:
-            raise ValueError('Virtual machine name is not exist')
+            raise AttributeError("Couldn't specify the virtual machine name")
 
         if user:
             self.login = user
         else:
-            raise ValueError('Virtual machine user is not exist')
+            raise AttributeError("Couldn't specify the virtual machine user")
 
         if password:
             self.password = password
         else:
-            raise ValueError('Virtual machine password is not exist')
+            raise AttributeError("Couldn't specify the virtual machine password")
 
         self.memory = memory
         self.cpu = cpu
@@ -38,13 +38,13 @@ class VirtualMachine(object):
     def create(self, manager, host_name, resource_pool_name):
 
         if not host_name:
-            raise AttributeError('ESX host does not exist')
+            raise AttributeError("Couldn't specify the ESX host name")
 
-        if not manager:
-            raise AttributeError('ESX manager address does not exist')
+        if not manager or not isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the ESX manager")
 
         if not resource_pool_name:
-            raise AttributeError('Resource pool name does not exist')
+            raise AttributeError("Couldn't specify the resource pool name")
 
         try:
             manager.create_vm_old(self.name, host_name, self.iso,
@@ -54,23 +54,26 @@ class VirtualMachine(object):
                                   memorysize=self.memory,
                                   cpucount=self.cpu,
                                   disksize=self.size)
-        except exception as error:
-            raise error
 
-    def add_network(self, network):
-        if not network:
-            raise ValueError('Network is not exist')
-        self.connected_networks.append(network)
+        except Manager.ExistenceException as error:
+            raise error
+        except Manager.CreatorException as error:
+            raise error
 
     def add_serial_port(self):
         pass
 
+    def is_serial_port_exist(self):
+        pass
+
     def destroy(self, manager):
-        if not manager:
-            raise AttributeError('ESX manager address is not exist')
+        if not manager or not isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the ESX manager")
         try:
             manager.destroy_vm(self.name)
-        except exception as error:
+        except Manager.ExistenceException as error:
+            raise error
+        except Manager.CreatorException as error:
             raise error
 
     def configure(self, host_address, host_user, user_password):
@@ -82,5 +85,7 @@ class VirtualMachine(object):
 
             for option in self.configuration:
                 vm_ctrl.cmd(option)
-        except Exception as error:
+        except Manager.ExistenceException as error:
+            raise error
+        except Manager.CreatorException as error:
             raise error
