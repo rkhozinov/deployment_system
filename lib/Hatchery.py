@@ -272,7 +272,7 @@ class Creator:
     # dicksize - hard disk in Kb
     def create_vm_old(self, vmname, esx_hostname=None, cd_iso_location=None,
                       datacenter=None, resource_pool='/', networks=[], datastore=None,
-                      annotation="Description of %s"%vmname,
+                      annotation=None,
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
         parameter = {}
         parameter['vm_name'] = vmname
@@ -282,7 +282,11 @@ class Creator:
         parameter['datastore_name'] = datastore
         parameter['resource_pool_name'] = resource_pool
         parameter['networks'] = networks
-        parameter['annotation'] = annotation
+        if not annotation:
+            parameter['annotation'] = "Description of %s" % vmname
+        else:
+            parameter['annotation'] = annotation
+
         parameter['guestosid'] = guestosid
         parameter['memory_size'] = memorysize
         parameter['cpu_count'] = cpucount
