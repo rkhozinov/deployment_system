@@ -149,8 +149,8 @@ class Topology:
 
             # add ports to the created switch
             try:
-                self.manager.add_port_group(vswitch=switch_name,
-                                            name=switch_name,
+                self.manager.add_port_group(switch_name=switch_name,
+                                            vlan_name=switch_name,
                                             esx_hostname=self.esx_host,
                                             vlan_id=vlan,
                                             promiscuous=promiscuous)
