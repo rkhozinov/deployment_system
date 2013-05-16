@@ -59,6 +59,7 @@ class TestHatchery(unittest2.TestCase):
             self.assertTrue(False, error.message)
 
     def test_destroy_resource_pool_with_vms(self):
+        self.test_create_resource_pool()
         try:
             manager = self.__get_manager()
             manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
