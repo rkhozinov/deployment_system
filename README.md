@@ -1,12 +1,6 @@
-
-==========
-
-
-
-
 # _Deployment System_
 
-_Description: Deployment System for ESXi.
+_Deployment System for ESXi.
 
 Based on PySphere (https://code.google.com/p/pysphere/) sources_
 
