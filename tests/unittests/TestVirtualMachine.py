@@ -17,6 +17,10 @@ class TestVirtualMachine(unittest.TestCase):
         self.vmname = 'pipe_client3'
         self.vmlogin = 'vyatta'
         self.vmpassword = 'vyatta'
+        self.host_address = '172.18.93.30'
+        self.host_user = 'root'
+        self.host_password = 'swordfish'
+
         self.treader = TopologyReader(self.config_path)
         self.manager = vm_manager.Creator(self.treader.host_address,
                                           self.treader.host_user,
@@ -53,10 +57,17 @@ class TestVirtualMachine(unittest.TestCase):
     def test_destroy_virtual_machine(self):
         try:
             vm = VirtualMachine(self.vmname, self.rpname, 'login', 'password')
-            vm.destroy(self.manager, self.treader.host_address)
+            vm.destroy(self.manager)
         except Exception as e:
             self.logger.critical(e.message)
             self.fail(e.message)
+
+    def test_add_serial_port(self):
+        try:
+            vm = VirtualMachine('pipe_client', user='login', password='password')
+            vm.add_serial_port(self.manager, self.host_address, self.host_user, self.host_password)
+        except Exception as error:
+            self.assertTrue(False, error.message)
 
 
 if __name__ == "__main__":
