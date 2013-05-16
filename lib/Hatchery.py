@@ -1034,3 +1034,21 @@ class Creator:
 
     def is_connected(self):
         return self.esx_server.is_connected()
+
+    def get_vm_path(self, vmname):
+
+        if not vmname:
+            raise AttributeError("Couldn't specify the virtual machine name")
+
+        if not self._is_vm_exist(vmname):
+            raise ExistenceException("Couldn't find the virtual machine '%s'" % vmname)
+
+        try:
+            self._connect_to_esx()
+            vm = self.esx_server.get_vm_by_name(vmname)
+            path = vm.get_property('path')
+            self._disconnect_from_esx()
+            return path
+        except Exception as error:
+            raise CreatorException(error)
+
