@@ -162,6 +162,18 @@ class TestHatchery(unittest2.TestCase):
             self.assertTrue(False, error.message)
         self.test_destroy_virtual_machine()
 
+    def test_vm_power_on(self):
+        self.test_create_virtual_machine()
+        try:
+            manager = self.__get_manager()
+            manager.vm_power_on(self.vmname)
+        except Manager.ExistenceException as error:
+            self.assertTrue(False, error.message)
+        except Exception as error:
+            self.test_destroy_virtual_machine()
+            self.assertTrue(False, error.message)
+        self.test_destroy_virtual_machine()
+
 
     def __get_manager(self):
         try:
