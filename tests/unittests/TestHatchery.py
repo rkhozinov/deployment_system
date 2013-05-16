@@ -99,7 +99,10 @@ class TestHatchery(unittest2.TestCase):
         except Manager.ExistenceException as error:
             self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
+            self.test_destroy_switch()
             self.assertTrue(False, error.message)
+        self.test_destroy_switch()
+
 
     def test_add_network_to_switch(self):
         self.test_create_switch()
@@ -113,9 +116,12 @@ class TestHatchery(unittest2.TestCase):
         except Manager.ExistenceException as error:
             self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
+            self.test_destroy_switch()
             self.assertTrue(False, error.message)
+        self.test_destroy_switch()
 
     def test_destroy_switch(self):
+        self.test_create_switch()
         try:
             manager = self.__get_manager()
             manager.destroy_virtual_switch(self.switch_name, self.host_name)
@@ -134,7 +140,7 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-    def test_get_not_existing_network(self):
+    def test_try_to_get_not_existing_network(self):
         self.test_destroy_switch()
         try:
             manager = self.__get_manager()
@@ -145,13 +151,16 @@ class TestHatchery(unittest2.TestCase):
 
 
     def test_get_vm_path(self):
+        self.test_create_virtual_machine()
         try:
             manager = self.__get_manager()
             manager.get_vm_path(self.vmname)
         except Manager.ExistenceException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
+            self.test_destroy_virtual_machine()
             self.assertTrue(False, error.message)
+        self.test_destroy_virtual_machine()
 
 
     def __get_manager(self):
