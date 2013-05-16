@@ -4,9 +4,6 @@
 # - Create/destroy virtual machine with specified parameters
 # - Create/destroy resource pool
 
-
-
-
 import pysphere
 from pysphere import VIServer, VIProperty
 from pysphere.resources import VimService_services as VI
@@ -750,12 +747,6 @@ class Creator:
 
     def _fetch_resource_pool(self, rp_name, esx_hostname):
 
-        """
-
-        :param rp_name: resource pool name
-        :param esx_hostname: esx hostname
-        :return:
-        """
         rpmor = None
 
         if rp_name == '/':
@@ -810,6 +801,11 @@ class Creator:
         return VIProperty(self.esx_server, crmor)
 
     def is_connected(self):
+        """
+        Checks ESX manager connection
+
+        :return: bool
+        """
         return self.esx_server.is_connected()
 
     def vm_power_on(self, vmname):
