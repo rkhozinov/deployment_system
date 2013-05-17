@@ -101,6 +101,34 @@ class VirtualMachine(object):
         for cmd in commands:
             child.sendline(cmd)
 
+    # TODO
+    def add_existance_vmdk(self, manager, host_address, host_user, host_password,
+                        datastore, vmdk_path, vmdk_name, vmdk_max_size):
+
+
+        vmdk_max_size = vmdk_max_size * 1024
+        vmdk_flat_name = "%s-flat.vmdk"%vmdk_name[:-5]
+        vmdk_location = '/vmfs/volumes/%s/%s'%(datastore,vmdk_path)
+
+        vm_path = manager.get_vm_path(self.name)
+        path_temp = vm_path.split(' ')
+        vm_datastore = path_temp[0][1:-1]
+        vm_folder = path_temp[1].split('/')[0]
+        final_path = '/vmfs/volumes/%s/%s/'%(vm_datastore,vm_folder)
+        final_path_esx_style = "[%s] %s/%s"%(vm_datastore,vm_folder,
+                                             vmdk_name)
+
+        commands = []
+        commands.append('cp -f "%s/%s" "%s"' % (vmdk_location, vmdk_name, final_path))
+        commands.append('cp -f "%s/%s" "%s"' % (vmdk_location, vmdk_flat_name,final_path))
+
+##        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+##        child.expect(".*assword:")
+##        child.sendline(host_password + "\r")
+##        child.expect(".*\# ")
+##        #child.sendline(command)
+##        child.close()
+        manager.add_existanse_vmdk(self.name, final_path_esx_style, vmdk_max_size)
 
     def is_serial_port_exist(self):
         pass

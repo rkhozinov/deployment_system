@@ -261,7 +261,7 @@ class Creator:
 
     def create_vm_old(self, vmname, esx_hostname=None, cd_iso_location=None,
                       datacenter=None, resource_pool='/', networks=[], datastore=None,
-                      annotation=None,
+                      annotation=None, hard_drive = True,
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
         """
         Creates virtual machine
@@ -304,6 +304,7 @@ class Creator:
         else:
             parameter['annotation'] = annotation
 
+        parameter['hard_drive'] = hard_drive
         parameter['guestosid'] = guestosid
         parameter['memory_size'] = memorysize
         parameter['cpu_count'] = cpucount
@@ -407,6 +408,10 @@ class Creator:
             cd_iso_location = vm_options['cd_iso_location']
         except KeyError:
             cd_iso_location = None
+        try:
+            hard_drive = vm_options['hard_drive']
+        except KeyError:
+            hard_drive = True
 
         # Description
         try:
@@ -506,42 +511,46 @@ class Creator:
         scsi_ctrl.set_element_sharedBus("noSharing")
         scsi_ctrl_spec.set_element_device(scsi_ctrl)
         devices.append(scsi_ctrl_spec)
+
         #find ide controller
-        ide_ctlr = None
-        for dev in defaul_devs:
-            if dev.typecode.type[1] == "VirtualIDEController":
-                ide_ctlr = dev
-                #add a cdrom based on a physical device
-        if ide_ctlr:
-            cd_spec = config.new_deviceChange()
-            cd_spec.set_element_operation('add')
-            cd_ctrl = VI.ns0.VirtualCdrom_Def("cd_ctrl").pyclass()
-            cd_device_backing = VI.ns0.VirtualCdromIsoBackingInfo_Def("cd_device_backing").pyclass()
-            ds_ref = cd_device_backing.new_datastore(ds)
-            ds_ref.set_attribute_type(ds.get_attribute_type())
-            cd_device_backing.set_element_datastore(ds_ref)
-            cd_device_backing.set_element_fileName("%s %s" % (volume_name, cd_iso_location))
-            cd_ctrl.set_element_backing(cd_device_backing)
-            cd_ctrl.set_element_key(20)
-            cd_ctrl.set_element_controllerKey(ide_ctlr.get_element_key())
-            cd_ctrl.set_element_unitNumber(0)
-            cd_spec.set_element_device(cd_ctrl)
-            devices.append(cd_spec)
-            # create a new disk - file based - for the vm
-        disk_spec = config.new_deviceChange()
-        disk_spec.set_element_fileOperation("create")
-        disk_spec.set_element_operation("add")
-        disk_ctlr = VI.ns0.VirtualDisk_Def("disk_ctlr").pyclass()
-        disk_backing = VI.ns0.VirtualDiskFlatVer2BackingInfo_Def("disk_backing").pyclass()
-        disk_backing.set_element_fileName(volume_name)
-        disk_backing.set_element_diskMode("persistent")
-        disk_ctlr.set_element_key(0)
-        disk_ctlr.set_element_controllerKey(disk_ctrl_key)
-        disk_ctlr.set_element_unitNumber(0)
-        disk_ctlr.set_element_backing(disk_backing)
-        disk_ctlr.set_element_capacityInKB(disk_size)
-        disk_spec.set_element_device(disk_ctlr)
-        devices.append(disk_spec)
+        if cd_iso_location:
+            ide_ctlr = None
+            for dev in defaul_devs:
+                if dev.typecode.type[1] == "VirtualIDEController":
+                    ide_ctlr = dev
+                    #add a cdrom based on a physical device
+            if ide_ctlr:
+                cd_spec = config.new_deviceChange()
+                cd_spec.set_element_operation('add')
+                cd_ctrl = VI.ns0.VirtualCdrom_Def("cd_ctrl").pyclass()
+                cd_device_backing = VI.ns0.VirtualCdromIsoBackingInfo_Def("cd_device_backing").pyclass()
+                ds_ref = cd_device_backing.new_datastore(ds)
+                ds_ref.set_attribute_type(ds.get_attribute_type())
+                cd_device_backing.set_element_datastore(ds_ref)
+                cd_device_backing.set_element_fileName("%s %s" % (volume_name, cd_iso_location))
+                cd_ctrl.set_element_backing(cd_device_backing)
+                cd_ctrl.set_element_key(20)
+                cd_ctrl.set_element_controllerKey(ide_ctlr.get_element_key())
+                cd_ctrl.set_element_unitNumber(0)
+                cd_spec.set_element_device(cd_ctrl)
+                devices.append(cd_spec)
+
+        # create a new disk - file based - for the vm
+        if hard_drive:
+            disk_spec = config.new_deviceChange()
+            disk_spec.set_element_fileOperation("create")
+            disk_spec.set_element_operation("add")
+            disk_ctlr = VI.ns0.VirtualDisk_Def("disk_ctlr").pyclass()
+            disk_backing = VI.ns0.VirtualDiskFlatVer2BackingInfo_Def("disk_backing").pyclass()
+            disk_backing.set_element_fileName(volume_name)
+            disk_backing.set_element_diskMode("persistent")
+            disk_ctlr.set_element_key(0)
+            disk_ctlr.set_element_controllerKey(disk_ctrl_key)
+            disk_ctlr.set_element_unitNumber(0)
+            disk_ctlr.set_element_backing(disk_backing)
+            disk_ctlr.set_element_capacityInKB(disk_size)
+            disk_spec.set_element_device(disk_ctlr)
+            devices.append(disk_spec)
 
         #add a NIC. the network Name must be set as the device name to create the NIC.
         for network_name in _networks:
@@ -899,4 +908,60 @@ class Creator:
             return path
         except Exception as error:
             raise CreatorException(error)
+
+    #REVIEW ME
+    def add_existanse_vmdk(self, vm_name, vmdk_path, vmdk_capability):
+        self._connect_to_esx()
+        vm = self.esx_server.get_vm_by_name(vm_name)
+        unit_number = 0
+        for disk in vm._disks:
+            unit_number = max(unit_number,disk['device']['unitNumber'])
+        unit_number += 1
+
+        request = VI.ReconfigVM_TaskRequestMsg()
+        _this = request.new__this(vm._mor)
+        _this.set_attribute_type(vm._mor.get_attribute_type())
+        request.set_element__this(_this)
+
+        spec = request.new_spec()
+
+        dc = spec.new_deviceChange()
+        dc.Operation = "add"
+
+
+        hd = VI.ns0.VirtualDisk_Def("hd").pyclass()
+        hd.Key = -100
+        hd.UnitNumber = unit_number
+        hd.CapacityInKB = vmdk_capability
+        hd.ControllerKey = 1000
+
+        backing = VI.ns0.VirtualDiskFlatVer2BackingInfo_Def("backing").pyclass()
+        backing.FileName = vmdk_path
+        backing.DiskMode = "persistent"
+        backing.ThinProvisioned = False
+        hd.Backing = backing
+
+        connectable = hd.new_connectable()
+        connectable.StartConnected = True
+        connectable.AllowGuestControl = False
+        connectable.Connected = True
+        hd.Connectable = connectable
+
+        dc.Device = hd
+
+        spec.DeviceChange = [dc]
+        request.Spec = spec
+
+        task = self.esx_server._proxy.ReconfigVM_Task(request)._returnval
+        vi_task = VITask(task, self.esx_server)
+
+        #Wait for task to finis
+        status = vi_task.wait_for_state([vi_task.STATE_SUCCESS,
+                                         vi_task.STATE_ERROR])
+        if status == vi_task.STATE_ERROR:
+            raise CreatorException("ERROR CONFIGURING VM:%s"%vi_task.get_error_message())
+        self._disconnect_from_esx()
+
+
+
 
