@@ -5,31 +5,39 @@ import lib.Hatchery as Manager
 
 
 class VirtualMachine(object):
-    def __init__(self, name, user, password, memory=512, cpu=2, size=1024,
+    DISK_DEFAULT_SPACE = 2048
+
+    def __init__(self, name, user, password, memory=512, cpu=2, disk_space=1024, hard_disk=None,
                  connected_networks=None, iso=None,
                  description=None, neighbours=None, configuration=None):
 
         if name:
             self.name = name
         else:
-            raise AttributeError("Couldn't specify the virtual machine name")
+            raise AttributeError("Couldn't specify a virtual machine name")
 
         if user:
             self.login = user
         else:
-            raise AttributeError("Couldn't specify the virtual machine user")
+            raise AttributeError("Couldn't specify a virtual machine user")
 
         if password:
             self.password = password
         else:
-            raise AttributeError("Couldn't specify the virtual machine password")
+            raise AttributeError("Couldn't specify a virtual machine password")
 
         self.memory = memory
         self.cpu = cpu
-        if size:
-            self.size = int(size) * 1024
+        self.hard_disk = hard_disk
+
+        if self.hard_disk and not disk_space:
+            raise AttributeError("Couldn't specify a disk space for the hard drive")
+
+        if disk_space:
+            self.disk_space = int(disk_space) * 1024
         else:
-            self.size = 1024 * 1024
+            self.disk_space = self.DISK_DEFAULT_SPACE * 1024
+
         self.description = description
         self.neighbours = neighbours
         self.connected_networks = connected_networks
@@ -37,12 +45,12 @@ class VirtualMachine(object):
         self.iso = iso
         self.serial_port_path = None
 
-    def create(self, manager, host_name, resource_pool_name):
+    def create(self, manager, resource_pool_name, host_name=None):
 
         if not host_name:
             raise AttributeError("Couldn't specify the ESX host name")
 
-        if not manager or not isinstance(manager, Manager.Creator):
+        if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the ESX manager")
 
         if not resource_pool_name:
@@ -55,12 +63,12 @@ class VirtualMachine(object):
                                   annotation=self.description,
                                   memorysize=self.memory,
                                   cpucount=self.cpu,
-                                  disksize=self.size)
+                                  disksize=self.disk_space)
 
-        except Manager.ExistenceException as error:
-            raise error
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
 
     def add_serial_port(self, manager, host_address, host_user, host_password,
                         serial_ports_dir='serial_ports'):
@@ -68,10 +76,10 @@ class VirtualMachine(object):
         path = None
         try:
             path = manager.get_vm_path(self.name)
-        except Manager.ExistenceException as error:
-            raise error
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
 
         path_temp = path.split(' ')
         datastore = path_temp[0][1:-1]
@@ -102,46 +110,49 @@ class VirtualMachine(object):
             child.sendline(cmd)
 
     # TODO
-    def add_existance_vmdk(self, manager, host_address, host_user, host_password,
-                        datastore, vmdk_path, vmdk_name, vmdk_max_size):
+    def add_hard_disk(self, manager, host_address, host_user, host_password):
 
+        vmdk_flat_name = "%s-flat.vmdk" % self.hard_disk[:-5]
 
-        vmdk_max_size = vmdk_max_size * 1024
-        vmdk_flat_name = "%s-flat.vmdk"%vmdk_name[:-5]
-        vmdk_location = '/vmfs/volumes/%s/%s'%(datastore,vmdk_path)
+        try:
+            vm_path = manager.get_vm_path(self.name)
+        except Manager.CreatorException:
+            raise
 
-        vm_path = manager.get_vm_path(self.name)
-        path_temp = vm_path.split(' ')
-        vm_datastore = path_temp[0][1:-1]
-        vm_folder = path_temp[1].split('/')[0]
-        final_path = '/vmfs/volumes/%s/%s/'%(vm_datastore,vm_folder)
-        final_path_esx_style = "[%s] %s/%s"%(vm_datastore,vm_folder,
-                                             vmdk_name)
+        path_tmp = vm_path.split(' ')
+        datastore = path_tmp[0][1:-1]
+        vm_path = path_tmp[1].split('/')[0]
+        vm_path = '/vmfs/volumes/%s/%s/' % (datastore, vm_path)
+        disk_name = self.hard_disk.split('/')[-1]
+        vm_path_esx_style = "[%s] %s/%s" % (datastore, vm_path, disk_name)
 
         commands = []
-        commands.append('cp -f "%s/%s" "%s"' % (vmdk_location, vmdk_name, final_path))
-        commands.append('cp -f "%s/%s" "%s"' % (vmdk_location, vmdk_flat_name,final_path))
+        commands.append('cp -f "%s" "%s"' % (self.hard_disk, vm_path))
+        commands.append('cp -f "%s" "%s"' % (vmdk_flat_name, vm_path))
 
-##        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
-##        child.expect(".*assword:")
-##        child.sendline(host_password + "\r")
-##        child.expect(".*\# ")
-##        #child.sendline(command)
-##        child.close()
-        manager.add_existanse_vmdk(self.name, final_path_esx_style, vmdk_max_size)
+        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+        child.expect(".*assword:")
+        child.sendline(host_password + "\r")
+        child.expect(".*\# ")
 
-    def is_serial_port_exist(self):
-        pass
+        for cmd in commands:
+            child.sendline(cmd)
+        child.close()
+
+        try:
+            manager.add_existence_vmdk(disk_name=self.name, vm_path_esx_style, self.disk_space)
+        except Manager.CreatorException:
+            raise
 
     def destroy(self, manager):
-        if not manager or not isinstance(manager, Manager.Creator):
+        if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the ESX manager")
         try:
             manager.destroy_vm(self.name)
-        except Manager.ExistenceException as error:
-            raise error
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
 
     def configure(self, host_address, host_user, user_password):
         try:
@@ -152,7 +163,7 @@ class VirtualMachine(object):
 
             for option in self.configuration:
                 vm_ctrl.cmd(option)
-        except Manager.ExistenceException as error:
-            raise error
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
