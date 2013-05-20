@@ -37,7 +37,7 @@ class TopologyReader(object):
     # virtual machine settings
     VM_MEM = 'memory'
     VM_CPU = 'cpu'
-    VM_SIZE = 'disk_space'
+    VM_DISK_SPACE = 'disk_space'
     VM_DESCR = 'description'
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
@@ -46,12 +46,13 @@ class TopologyReader(object):
     VM_USER = 'user'
     VM_PASSWORD = 'password'
     VM_NEIGHBOURS = 'neighbours'
+    VM_HARD_DISK = 'hard_disk'
 
     def __init__(self, config_path):
         """
         Reads and parse config with topology
         :param config_path: topology configuration file
-        :raise: ConfigParser.Error,
+        :raise: ConfigParser.Error
         """
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
@@ -115,10 +116,10 @@ class TopologyReader(object):
         try:
             password = self.config.get(vm, self.VM_PASSWORD)
             login = self.config.get(vm, self.VM_USER)
-        except ConfigParser.NoOptionError as e:
-            raise e
-        except ConfigParser.ParsingError as e:
-            raise e
+        except ConfigParser.NoOptionError:
+            raise
+        except ConfigParser.ParsingError:
+            raise
 
         try:
             description = self.config.get(vm, self.VM_DESCR)
@@ -133,9 +134,13 @@ class TopologyReader(object):
         except:
             cpu = None
         try:
-            size = self.config.get(vm, self.VM_SIZE)
+            hard_disk = self.config.get(vm, self.VM_HARD_DISK)
         except:
-            size = None
+            hard_disk = None
+        try:
+            disk_space = self.config.get(vm, self.VM_DISK_SPACE)
+        except:
+            disk_space = None
         try:
             config = self.__str_to_list_strip(self.config.get(vm, self.VM_CONFIG))
         except:
@@ -163,7 +168,7 @@ class TopologyReader(object):
                               password=password,
                               memory=memory,
                               cpu=cpu,
-                              size=size,
+                              disk_space=disk_space,
                               connected_networks=connected_networks,
                               iso=iso,
                               description=description,
