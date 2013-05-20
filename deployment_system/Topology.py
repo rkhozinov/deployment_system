@@ -13,11 +13,17 @@ class Topology(object):
         :param config_path: configuration file
         :param resource_pool: stack name for topology
         """
+        if not config_path:
+            raise AttributeError("Couldn't specify configuration file name")
+        if not resource_pool:
+            raise AttributeError("Couldn't specify resource pool name")
+
         try:
             self.config = TopologyReader(config_path)
             self.resource_pool = resource_pool
             self.vm_lst = self.config.get_virtual_machines()
             self.networks_lst = self.config.get_networks()
+            self.host_name = self.config.host_name
             self.manager = vm_manager.Creator(self.resource_pool,
                                               self.config.host_user,
                                               self.config.host_password)
@@ -25,7 +31,6 @@ class Topology(object):
             raise error
         except ConfigParser.Error as error:
             raise error
-
 
     def create(self):
         try:
@@ -39,7 +44,7 @@ class Topology(object):
                 else:
                     switch_name = self.config.SWITCH_PREFIX + '_' + self.resource_pool
 
-                switch = Switch(switch_name, self.config.host_address, net.ports)
+                switch = Switch(switch_name, net.ports)
                 switch.create(self.manager, self.config.host_name)
                 switch.add_network(network=net, manager=self.manager, host_name=self.config.host_name)
 
@@ -66,7 +71,7 @@ class Topology(object):
                     switch_name = self.config.SWITCH_PREFIX + '_' + self.resource_pool
 
                 switch = Switch(switch_name, self.config.host_address)
-                switch.destroy()
+                switch.destroy(self.manager, self.host_name)
 
             # destroys virtual machines
             for vm in self.vm_lst:

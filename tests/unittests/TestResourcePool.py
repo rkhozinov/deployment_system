@@ -19,8 +19,8 @@ class TestResoursePool(unittest.TestCase):
             rpool = ResourcePool(self.rpname)
             self.assertIsInstance(rpool, ResourcePool)
             self.assertEqual(rpool.name, self.rpname)
-        except AttributeError as e:
-            self.fail(e.message)
+        except AttributeError as error:
+            self.assertTrue(False, error.message)
 
     def test_create_resource_pool(self):
         try:
@@ -41,11 +41,18 @@ class TestResoursePool(unittest.TestCase):
     def test_destroy_resource_pool_with_vms(self):
         self.test_create_resource_pool()
         try:
+            #todo: add some virtual machines
             ResourcePool(self.rpname).destroy(self.manager, with_vms=True)
         except Manager.ExistenceException as error:
             self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
+
+    def test_create_invalid_instance(self):
+        try:
+            ResourcePool(None)
+        except AttributeError as error:
+            self.assertTrue(True, error.message)
 
 
 if __name__ == "__main__":

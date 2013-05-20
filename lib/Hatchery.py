@@ -246,10 +246,9 @@ class Creator:
 
         try:
             vm = self.esx_server.get_vm_by_name(vmname)
-        except Exception:
-            raise ExistenceException("Couldn't find VM '%s'" % vmname)
-        finally:
+        except Exception as error:
             self._disconnect_from_esx()
+            raise ExistenceException("Couldn't find VM '%s' - %s" % (vmname,error.message))
 
         try:
             request = VI.Destroy_TaskRequestMsg()

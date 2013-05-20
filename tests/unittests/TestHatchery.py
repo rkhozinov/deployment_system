@@ -170,7 +170,7 @@ class TestHatchery(unittest2.TestCase):
         self.test_destroy_virtual_machine()
 
     def test_vm_power_on(self):
-        self.test_create_virtual_machine()
+
         try:
             manager = self.__get_manager()
             manager.vm_power_on(self.vmname)
@@ -182,7 +182,6 @@ class TestHatchery(unittest2.TestCase):
         self.test_destroy_virtual_machine()
 
     def test_add_hard_disk(self):
-        #self.test_create_resource_pool()
         manager = self.__get_manager()
 
         clear_vm = self.vmname
