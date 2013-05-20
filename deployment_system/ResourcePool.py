@@ -9,7 +9,7 @@ class ResourcePool(object):
         :param name: ESXi name of a resource pool
         :raise: AttributeException
         """
-        if name and isinstance(name, str):
+        if name :
             self.name = name
         else:
             raise AttributeError("Couldn't specify the name of the resource pool")
@@ -20,7 +20,7 @@ class ResourcePool(object):
         Creates a ESXi resource pool
         :raise: AttributeException, CreatorException
         """
-        if not manager:
+        if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the esx manager")
         try:
 
@@ -35,7 +35,7 @@ class ResourcePool(object):
                          if False - save vms and move its to the up resource pool
         :raise: CreatorException
         """
-        if not manager or isinstance(manager, Manager.Creator):
+        if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the esx manager")
 
         try:
