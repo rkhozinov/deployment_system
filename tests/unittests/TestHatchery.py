@@ -30,7 +30,6 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-
     def test_connect_to_esx(self):
         try:
             manager = self.__get_manager()
@@ -44,6 +43,17 @@ class TestHatchery(unittest2.TestCase):
             manager = self.__get_manager()
             manager.create_resource_pool(self.rpname, parent_rp='/', esx_hostname=self.host_name)
         except Manager.ExistenceException as error:
+            self.logger.warning(error.message)
+            self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+
+    def test_create_resource_pool_only_by_name(self):
+        try:
+            manager = self.__get_manager()
+            manager.create_resource_pool("some_rp")
+        except Manager.ExistenceException as error:
+            self.logger.warning(error.message)
             self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
@@ -52,9 +62,9 @@ class TestHatchery(unittest2.TestCase):
         try:
             manager = self.__get_manager()
             manager.destroy_resource_pool(self.rpname, self.host_name)
-
         except Manager.ExistenceException as error:
             self.assertTrue(True, error.message)
+            self.logger.warning(error.message)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
@@ -68,7 +78,6 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-
     def test_create_virtual_machine(self):
         self.test_create_resource_pool()
         try:
@@ -79,7 +88,6 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-
     def test_destroy_virtual_machine(self):
         try:
             manager = self.__get_manager()
@@ -88,7 +96,6 @@ class TestHatchery(unittest2.TestCase):
             self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
-
 
     def test_create_switch(self):
         try:
@@ -102,7 +109,6 @@ class TestHatchery(unittest2.TestCase):
             self.test_destroy_switch()
             self.assertTrue(False, error.message)
         self.test_destroy_switch()
-
 
     def test_add_network_to_switch(self):
         self.test_create_switch()
@@ -149,7 +155,6 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-
     def test_get_vm_path(self):
         self.test_create_virtual_machine()
         try:
@@ -174,6 +179,33 @@ class TestHatchery(unittest2.TestCase):
             self.assertTrue(False, error.message)
         self.test_destroy_virtual_machine()
 
+    def test_add_hard_disk(self):
+        self.test_create_resource_pool()
+        manager = self.__get_manager()
+
+        clear_vm = self.vmname
+        donor_vm = self.vmname + '_donor'
+        vm_path = None
+        try:
+            manager.create_vm_old(vmname=clear_vm, esx_hostname=self.host_name, create_hard_drive=False)
+            manager.create_vm_old(vmname=donor_vm, esx_hostname=self.host_name)
+            vm_path = manager.get_vm_path(donor_vm)
+        except Manager.ExistenceException as error:
+            self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+
+        disk_path = None
+        try:
+            vm_path = manager.get_vm_path(donor_vm)
+            path_temp = vm_path.split('/')
+
+            vm_folder = path_temp[0]
+            disk_path = "%s/%s.vmdk" % (vm_folder, donor_vm)
+            manager.add_existence_vmdk(clear_vm, disk_path, 2048 * 1024)
+
+        except Exception as error:
+            self.assertTrue(False, error.message)
 
     def __get_manager(self):
         try:
