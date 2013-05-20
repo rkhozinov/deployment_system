@@ -9,11 +9,10 @@ class ResourcePool(object):
         :param name: ESXi name of a resource pool
         :raise: AttributeException
         """
-        if name :
+        if name:
             self.name = name
         else:
             raise AttributeError("Couldn't specify the name of the resource pool")
-
 
     def create(self, manager):
         """
@@ -25,8 +24,10 @@ class ResourcePool(object):
         try:
 
             manager.create_resource_pool(self.name)
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
 
     def destroy(self, manager, with_vms=False):
         """
@@ -43,5 +44,7 @@ class ResourcePool(object):
                 manager.destroy_resource_pool_with_vms(self.name)
             else:
                 manager.destroy_resource_pool(self.name)
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
