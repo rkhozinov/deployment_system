@@ -13,12 +13,6 @@ from pysphere.vi_task import VITask
 # An object of class Creator contain esx address and user credentials
 class CreatorException(Exception): pass
 
-# def __init__(self, value):
-#     self.value = value
-#
-# def __str__(self):
-#     return repr(self.value)
-
 
 class ExistenceException(Exception): pass
 
@@ -45,16 +39,26 @@ class Creator:
         if self.esx_server.is_connected():
             self.esx_server.disconnect()
 
-    # resources:
-    # 0:share level ('low' 'normal' 'hight' 'custom')
-    # 1:share value - 'custom' share value
-    # 2:reservation - reserved CPU/Memory
-    # 3:expandable reservation - True/False
-    # 4:limit - -1 - unlimited, another value - limit value
+
     def create_resource_pool(self, name, parent_rp='/', esx_hostname=None,
                              cpu_resources=('normal', 4000, 0, True, -1),
                              memory_resources=('normal', 163840, 0, True, -1)):
 
+        """
+        Creates a resource pool on esx server
+        Resources:
+        0:share level ('low' 'normal' 'high' 'custom')
+        1:share value - 'custom' share value
+        2:reservation - reserved CPU/Memory
+        3:expandable reservation - True/False
+        4:limit - -1 - unlimited, another value - limit value
+        :param name:
+        :param parent_rp:
+        :param esx_hostname:
+        :param cpu_resources:
+        :param memory_resources:
+        :raise:
+        """
         self._connect_to_esx()
 
         if parent_rp == '/':
@@ -84,9 +88,9 @@ class Creator:
                 parent_rp_temp = [k for k, v in self.esx_server.get_resource_pools().items()
                                   if v == parent_rp]
             except IndexError:
-                raise CreatorException("Couldn't find parent resource pool")
+                raise CreatorException("Couldn't find parent a resource pool")
             if len(parent_rp_temp) == 0:
-                raise CreatorException("Couldn't find parent recource pool")
+                raise CreatorException("Couldn't find parent a resource pool")
                 ##222
             if len(parent_rp_temp) == 1:
                 parent_rpmor = parent_rp_temp[0]
@@ -158,9 +162,9 @@ class Creator:
             rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
                            if v == rp_name]
         except IndexError:
-            raise CreatorException("Couldn't find resource pool")
+            raise ExistenceException("Couldn't find resource pool")
         if len(rp_mor_temp) == 0:
-            raise CreatorException("Couldn't find resource pool " + name)
+            raise ExistenceException("Couldn't find resource pool " + name)
 
         rpmor = ''
         if esx_hostname:
@@ -181,9 +185,14 @@ class Creator:
         _this.set_attribute_type(rpmor.get_attribute_type())
         req.set_element__this(_this)
 
-        self.esx_server._proxy.Destroy_Task(req)
+        try:
+            self.esx_server._proxy.Destroy_Task(req)
+            self._disconnect_from_esx()
+        except Exception:
+            raise
+        finally:
+            self._disconnect_from_esx()
 
-        self._disconnect_from_esx()
 
     def destroy_resource_pool_with_vms(self, name, esx_hostname=None):
         self._connect_to_esx()
@@ -232,13 +241,15 @@ class Creator:
         :param vmname: virtual machine name
         :raise:
         """
+
         self._connect_to_esx()
 
         try:
             vm = self.esx_server.get_vm_by_name(vmname)
         except Exception:
-            self._disconnect_from_esx()
             raise ExistenceException("Couldn't find VM '%s'" % vmname)
+        finally:
+            self._disconnect_from_esx()
 
         try:
             request = VI.Destroy_TaskRequestMsg()
@@ -254,14 +265,14 @@ class Creator:
             if status != task.STATE_SUCCESS:
                 raise CreatorException("Couldn't destroy vm - " + task.get_error_message())
         except Exception:
-            raise CreatorException("Couldn't find VM")
+            raise CreatorException("Couldn't destroy the virtual machine %s" % vmname)
+        finally:
+            self._disconnect_from_esx()
 
-        self._disconnect_from_esx()
 
-
-    def create_vm_old(self, vmname, esx_hostname=None, cd_iso_location=None,
+    def create_vm_old(self, vmname, esx_hostname=None, iso=None,
                       datacenter=None, resource_pool='/', networks=[], datastore=None,
-                      annotation=None, hard_drive = True,
+                      annotation=None, create_hard_drive=True,
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
         """
         Creates virtual machine
@@ -274,7 +285,7 @@ class Creator:
         # dicksize - hard disk in Kb
         :param vmname:
         :param esx_hostname:
-        :param cd_iso_location:
+        :param iso:
         :param datacenter:
         :param resource_pool:
         :param networks:
@@ -286,11 +297,13 @@ class Creator:
         :param disksize:
         """
         parameter = {}
-        parameter['vm_name'] = vmname
-        if esx_hostname:
-            parameter['esx_hostname'] = esx_hostname
-        if cd_iso_location:
-            parameter['cd_iso_location'] = cd_iso_location
+        if vmname:
+            parameter['vm_name'] = vmname
+        else:
+            raise AttributeError("Couldn't specify a virtual machine name")
+
+        if iso:
+            parameter['iso'] = iso
         if datacenter:
             parameter['datacenter_name'] = datacenter
         if datastore:
@@ -304,7 +317,8 @@ class Creator:
         else:
             parameter['annotation'] = annotation
 
-        parameter['hard_drive'] = hard_drive
+        parameter['esx_hostname'] = esx_hostname
+        parameter['hard_drive'] = create_hard_drive
         parameter['guestosid'] = guestosid
         parameter['memory_size'] = memorysize
         parameter['cpu_count'] = cpucount
@@ -312,12 +326,13 @@ class Creator:
         self.create_vm(parameter)
 
 
-    #################################################
     def create_vm(self, vm_options):
-
+        """
+         Creates a virtual machine on ESXi server
+        :param vm_options: virtual machine options
+        :raise: CreatorException, ExistenceException
+        """
         self._connect_to_esx()
-
-        #parse vm_options
 
         #VM NAME
         vm_name = None
@@ -405,9 +420,9 @@ class Creator:
 
         # Source - CD (TODO vmdx)
         try:
-            cd_iso_location = vm_options['cd_iso_location']
+            iso = vm_options['iso']
         except KeyError:
-            cd_iso_location = None
+            iso = None
         try:
             hard_drive = vm_options['hard_drive']
         except KeyError:
@@ -513,7 +528,7 @@ class Creator:
         devices.append(scsi_ctrl_spec)
 
         #find ide controller
-        if cd_iso_location:
+        if iso:
             ide_ctlr = None
             for dev in defaul_devs:
                 if dev.typecode.type[1] == "VirtualIDEController":
@@ -527,7 +542,7 @@ class Creator:
                 ds_ref = cd_device_backing.new_datastore(ds)
                 ds_ref.set_attribute_type(ds.get_attribute_type())
                 cd_device_backing.set_element_datastore(ds_ref)
-                cd_device_backing.set_element_fileName("%s %s" % (volume_name, cd_iso_location))
+                cd_device_backing.set_element_fileName("%s %s" % (volume_name, iso))
                 cd_ctrl.set_element_backing(cd_device_backing)
                 cd_ctrl.set_element_key(20)
                 cd_ctrl.set_element_controllerKey(ide_ctlr.get_element_key())
@@ -719,95 +734,6 @@ class Creator:
 
         self._disconnect_from_esx()
 
-    def _get_portgroup_name(self, name, esx_hostname=None):
-        self._connect_to_esx()
-        try:
-            if esx_hostname:
-                host_system = [k for k, v in self.esx_server.get_hosts().items()
-                               if v == esx_hostname][0]
-            else:
-                host_system = self.esx_server.get_hosts().keys()[0]
-        except IndexError:
-            raise CreatorException("Couldn't find host")
-        if not host_system:
-            raise CreatorException("Couldn't find host")
-
-        prop = VIProperty(self.esx_server, host_system)
-
-        for pg in prop.configManager.networkSystem.networkInfo.portgroup:
-            if pg.spec.name.lower() == name.lower():
-                real_name = pg.spec.name
-                self._disconnect_from_esx()
-                return real_name
-
-        self._disconnect_from_esx()
-        return None
-
-    def _is_vm_exist(self, name):
-        self._connect_to_esx()
-        exist = False
-        try:
-            self.esx_server.get_vm_by_name(name)
-            exist = True
-        except:
-            pass
-        self._disconnect_from_esx()
-        return exist
-
-    def _fetch_resource_pool(self, rp_name, esx_hostname):
-
-        rpmor = None
-
-        if rp_name == '/':
-            rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
-                           if v == '/Resources']
-            for rp in rp_mor_temp:
-                prop = VIProperty(self.esx_server, rp)
-                if prop.parent.name == esx_hostname:
-                    rpmor = rp
-                    break
-        else:
-            resource_pool = '/Resources' + rp_name
-
-            rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
-                           if v == resource_pool]
-
-            for rp in rp_mor_temp:
-                prop = VIProperty(self.esx_server, rp)
-                while prop.parent.name != "host":
-                    prop = prop.parent
-                    if prop.name == esx_hostname:
-                        rpmor = rp
-                        break
-                if rp:
-                    break
-
-        return rpmor
-
-    def _fetch_computer_resource(self, datacenter_props, host):
-        host_folder = datacenter_props.hostFolder._obj
-
-
-        #get computer resources
-        computer_resources = self.esx_server._retrieve_properties_traversal(
-            property_names=['name', 'host'],
-            from_node=host_folder,
-            obj_type='ComputeResource')
-
-        #get computer resource of this host
-        crmor = None
-        for cr in computer_resources:
-            if crmor:
-                break
-            for p in cr.PropSet:
-                if p.Name == "host":
-                    for h in p.Val.get_element_ManagedObjectReference():
-                        if h == host:
-                            crmor = cr.Obj
-                            break
-                    if crmor:
-                        break
-        return VIProperty(self.esx_server, crmor)
 
     def is_connected(self):
         """
@@ -909,13 +835,19 @@ class Creator:
         except Exception as error:
             raise CreatorException(error)
 
-    #REVIEW ME
-    def add_existanse_vmdk(self, vm_name, vmdk_path, vmdk_capability):
+    #todo: REVIEW ME
+    def add_existence_vmdk(self, vm_name, vmdk_path, vmdk_capability):
         self._connect_to_esx()
-        vm = self.esx_server.get_vm_by_name(vm_name)
+        try:
+            vm = self.esx_server.get_vm_by_name(vm_name)
+        except ExistenceException:
+            raise
+        except CreatorException:
+            raise
+
         unit_number = 0
         for disk in vm._disks:
-            unit_number = max(unit_number,disk['device']['unitNumber'])
+            unit_number = max(unit_number, disk['device']['unitNumber'])
         unit_number += 1
 
         request = VI.ReconfigVM_TaskRequestMsg()
@@ -927,7 +859,6 @@ class Creator:
 
         dc = spec.new_deviceChange()
         dc.Operation = "add"
-
 
         hd = VI.ns0.VirtualDisk_Def("hd").pyclass()
         hd.Key = -100
@@ -959,9 +890,98 @@ class Creator:
         status = vi_task.wait_for_state([vi_task.STATE_SUCCESS,
                                          vi_task.STATE_ERROR])
         if status == vi_task.STATE_ERROR:
-            raise CreatorException("ERROR CONFIGURING VM:%s"%vi_task.get_error_message())
+            raise CreatorException("ERROR CONFIGURING VM:%s" % vi_task.get_error_message())
         self._disconnect_from_esx()
 
+    def _get_portgroup_name(self, name, esx_hostname=None):
+        self._connect_to_esx()
+        try:
+            if esx_hostname:
+                host_system = [k for k, v in self.esx_server.get_hosts().items()
+                               if v == esx_hostname][0]
+            else:
+                host_system = self.esx_server.get_hosts().keys()[0]
+        except IndexError:
+            raise CreatorException("Couldn't find host")
+        if not host_system:
+            raise CreatorException("Couldn't find host")
+
+        prop = VIProperty(self.esx_server, host_system)
+
+        for pg in prop.configManager.networkSystem.networkInfo.portgroup:
+            if pg.spec.name.lower() == name.lower():
+                real_name = pg.spec.name
+                self._disconnect_from_esx()
+                return real_name
+
+        self._disconnect_from_esx()
+        return None
+
+    def _is_vm_exist(self, name):
+        self._connect_to_esx()
+        exist = False
+        try:
+            self.esx_server.get_vm_by_name(name)
+            exist = True
+        except:
+            pass
+        self._disconnect_from_esx()
+        return exist
+
+    def _fetch_resource_pool(self, rp_name, esx_hostname):
+
+        rpmor = None
+
+        if rp_name == '/':
+            rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
+                           if v == '/Resources']
+            for rp in rp_mor_temp:
+                prop = VIProperty(self.esx_server, rp)
+                if prop.parent.name == esx_hostname:
+                    rpmor = rp
+                    break
+        else:
+            resource_pool = '/Resources' + rp_name
+
+            rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
+                           if v == resource_pool]
+
+            for rp in rp_mor_temp:
+                prop = VIProperty(self.esx_server, rp)
+                while prop.parent.name != "host":
+                    prop = prop.parent
+                    if prop.name == esx_hostname:
+                        rpmor = rp
+                        break
+                if rp:
+                    break
+
+        return rpmor
+
+    def _fetch_computer_resource(self, datacenter_props, host):
+        host_folder = datacenter_props.hostFolder._obj
+
+
+        #get computer resources
+        computer_resources = self.esx_server._retrieve_properties_traversal(
+            property_names=['name', 'host'],
+            from_node=host_folder,
+            obj_type='ComputeResource')
+
+        #get computer resource of this host
+        crmor = None
+        for cr in computer_resources:
+            if crmor:
+                break
+            for p in cr.PropSet:
+                if p.Name == "host":
+                    for h in p.Val.get_element_ManagedObjectReference():
+                        if h == host:
+                            crmor = cr.Obj
+                            break
+                    if crmor:
+                        break
+        return VIProperty(self.esx_server, crmor)
 
 
 
