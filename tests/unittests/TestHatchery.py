@@ -106,15 +106,19 @@ class TestHatchery(unittest2.TestCase):
         except Manager.ExistenceException as error:
             self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
-            self.test_destroy_switch()
             self.assertTrue(False, error.message)
-        self.test_destroy_switch()
 
     def test_add_network_to_switch(self):
-        self.test_create_switch()
+        manager = self.__get_manager()
         try:
+            switch_ports = 8
+            manager.create_virtual_switch(name=self.switch_name, num_ports=switch_ports, esx_hostname=self.host_name)
+        except Manager.ExistenceException as error:
+            self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
 
-            manager = self.__get_manager()
+        try:
             manager.add_port_group(switch_name=self.switch_name,
                                    vlan_name=self.vlan_name,
                                    vlan_id=self.vlan_id,
@@ -122,9 +126,7 @@ class TestHatchery(unittest2.TestCase):
         except Manager.ExistenceException as error:
             self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
-            self.test_destroy_switch()
             self.assertTrue(False, error.message)
-        self.test_destroy_switch()
 
     def test_destroy_switch(self):
         self.test_create_switch()
@@ -180,7 +182,7 @@ class TestHatchery(unittest2.TestCase):
         self.test_destroy_virtual_machine()
 
     def test_add_hard_disk(self):
-        self.test_create_resource_pool()
+        #self.test_create_resource_pool()
         manager = self.__get_manager()
 
         clear_vm = self.vmname
@@ -188,6 +190,13 @@ class TestHatchery(unittest2.TestCase):
         vm_path = None
         try:
             manager.create_vm_old(vmname=clear_vm, esx_hostname=self.host_name, create_hard_drive=False)
+        except Manager.ExistenceException as error:
+            self.test_destroy_virtual_machine()
+            manager.create_vm_old(vmname=clear_vm, esx_hostname=self.host_name, create_hard_drive=False)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+
+        try:
             manager.create_vm_old(vmname=donor_vm, esx_hostname=self.host_name)
             vm_path = manager.get_vm_path(donor_vm)
         except Manager.ExistenceException as error:
