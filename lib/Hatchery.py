@@ -348,23 +348,24 @@ class Creator:
                 pass
 
         # HOSTNAME
+        hosts = self.esx_server.get_hosts().values()
         try:
             esx_hostname = vm_options['esx_hostname']
-            if not esx_hostname in self.esx_server.get_hosts().values():
-                raise CreatorException("Couldn't find host \"" +
-                                       esx_hostname + "\"")
+            if not esx_hostname in hosts:
+                raise CreatorException("Couldn't find host '%s'" % esx_hostname)
         except KeyError:
-            if len(self.esx_server.get_hosts().values()) > 1:
+            if len(hosts) > 1:
                 raise CreatorException("More than 1 host - must specify ESX Hostname")
-            elif not self.esx_server.get_hosts().values():
-                raise CreatorException("Could't find avaliable host")
-            esx_hostname = self.esx_server.get_hosts().values()[0]
+            elif not hosts:
+                raise CreatorException("Couldn't find avaliable host")
+            esx_hostname = hosts[0]
             # MOR and PROPERTIES
         hostmor = [k for k, v in self.esx_server.get_hosts().items() if v == esx_hostname][0]
         hostprop = VIProperty(self.esx_server, hostmor)
 
 
         #DATACENTER - FIX EXCEPTION
+        # todo: fix self.esx_server.get_datacenters().values()
         try:
             datacenter_name = vm_options['datacenter_name']
             if not datacenter_name in self.esx_server.get_datacenters().values():
@@ -836,14 +837,12 @@ class Creator:
             raise CreatorException(error)
 
     #todo: REVIEW ME
-    def add_existence_vmdk(self, vm_name, vmdk_path, vmdk_capability):
+    def add_existence_vmdk(self, vm_name, path, space):
         self._connect_to_esx()
         try:
             vm = self.esx_server.get_vm_by_name(vm_name)
-        except ExistenceException:
-            raise
-        except CreatorException:
-            raise
+        except Exception as error:
+            raise CreatorException("Couldn't find the virtual machine %s" % vm_name)
 
         unit_number = 0
         for disk in vm._disks:
@@ -863,11 +862,11 @@ class Creator:
         hd = VI.ns0.VirtualDisk_Def("hd").pyclass()
         hd.Key = -100
         hd.UnitNumber = unit_number
-        hd.CapacityInKB = vmdk_capability
+        hd.CapacityInKB = space
         hd.ControllerKey = 1000
 
         backing = VI.ns0.VirtualDiskFlatVer2BackingInfo_Def("backing").pyclass()
-        backing.FileName = vmdk_path
+        backing.FileName = path
         backing.DiskMode = "persistent"
         backing.ThinProvisioned = False
         hd.Backing = backing
