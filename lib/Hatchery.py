@@ -629,7 +629,14 @@ class Creator:
 
 
     def create_virtual_switch(self, name, num_ports, esx_hostname=None):
+        """
+        Creates a new standart virtual switch on esx
+        name - name for new virtual switch
+        num_ports - numbers of emulated ports
+        esx_hostname - host name of esx server when virtual switch will be created
 
+        :raise: CreatorException, ExistenceException
+        """
         num_ports = int(num_ports)
 
         self._connect_to_esx()
@@ -671,6 +678,12 @@ class Creator:
 
 
     def destroy_virtual_switch(self, name, esx_hostname=None):
+        """
+        Destroys a named standart virtual switch on esx
+        name - virtual switch's name
+        esx_hostname - host name of esx server when virtual switch placed
+        :raise: CreatorException, ExistenceException
+        """
         self._connect_to_esx()
 
         try:
@@ -712,7 +725,7 @@ class Creator:
         :param vlan_name: vlan_name of VLAN
         :param esx_hostname: ESX hostname
         :param vlan_id: id for VLAN
-        :param promiscuous: promiscuous mode
+        :param promiscuous: promiscuous mode enable/disable (True/False)
         :raise: ExistenceException, CreatorException
         """
         self._connect_to_esx()
