@@ -26,18 +26,17 @@ class VirtualMachine(object):
         else:
             raise AttributeError("Couldn't specify a virtual machine password")
 
-        self.memory = memory
-        self.cpu = cpu
-        self.hard_disk = hard_disk
-
         if self.hard_disk and not disk_space:
-            raise AttributeError("Couldn't specify a disk space for the hard drive")
+            raise AttributeError("Couldn't specify a disk space for the hard disk '%s'" % self.hard_disk)
 
         if disk_space:
             self.disk_space = int(disk_space) * 1024
         else:
             self.disk_space = self.DISK_DEFAULT_SPACE * 1024
 
+        self.memory = memory
+        self.cpu = cpu
+        self.hard_disk = hard_disk
         self.description = description
         self.neighbours = neighbours
         self.connected_networks = connected_networks

@@ -1,5 +1,3 @@
-import logging
-
 import lib.Hatchery as Manager
 
 
@@ -22,17 +20,17 @@ class Switch(object):
         else:
             raise AttributeError("Couldn't specify a switch ports count")
 
-        self.logger = logging.getLogger(__name__)
-        logging.basicConfig()
-
     def add_network(self, network, manager, host_name):
         """
-        Adds a network to the switch
-        :raise: CreatorException, AttributeError
+         Adds a network to the switch
+        :param network: Network instance
+        :param host_name: ESXi host name
+        :param manager: ESXi manager instance
+        :raise: CreatorException, AttributeError, ExistenceException
         """
-        if not network and isinstance(network, Network):
-            raise AttributeError("No network for adding")
-        if not manager and isinstance(manager, Manager):
+        if not network:
+            raise AttributeError("Couldn't specify network")
+        if not manager:
             raise AttributeError("Couldn't specify ESX manager")
         if not host_name:
             raise AttributeError("Couldn't specify ESX host name")
@@ -43,39 +41,44 @@ class Switch(object):
                                    esx_hostname=host_name,
                                    vlan_id=network.vlan,
                                    promiscuous=network.promiscuous)
-        except Manager.ExistenceException as error:
-            raise error
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
 
     def create(self, manager, host_name):
         """
         Creates a ESXi virtual switch
-        :raise: ManagerException
+        :param manager: ESXi manager instance
+        :param host_name: ESXi host name
+        :raise: ManagerException, AttributeError, ExistenceException
         """
-        if not manager and isinstance(manager, Manager):
+        if not manager:
             raise AttributeError("Couldn't specify ESX manager")
         if not host_name:
             raise AttributeError("Couldn't specify ESX host name")
         try:
             manager.create_virtual_switch(self.name, self.ports, host_name)
-        except Manager.ExistenceException as error:
-            raise error
-        except Manager.CreatorException as error:
-            raise error
+            return self
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
 
     def destroy(self, manager, host_name):
         """
         Destroys switch by name on ESXi host
-        :raise:
+        :param manager: ESXi manager instance
+        :param host_name: ESXi host name
+        :raise: AttributeError, ExistenceException, CreatorException
         """
-        if not manager and isinstance(manager, Manager):
+        if not manager:
             raise AttributeError("Couldn't specify ESX manager")
         if not host_name:
             raise AttributeError("Couldn't specify ESX host name")
         try:
             manager.destroy_virtual_switch(self.name, host_name)
-        except Manager.ExistenceException as error:
-            raise error
-        except Manager.CreatorException as error:
-            raise error
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise

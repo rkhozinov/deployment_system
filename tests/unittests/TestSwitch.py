@@ -91,7 +91,7 @@ class TestSwitch(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-    def test_add_some_networks(self):
+    def test_create_and_destroy_some_networks(self):
         switch = Switch(self.switch_name, self.switch_ports)
         try:
             # create switch
