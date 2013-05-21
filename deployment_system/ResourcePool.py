@@ -14,16 +14,17 @@ class ResourcePool(object):
         else:
             raise AttributeError("Couldn't specify the name of the resource pool")
 
-    def create(self, manager):
+    def create(self, manager, host_name=None):
         """
         Creates a ESXi resource pool
         :raise: AttributeException, CreatorException
         """
         if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the esx manager")
+
         try:
 
-            manager.create_resource_pool(self.name)
+            manager.create_resource_pool(name=self.name, esx_hostname=host_name)
         except Manager.ExistenceException:
             raise
         except Manager.CreatorException:
