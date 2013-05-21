@@ -46,18 +46,17 @@ class Creator:
 
         """
         Creates a resource pool on esx server
-        Resources:
-        0:share level ('low' 'normal' 'high' 'custom')
-        1:share value - 'custom' share value
-        2:reservation - reserved CPU/Memory
-        3:expandable reservation - True/False
-        4:limit - -1 - unlimited, another value - limit value
-        :param name:
-        :param parent_rp:
-        :param esx_hostname:
-        :param cpu_resources:
-        :param memory_resources:
-        :raise:
+        name - name for new resource pool
+        parent_pr - parent resource pool
+        esx_hostname - host name of esx server when resource pool will be created
+        cpu_resources and memory_resources: tuple
+        0:share level - 'low' 'normal' 'high' 'custom'
+        1:share value - 'custom' share value, int
+        2:reservation - reserved CPU/Memory, int
+        3:expandable reservation - bool
+        4:limit - -1 - unlimited, another value - limit value, int
+
+        :raise: CreatorException
         """
         self._connect_to_esx()
 
@@ -152,6 +151,13 @@ class Creator:
 
 
     def destroy_resource_pool(self, name, esx_hostname=None):
+        """
+        Destroy named resource pool; vm included in this pool will be thrown
+        on upper resource pool
+        name - name of resource pool
+        esx_hostname - host name of esx server, which contains resource pool
+        :raise: CreatorException, ExistenceException
+        """
         self._connect_to_esx()
         if name[0] != '/':
             rp_name = '/Resources/' + name
@@ -195,6 +201,12 @@ class Creator:
 
 
     def destroy_resource_pool_with_vms(self, name, esx_hostname=None):
+        """
+        Destroy named resource pool; vm included in this pool also will be destroyed
+        name - name of resource pool
+        esx_hostname - host name of esx server, which contains resource pool
+        :raise: CreatorException, ExistenceException
+        """
         self._connect_to_esx()
 
         if not name:
@@ -239,7 +251,7 @@ class Creator:
         """
         Destroys virtual machine by name
         :param vmname: virtual machine name
-        :raise:
+        :raise: ExistenceException, CreatorException
         """
 
         self._connect_to_esx()
@@ -275,25 +287,26 @@ class Creator:
                       guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
         """
         Creates virtual machine
-        # If resource_pool_path is not defined, VM will created in root of inventory
-        # If network_name is not defined, VM will created with random network
-        # If datastorename is not defined, VM's files will be placed in
-        #   first avaliable datstore
-        # guestosid - parameter for PySphere, contains type of guest OS
-        # memorysize - RAM size ib Mb
-        # dicksize - hard disk in Kb
-        :param vmname:
-        :param esx_hostname:
-        :param iso:
-        :param datacenter:
-        :param resource_pool:
-        :param networks:
-        :param datastore:
-        :param annotation:
-        :param guestosid:
-        :param memorysize:
-        :param cpucount:
-        :param disksize:
+        :vmname: name of new vm
+        :esx_hostname: host's name, when vm will be created; if not specified
+            and ESX contains more than 1 hosts - raise CreatorException
+        :iso: path to .ISO image; must be stored in the same datastore
+            as the virtual machine is created
+        :datacenter: name of datacenter, which contain hosts and datastores
+        :resource_pool: name of resource pool, when VM will be created
+            (e.g. win-servers/win2003)
+            if resource_pool_path is not defined, VM will created in root of inventory
+        :networks: list of existing port groups. NIC are based on this list
+        :datastore: name of datastore, which will be contain VM files; if not
+            specified, VM will be placed in first datastore, which is avaliable
+            for chosen host
+        :annotation: description for VM
+        :guestosid: ID for guest OS; full list
+            http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html
+        :memorysize: size of RAM, which will be avaliable on VM, in Mb
+        :cpucount: count of CPU, which will be avaliable on VM
+        :create_hard_drive: if True, new .vmdk disk will be created and added to VM
+        :disksize: hard drive's maximal size, in Kb
         """
         parameter = {}
         if vmname:
@@ -328,7 +341,21 @@ class Creator:
     def create_vm(self, vm_options):
         """
          Creates a virtual machine on ESXi server
-        :param vm_options: virtual machine options
+        :param vm_options: dict, which contain parameters for VM
+        'vm_name'
+        'iso'
+        'datacenter_name'
+        'datastore_name'
+        'resource_pool_name'
+        'networks'
+        'annotation'
+        'esx_hostname'
+        'hard_drive'
+        'guestosid'
+        'memory_size'
+        'cpu_count'
+        'disk_size'
+        See create_vm_old for details
         :raise: CreatorException, ExistenceException
         """
         self._connect_to_esx()
@@ -441,19 +468,19 @@ class Creator:
             guestosid = 'otherGuest'
 
         try:
-            memory_size = vm_options['memory_size']
+            memory_size = int(vm_options['memory_size'])
             if memory_size <= 0:
                 raise CreatorException('Disk size must be greater than 0')
         except KeyError:
             memory_size = 1024 # MB
 
         try:
-            cpu_count = vm_options['cpu_count']
+            cpu_count = int(vm_options['cpu_count'])
         except KeyError:
             cpu_count = 1
 
         try:
-            disk_size = vm_options['disk_size']
+            disk_size = int(vm_options['disk_size'])
             if disk_size <= 0:
                 raise CreatorException('Disk size must be greater than 0')
         except KeyError:
