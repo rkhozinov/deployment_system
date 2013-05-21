@@ -34,75 +34,109 @@ class TestVirtualMachine(unittest.TestCase):
 
     def test_create_instance(self):
         try:
-            vm = VirtualMachine(self.vmname, user='login', password='password')
+            vm = VirtualMachine(name=self.vmname, user='login', password='password')
             self.assertIsInstance(vm, VirtualMachine)
             self.assertEqual(vm.name, self.vmname)
         except AttributeError as e:
             self.logger.critical(e.message)
             self.fail(e.message)
 
-
-    def test_create_virtual_machine_on_esx(self):
-        networks = ['VLAN1002']
+    def test_create_and_destroy(self):
         # create resource pool
-        # if rp already exist, then nothing to do
         try:
-            self.manager.create_resource_pool(self.rpname)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
+            try:
+                self.manager.create_resource_pool(name=self.rpname)
+            except Manager.ExistenceException:
+                pass
 
-        # create virtual machine
-        try:
-            vm = VirtualMachine(name=self.vmname,
-                                user=self.vmuser,
-                                password=self.vmpassword,
-                                iso=self.vmiso,
-                                connected_networks=networks)
-            vm.create(manager=self.manager,
-                      host_name=self.host_name,
-                      resource_pool_name=self.rpname)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
+            # create vm
+            vm = None
+            try:
+                vm = VirtualMachine(name=self.vmname, user=self.vmuser, password=self.vmpassword)
+                vm.create(manager=self.manager,
+                          host_name=self.host_name,
+                          resource_pool_name=self.rpname)
+            except Manager.ExistenceException:
+                pass
 
-    def test_destroy_virtual_machine(self):
-        try:
-            vm = VirtualMachine(self.vmname, self.rpname, 'login', 'password')
-            vm.destroy(self.manager)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
+            # destroy vm
+            try:
+                vm.destroy(self.manager)
+            except Manager.ExistenceException as error:
+                pass
+
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
+        finally:
+            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+
+    def test_create_power_on_power_off_and_destroy(self):
+        try:
+
+            # create resource pool
+            try:
+                self.manager.create_resource_pool(name=self.rpname)
+            except Manager.ExistenceException:
+                pass
+
+            # create vm
+            vm = None
+            try:
+                vm = VirtualMachine(name=self.vmname, user=self.vmuser, password=self.vmpassword)
+                vm.create(manager=self.manager, host_name=self.host_name, resource_pool_name=self.rpname)
+            except Manager.ExistenceException:
+                pass
+
+            # turn vm power on
+            vm.power_on(self.manager)
+
+            # turn vm power off
+            vm.power_off(self.manager)
+
+            # destroy vm
+            try:
+                vm.destroy(self.manager)
+            except Manager.ExistenceException:
+                pass
+
+        except Exception as error:
+            self.assertTrue(False, error.message)
+        finally:
+            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+
 
     def test_add_serial_port(self):
         try:
-            vm = VirtualMachine('pipe_client', user='login', password='password')
-            vm.add_serial_port(self.manager, self.host_address, self.host_user, self.host_password)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
+            # create resource pool
+            try:
+                self.manager.create_resource_pool(name=self.rpname)
+            except Manager.ExistenceException:
+                pass
 
-    def test_turn_on_vm(self):
-        self.test_create_virtual_machine_on_esx()
-        try:
-            self.manager.vm_power_on(self.vmname)
-        except ExistenceException as error:
-            self.assertTrue(True, error.message)
+            # create vm
+            vm = None
+            try:
+                vm = VirtualMachine(name=self.vmname, user=self.vmuser, password=self.vmpassword)
+                vm.create(manager=self.manager, host_name=self.host_name, resource_pool_name=self.rpname)
+            except Manager.ExistenceException:
+                pass
+            # add serial port to vm
+            try:
+                vm.add_serial_port(self.manager, self.host_address, self.host_user, self.host_password)
+            except Manager.ExistenceException:
+                pass
+
+            # turn vm power on
+            vm.power_on(self.manager)
+
+             # turn vm power off
+            vm.power_off(self.manager)
+
         except Exception as error:
             self.assertTrue(False, error.message)
+        finally:
+            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
-    def test_turn_off_vm(self):
-        self.test_create_virtual_machine_on_esx()
-        try:
-            self.manager.vm_power_off(self.vmname)
-        except ExistenceException as error:
-            self.assertTrue(True, error.message)
-        except Exception as error:
-            self.assertTrue(False, error.message)
 
     def test_add_hard_disk(self):
 
