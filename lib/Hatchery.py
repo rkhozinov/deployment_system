@@ -19,6 +19,10 @@ class ExistenceException(Exception): pass
 
 class Creator:
     # todo; add comment
+    """
+
+    """
+
     def __init__(self, manager_address, manager_user, manager_password):
         """
 
@@ -155,12 +159,10 @@ class Creator:
             self.esx_server._proxy.CreateResourcePool(req)
         except Exception as inst:
             inst = str(inst)
-            message = ''
             if "already exist" in inst:
                 message = "- '" + name + "'" + "already exist"
                 raise ExistenceException("Couldn't create resource pool " + message)
             else:
-                message = inst
                 raise CreatorException("Couldn't create the resource pool with name '%s'" % name)
 
         self._disconnect_from_esx()
@@ -169,8 +171,8 @@ class Creator:
         """
         Destroy named resource pool; vm included in this pool will be thrown
         on upper resource pool
-        name - name of resource pool
-        esx_hostname - host name of esx server, which contains resource pool
+        :param esx_hostname: host name of esx server, which contains resource pool
+        :param name: name of resource pool
         :raise: CreatorException, ExistenceException
         """
         self._connect_to_esx()
@@ -218,8 +220,8 @@ class Creator:
     def destroy_resource_pool_with_vms(self, name, esx_hostname=None):
         """
         Destroy named resource pool; vm included in this pool also will be destroyed
-        name - name of resource pool
-        esx_hostname - host name of esx server, which contains resource pool
+        :param name:  name of resource pool
+        :param esx_hostname: host name of esx server, which contains resource pool
         :raise: CreatorException, ExistenceException
         """
         self._connect_to_esx()
@@ -295,34 +297,33 @@ class Creator:
         finally:
             self._disconnect_from_esx()
 
-
-    def create_vm_old(self, vmname, esx_hostname=None, iso=None,
-                      datacenter=None, resource_pool='/', networks=[], datastore=None,
-                      annotation=None, create_hard_drive=True,
-                      guestosid="debian4Guest", memorysize=512, cpucount=1, disksize=1048576):
+    def create_vm_old(self, vmname, esx_hostname=None, iso=None, datacenter=None, resource_pool='/', networks=None,
+                      datastore=None, annotation=None, create_hard_drive=True, guestosid="debian4Guest", memorysize=512,
+                      cpucount=1, disksize=1048576):
         """
         Creates virtual machine
-        :vmname: name of new vm
-        :esx_hostname: host's name, when vm will be created; if not specified
+        :param vmname: name of virtual machine
+        :param esx_hostname: host's name, when vm will be created; if not specified
                        and ESX contains more than 1 hosts - raise CreatorException
-        :iso: path to .ISO image; must be stored in the same datastore
+        :param iso: path to .ISO image; must be stored in the same datastore
               as the virtual machine is created
-        :datacenter: name of datacenter, which contain hosts and datastores
-        :resource_pool: name of resource pool, when VM will be created
+        :param datacenter: name of datacenter, which contain hosts and datastores
+        :param resource_pool: name of resource pool, when VM will be created
             (e.g. win-servers/win2003)
             if resource_pool_path is not defined, VM will created in root of inventory
-        :networks: list of existing port groups. NIC are based on this list
-        :datastore: name of datastore, which will be contain VM files; if not
+        :param networks: list of existing port groups. NIC are based on this list
+        :param datastore: name of datastore, which will be contain VM files; if not
             specified, VM will be placed in first datastore, which is avaliable
             for chosen host
-        :annotation: description for VM
-        :guestosid: ID for guest OS; full list
+        :param annotation: description for VM
+        :param guestosid: ID for guest OS; full list
             http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html
-        :memorysize: size of RAM, which will be avaliable on VM, in Mb
-        :cpucount: count of CPU, which will be avaliable on VM
-        :create_hard_drive: if True, new .vmdk disk will be created and added to VM
-        :disksize: hard drive's maximal size, in Kb
+        :param memorysize: size of RAM, which will be avaliable on VM, in Mb
+        :param cpucount: count of CPU, which will be avaliable on VM
+        :param create_hard_drive: if True, new .vmdk disk will be created and added to VM
+        :param disksize: hard drive's maximal size, in Kb
         """
+        if not networks: networks = []
         parameter = {}
         if vmname:
             parameter['vm_name'] = vmname
@@ -351,7 +352,6 @@ class Creator:
         parameter['cpu_count'] = cpucount
         parameter['disk_size'] = disksize
         self.create_vm(parameter)
-
 
     def create_vm(self, vm_options):
         """
@@ -422,7 +422,6 @@ class Creator:
         dcmor = [k for k, v in self.esx_server.get_datacenters().items() if v == datacenter_name][0]
         dcprops = VIProperty(self.esx_server, dcmor)
 
-
         #DATASTORE
         try:
             datastore_name = vm_options['datastore_name']
@@ -453,14 +452,12 @@ class Creator:
             if not rpmor:
                 raise CreatorException("Couldn't find resource pool '{0}'".format(resource_pool_name))
 
-
         # NETWORKS
         try:
             networks = list(vm_options['networks'])
         except KeyError:
             networks = []
 
-        # Source - CD (TODO vmdx)
         try:
             iso = vm_options['iso']
         except KeyError:
@@ -476,7 +473,6 @@ class Creator:
         except KeyError:
             annotation = "Description for VM %s" % vm_name
 
-        # Guest ID - http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html
         try:
             guestosid = vm_options['guestosid']
         except KeyError:
@@ -487,8 +483,7 @@ class Creator:
             if memory_size <= 0:
                 raise CreatorException('Disk size must be greater than 0')
         except KeyError:
-            memory_size = 1024 # MB
-
+            memory_size = 1024  # MB
         try:
             cpu_count = int(vm_options['cpu_count'])
         except KeyError:
@@ -499,7 +494,7 @@ class Creator:
             if disk_size <= 0:
                 raise CreatorException('Disk size must be greater than 0')
         except KeyError:
-            disk_size = 1048576 # KB
+            disk_size = 1048576  # KB
 
         crprops = self._fetch_computer_resource(dcprops, hostmor)
         vmfmor = dcprops.vmFolder._obj
@@ -529,7 +524,7 @@ class Creator:
         #get network name
         _networks = []
         for n in config_target.Network:
-            if (n.Network.Accessible and networks.count(n.Network.Name)):
+            if n.Network.Accessible and networks.count(n.Network.Name):
                 _networks.append(n.Network.Name)
         if not _networks and len(networks) != 0:
             raise CreatorException("Couldn't find network")
@@ -537,7 +532,7 @@ class Creator:
             #get datastore
         ds = None
         for d in config_target.Datastore:
-            if (d.Datastore.Accessible and d.Datastore.Name == datastore_name):
+            if d.Datastore.Accessible and d.Datastore.Name == datastore_name:
                 ds = d.Datastore.Datastore
                 datastore_name = d.Datastore.Name
                 break
@@ -642,14 +637,12 @@ class Creator:
 
         self._disconnect_from_esx()
 
-
     def create_virtual_switch(self, name, num_ports, esx_hostname=None):
         """
         Creates a new standard virtual switch on esx
-        name - name for new virtual switch
-        num_ports - numbers of emulated ports
-        esx_hostname - host name of esx server when virtual switch will be created
-
+        :param name: name for new virtual switch
+        :param num_ports: numbers of emulated ports
+        :param esx_hostname: host name of esx server when virtual switch will be created
         :raise: CreatorException, ExistenceException
         """
         num_ports = int(num_ports)
@@ -691,22 +684,21 @@ class Creator:
 
         self._disconnect_from_esx()
 
-
     def destroy_virtual_switch(self, name, esx_hostname=None):
         """
         Destroys a named standard virtual switch on esx
-        name - virtual switch's name
-        esx_hostname - host name of esx server when virtual switch placed
+        :param name: virtual switch's name
+        :param esx_hostname: host name of esx server when virtual switch placed
         :raise: CreatorException, ExistenceException
         """
         self._connect_to_esx()
-
+        hosts = self.esx_server.get_hosts()
         try:
             if esx_hostname:
-                host_system = [k for k, v in self.esx_server.get_hosts().items()
+                host_system = [k for k, v in hosts.items()
                                if v == esx_hostname][0]
             else:
-                host_system = self.esx_server.get_hosts().keys()[0]
+                host_system = hosts.keys()[0]
         except Exception:
             raise CreatorException("Couldn't find host")
         prop = VIProperty(self.esx_server, host_system)
@@ -789,12 +781,12 @@ class Creator:
 
         self._disconnect_from_esx()
 
-
     def is_connected(self):
         """
         Checks ESX manager connection
 
-        :return: bool
+        :rtype : bool
+        :return: connection status
         """
         return self.esx_server.is_connected()
 
@@ -903,7 +895,7 @@ class Creator:
         self._connect_to_esx()
         try:
             vm = self.esx_server.get_vm_by_name(vm_name)
-        except Exception as error:
+        except Exception:
             raise ExistenceException("Couldn't find the virtual machine %s" % vm_name)
 
         unit_number = 0
@@ -964,12 +956,12 @@ class Creator:
         """
 
         self._connect_to_esx()
+        hosts = self.esx_server.get_hosts()
         try:
             if esx_hostname:
-                host_system = [k for k, v in self.esx_server.get_hosts().items()
-                               if v == esx_hostname][0]
+                host_system = [k for k, v in hosts.items() if v == esx_hostname][0]
             else:
-                host_system = self.esx_server.get_hosts().keys()[0]
+                host_system = hosts.keys()[0]
         except IndexError:
             raise CreatorException("Couldn't find host")
         if not host_system:
@@ -985,6 +977,7 @@ class Creator:
 
         self._disconnect_from_esx()
         return None
+
 
     # todo: add comment
     def _is_vm_exist(self, name):
