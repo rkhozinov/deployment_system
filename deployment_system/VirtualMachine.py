@@ -26,7 +26,7 @@ class VirtualMachine(object):
         else:
             raise AttributeError("Couldn't specify a virtual machine password")
 
-        if self.hard_disk and not disk_space:
+        if hard_disk and not disk_space:
             raise AttributeError("Couldn't specify a disk space for the hard disk '%s'" % self.hard_disk)
 
         if disk_space:
@@ -146,6 +146,7 @@ class VirtualMachine(object):
         if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the ESX manager")
         try:
+            manager.vm_power_off(self.name)
             manager.destroy_vm(self.name)
         except Manager.ExistenceException:
             raise
@@ -161,6 +162,26 @@ class VirtualMachine(object):
 
             for option in self.configuration:
                 vm_ctrl.cmd(option)
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
+
+    def power_on(self, manager):
+        if not isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the ESX manager")
+        try:
+            manager.vm_power_on(self.name)
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
+
+    def power_off(self, manager):
+        if not isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the ESX manager")
+        try:
+            manager.vm_power_off(self.name)
         except Manager.ExistenceException:
             raise
         except Manager.CreatorException:
