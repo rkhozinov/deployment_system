@@ -109,7 +109,6 @@ class VirtualMachine(object):
         for cmd in commands:
             child.sendline(cmd)
 
-    # TODO
     def add_hard_disk(self, manager, host_address, host_user, host_password):
 
         vmdk_flat_name = "%s-flat.vmdk" % self.hard_disk[:-5]
@@ -140,7 +139,7 @@ class VirtualMachine(object):
         child.close()
 
         try:
-            manager.add_existence_vmdk(disk_name=self.name, vm_path_esx_style, self.disk_space)
+            manager.add_existence_vmdk(disk_name=self.name, vm_path_esx_style=vm_path_esx_style, space=self.disk_space)
         except Manager.CreatorException:
             raise
 
