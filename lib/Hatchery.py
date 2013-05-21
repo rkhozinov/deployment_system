@@ -14,7 +14,7 @@ from pysphere.vi_task import VITask
 class CreatorException(Exception): pass
 
 
-class ExistenceException(Exception): pass
+class ExistenceException(CreatorException): pass
 
 
 class Creator:
