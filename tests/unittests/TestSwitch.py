@@ -23,101 +23,137 @@ class TestSwitch(unittest2.TestCase):
         self.network_name = 'test_net2'
         self.vlan = 1515
 
-        self.isolated_networks = []
-        self.isolated_networks.append(Network(name=self.network_name + '1', vlan=self.vlan, isolated=True))
-        self.isolated_networks.append(Network(name=self.network_name + '2', vlan=self.vlan, isolated=True))
-        self.isolated_networks.append(Network(name=self.network_name + '3', vlan=self.vlan, isolated=True))
-        self.networks = []
-        self.networks.append(Network(name=self.network_name + '1', vlan=self.vlan, promiscuous=False))
-        self.networks.append(Network(name=self.network_name + '2', vlan=self.vlan, promiscuous=False))
-        self.networks.append(Network(name=self.network_name + '3', vlan=self.vlan, promiscuous=False))
-
-
     def test_create_instance(self):
         switch = Switch(name=self.switch_name, ports=self.switch_ports)
         self.assertIsInstance(switch, Switch)
         self.assertEqual(switch.name, self.switch_name)
         self.assertEqual(switch.ports, self.switch_ports)
 
-    def test_create_switch(self):
+    def test_create_and_destroy_switch(self):
         switch = Switch(self.switch_name, self.switch_ports)
         try:
-            switch.create(self.manager, self.host_name)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
+            try:
+                switch.create(self.manager, self.host_name)
+            except Manager.ExistenceException:
+                pass
+            try:
+                switch.destroy(manager=self.manager, host_name=self.host_name)
+            except Manager.ExistenceException:
+                pass
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
-        return switch
 
     def test_add_promiscuous_network(self):
-        switch = self.test_create_switch()
+        switch = Switch(self.switch_name, self.switch_ports)
         try:
-            network = Network(name=self.network_name, vlan=self.vlan, promiscuous=True)
-            switch.add_network(network=network, manager=self.manager, host_name=self.host_name)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
+            # create switch
+            try:
+                switch.create(self.manager, self.host_name)
+            except Manager.ExistenceException:
+                pass
+
+            # add promiscuous network
+            try:
+                network = Network(name=self.network_name, vlan=self.vlan, promiscuous=True)
+                switch.add_network(network=network, manager=self.manager, host_name=self.host_name)
+            except Manager.ExistenceException as error:
+                self.assertTrue(True, error.message)
+
+            # destroy switch
+            try:
+                switch.destroy(manager=self.manager, host_name=self.host_name)
+            except Manager.ExistenceException:
+                pass
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
     def test_add_network(self):
-        self.test_destroy_switch()
-        switch = self.test_create_switch()
+        switch = Switch(self.switch_name, self.switch_ports)
         try:
-            network = Network(name=self.network_name, vlan=self.vlan, promiscuous=False)
-            switch.add_network(network=network, manager=self.manager, host_name=self.host_name)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
+            # create switch
+            try:
+                switch.create(self.manager, self.host_name)
+            except Manager.ExistenceException:
+                pass
+
+            # add network
+            try:
+                network = Network(name=self.network_name, vlan=self.vlan, promiscuous=False)
+                switch.add_network(network=network, manager=self.manager, host_name=self.host_name)
+            except Manager.ExistenceException as error:
+                self.assertTrue(True, error.message)
+
+            # destroy switch
+            try:
+                switch.destroy(manager=self.manager, host_name=self.host_name)
+            except Manager.ExistenceException:
+                pass
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
-
 
     def test_add_some_networks(self):
-        self.test_destroy_switch()
-        switch = self.test_create_switch()
+        switch = Switch(self.switch_name, self.switch_ports)
         try:
-            for net in self.networks:
-                switch.add_network(network=net, manager=self.manager, host_name=self.host_name)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
+            # create switch
+            try:
+                switch.create(self.manager, self.host_name)
+            except Manager.ExistenceException:
+                pass
 
-    def test_create_some_isolated_networks(self):
-        self.test_destroy_switch()
-        try:
-            for net in self.isolated_networks:
-                if net.isolated:
-                    isolated_switch = Switch(net.name)
-                    isolated_switch.create(self.manager, self.host_name)
-                    isolated_switch.add_network(network=net, manager=self.manager, host_name=self.host_name)
-                else:
-                    switch = Switch(self.switch_name, self.switch_ports)
-                    switch.create(self.manager, self.host_name)
+            # create networks
+            networks = []
+            networks.append(Network(name=self.network_name + '1', vlan=self.vlan, promiscuous=False))
+            networks.append(Network(name=self.network_name + '2', vlan=self.vlan, promiscuous=False))
+            networks.append(Network(name=self.network_name + '3', vlan=self.vlan, promiscuous=False))
+
+            # add networks
+            for net in networks:
+                try:
                     switch.add_network(network=net, manager=self.manager, host_name=self.host_name)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
+                except Manager.ExistenceException:
+                    pass
+
+            # destroy switch
+            try:
+                switch.destroy(manager=self.manager, host_name=self.host_name)
+            except Manager.ExistenceException:
+                pass
+
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-    def test_destroy_isolated_networks(self):
-        switch = Switch(self.switch_name)
+    def test_create_and_destroy_some_isolated_networks(self):
         try:
-            for net in self.isolated_networks:
-                if net.isolated:
-                    switch.name = net.name
-                elif switch.name != self.switch_name:
-                    switch.name = self.switch_name
-                switch.destroy(self.manager, self.host_name)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
+
+            # create isolated networks
+            isolated_networks = []
+            isolated_networks.append(Network(name=self.network_name + '1', vlan=self.vlan, isolated=True))
+            isolated_networks.append(Network(name=self.network_name + '2', vlan=self.vlan, isolated=True))
+            isolated_networks.append(Network(name=self.network_name + '3', vlan=self.vlan, isolated=True))
+
+            # add isolated networks
+            for net in isolated_networks:
+                try:
+                    if net.isolated:
+                        Switch(net.name).create(self.manager, self.host_name).add_network(net, self.manager,
+                                                                                          self.host_name)
+                    else:
+                        Switch(self.switch_name, self.switch_ports).create(self.manager, self.host_name).add_network(
+                            net, self.manager, self.host_name)
+
+                except Manager.ExistenceException as error:
+                    pass
+
+            # destroy isolated networks
+            for net in isolated_networks:
+                try:
+                    if net.isolated:
+                        Switch(net.name).destroy(self.manager, self.host_name)
+                    else:
+                        Switch(self.switch_name).destroy(self.manager, self.host_name)
+                except Manager.ExistenceException:
+                    pass
+
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-    def test_destroy_switch(self):
-        try:
-            switch = Switch(self.switch_name)
-            switch.destroy(manager=self.manager, host_name=self.host_name)
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
