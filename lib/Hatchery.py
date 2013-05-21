@@ -18,7 +18,14 @@ class ExistenceException(Exception): pass
 
 
 class Creator:
+    # todo; add comment
     def __init__(self, manager_address, manager_user, manager_password):
+        """
+
+        :param manager_address:
+        :param manager_user:
+        :param manager_password:
+        """
         self.esx_server = VIServer()
         self.esx_address = manager_address
         self.esx_user = manager_user
@@ -27,7 +34,13 @@ class Creator:
     def __del__(self):
         self._disconnect_from_esx()
 
+    # todo; add comment
     def _connect_to_esx(self):
+        """
+
+
+        :raise:
+        """
         if not self.esx_server.is_connected():
             try:
                 self.esx_server.connect(self.esx_address,
@@ -36,9 +49,12 @@ class Creator:
                 raise CreatorException(str(inst))
 
     def _disconnect_from_esx(self):
+        # todo; add comment
+        """
+
+        """
         if self.esx_server.is_connected():
             self.esx_server.disconnect()
-
 
     def create_resource_pool(self, name, parent_rp='/', esx_hostname=None,
                              cpu_resources=('normal', 4000, 0, True, -1),
@@ -148,7 +164,6 @@ class Creator:
                 raise CreatorException("Couldn't create the resource pool with name '%s'" % name)
 
         self._disconnect_from_esx()
-
 
     def destroy_resource_pool(self, name, esx_hostname=None):
         """
@@ -260,7 +275,7 @@ class Creator:
             vm = self.esx_server.get_vm_by_name(vmname)
         except Exception as error:
             self._disconnect_from_esx()
-            raise ExistenceException("Couldn't find VM '%s' - %s" % (vmname,error.message))
+            raise ExistenceException("Couldn't find VM '%s' - %s" % (vmname, error.message))
 
         try:
             request = VI.Destroy_TaskRequestMsg()
@@ -289,9 +304,9 @@ class Creator:
         Creates virtual machine
         :vmname: name of new vm
         :esx_hostname: host's name, when vm will be created; if not specified
-            and ESX contains more than 1 hosts - raise CreatorException
+                       and ESX contains more than 1 hosts - raise CreatorException
         :iso: path to .ISO image; must be stored in the same datastore
-            as the virtual machine is created
+              as the virtual machine is created
         :datacenter: name of datacenter, which contain hosts and datastores
         :resource_pool: name of resource pool, when VM will be created
             (e.g. win-servers/win2003)
@@ -630,7 +645,7 @@ class Creator:
 
     def create_virtual_switch(self, name, num_ports, esx_hostname=None):
         """
-        Creates a new standart virtual switch on esx
+        Creates a new standard virtual switch on esx
         name - name for new virtual switch
         num_ports - numbers of emulated ports
         esx_hostname - host name of esx server when virtual switch will be created
@@ -679,7 +694,7 @@ class Creator:
 
     def destroy_virtual_switch(self, name, esx_hostname=None):
         """
-        Destroys a named standart virtual switch on esx
+        Destroys a named standard virtual switch on esx
         name - virtual switch's name
         esx_hostname - host name of esx server when virtual switch placed
         :raise: CreatorException, ExistenceException
@@ -863,12 +878,13 @@ class Creator:
         if not vmname:
             raise AttributeError("Couldn't specify the virtual machine name")
 
-        if not self._is_vm_exist(vmname):
+        try:
+            vm = self.esx_server.get_vm_by_name(vmname)
+        except Exception:
             raise ExistenceException("Couldn't find the virtual machine '%s'" % vmname)
 
         try:
             self._connect_to_esx()
-            vm = self.esx_server.get_vm_by_name(vmname)
             path = vm.get_property('path')
             self._disconnect_from_esx()
             return path
@@ -877,11 +893,18 @@ class Creator:
 
     #todo: REVIEW ME
     def add_existence_vmdk(self, vm_name, path, space):
+        """
+
+        :param vm_name:
+        :param path:
+        :param space:
+        :raise:
+        """
         self._connect_to_esx()
         try:
             vm = self.esx_server.get_vm_by_name(vm_name)
         except Exception as error:
-            raise CreatorException("Couldn't find the virtual machine %s" % vm_name)
+            raise ExistenceException("Couldn't find the virtual machine %s" % vm_name)
 
         unit_number = 0
         for disk in vm._disks:
@@ -931,7 +954,15 @@ class Creator:
             raise CreatorException("ERROR CONFIGURING VM:%s" % vi_task.get_error_message())
         self._disconnect_from_esx()
 
+    # todo: add comment
     def _get_portgroup_name(self, name, esx_hostname=None):
+        """
+
+        :param name:
+        :param esx_hostname:
+        :return: :raise:
+        """
+
         self._connect_to_esx()
         try:
             if esx_hostname:
@@ -955,7 +986,13 @@ class Creator:
         self._disconnect_from_esx()
         return None
 
+    # todo: add comment
     def _is_vm_exist(self, name):
+        """
+
+        :param name:
+        :return:
+        """
         self._connect_to_esx()
         exist = False
         try:
@@ -966,8 +1003,15 @@ class Creator:
         self._disconnect_from_esx()
         return exist
 
+    # todo: add comment
     def _fetch_resource_pool(self, rp_name, esx_hostname):
 
+        """
+
+        :param rp_name:
+        :param esx_hostname:
+        :return:
+        """
         rpmor = None
 
         if rp_name == '/':
@@ -996,7 +1040,15 @@ class Creator:
 
         return rpmor
 
+        # todo: add comment
+
     def _fetch_computer_resource(self, datacenter_props, host):
+        """
+
+        :param datacenter_props:
+        :param host:
+        :return:
+        """
         host_folder = datacenter_props.hostFolder._obj
 
 
