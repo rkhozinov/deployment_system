@@ -51,7 +51,7 @@ class Topology:
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
     VM_VNC_PORT = 'vnc_port'
-    VM_LOGIN = 'login'
+    VM_LOGIN = 'user'
     VM_PASSWORD = 'password'
 
     NET_PORTS = 'num_ports'

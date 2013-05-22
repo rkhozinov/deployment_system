@@ -34,12 +34,53 @@ class TestVirtualMachine(unittest.TestCase):
 
     def test_create_instance(self):
         try:
-            vm = VirtualMachine(name=self.vmname, user='login', password='password')
+            vm = VirtualMachine(name=self.vmname, user='user', password='password')
             self.assertIsInstance(vm, VirtualMachine)
             self.assertEqual(vm.name, self.vmname)
-        except AttributeError as e:
-            self.logger.critical(e.message)
-            self.fail(e.message)
+        except AttributeError as error:
+            self.assertTrue(False, error.message)
+
+    def test_create_instance_with_invalid_name(self):
+        try:
+            invalid_vm_name = None
+            vm = VirtualMachine(name=invalid_vm_name, user='user', password='password')
+            self.assertNotIsInstance(vm, VirtualMachine)
+        except AttributeError as error:
+            self.assertTrue(True, error.message)
+
+    def test_create_instance_with_invalid_credentials(self):
+        try:
+            invalid_vm_password = None
+            vm = VirtualMachine(name=self.vmname, user='user', password=invalid_vm_password)
+            self.assertNotIsInstance(vm, VirtualMachine)
+        except AttributeError as error:
+            self.assertTrue(True, error.message)
+
+        try:
+            invalid_vm_user = None
+            vm = VirtualMachine(name=self.vmname, user='user', password=invalid_vm_user)
+            self.assertNotIsInstance(vm, VirtualMachine)
+        except AttributeError as error:
+            self.assertTrue(True, error.message)
+
+
+    def test_create_instance_with_hard_disk(self):
+        try:
+            hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
+            disk_space =  1024
+            vm = VirtualMa chine(name=self.vmname, user='user', password='password', hard_disk=hard_disk, disk_space=disk_space)
+            self.assertIsInstance(vm, VirtualMachine)
+        except AttributeError as error:
+            self.assertTrue(False, error.message)
+
+
+    def test_try_create_instance_with_hard_disk_without_space(self):
+        try:
+            hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
+            vm = VirtualMachine(name=self.vmname, user='user', password='password', hard_disk=hard_disk)
+            self.assertIsInstance(vm, VirtualMachine)
+        except AttributeError as error:
+            self.assertTrue(True, error.message)
 
     def test_create_and_destroy(self):
         # create resource pool
@@ -104,7 +145,6 @@ class TestVirtualMachine(unittest.TestCase):
         finally:
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
-
     def test_add_serial_port(self):
         try:
             # create resource pool
@@ -120,7 +160,7 @@ class TestVirtualMachine(unittest.TestCase):
                 vm.create(manager=self.manager, host_name=self.host_name, resource_pool_name=self.rpname)
             except Manager.ExistenceException:
                 pass
-            # add serial port to vm
+                # add serial port to vm
             try:
                 vm.add_serial_port(self.manager, self.host_address, self.host_user, self.host_password)
             except Manager.ExistenceException:
@@ -129,14 +169,13 @@ class TestVirtualMachine(unittest.TestCase):
             # turn vm power on
             vm.power_on(self.manager)
 
-             # turn vm power off
+            # turn vm power off
             vm.power_off(self.manager)
 
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
-
 
     def test_add_hard_disk(self):
 
@@ -169,7 +208,6 @@ class TestVirtualMachine(unittest.TestCase):
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertTrue(False, error.message)
-
 
     if __name__ == "__main__":
         unittest.main()
