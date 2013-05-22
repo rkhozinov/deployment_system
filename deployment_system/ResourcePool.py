@@ -21,9 +21,7 @@ class ResourcePool(object):
         """
         if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the esx manager")
-
         try:
-
             manager.create_resource_pool(name=self.name, esx_hostname=host_name)
         except Manager.ExistenceException:
             raise
