@@ -46,6 +46,40 @@ class TestResoursePool(unittest.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
+    def test_try_to_create_with_invalid_params(self):
+        try:
+            ResourcePool(self.rpname).create(None, None)
+        except AttributeError as error:
+            self.assertTrue(True, error.message)
+
+    def test_try_to_create_with_same_name(self):
+        try:
+            # destroy rp
+            try:
+                ResourcePool(self.rpname).destroy(self.manager)
+            except Manager.ExistenceException as error:
+                pass
+
+            # create rp
+            try:
+                ResourcePool(self.rpname).create(self.manager, self.host_name)
+            except Manager.ExistenceException:
+                pass
+
+            # create rp
+            try:
+                ResourcePool(self.rpname).create(self.manager, self.host_name)
+            except Manager.ExistenceException as error:
+                self.assertTrue(True, error.message)
+
+            # destroy rp
+            try:
+                ResourcePool(self.rpname).destroy(self.manager)
+            except Manager.ExistenceException as error:
+                pass
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+
     def test_create_and_destroy_resource_pool_with_vms(self):
         try:
 
