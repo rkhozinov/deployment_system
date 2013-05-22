@@ -52,86 +52,106 @@ class TestResoursePool(unittest.TestCase):
         except AttributeError as error:
             self.assertTrue(True, error.message)
 
-    def test_try_to_create_with_same_name(self):
+    def test_try_to_destroy_with_invalid_params(self):
         try:
-            # destroy rp
-            try:
-                ResourcePool(self.rpname).destroy(self.manager)
-            except Manager.ExistenceException as error:
-                pass
-
-            # create rp
-            try:
-                ResourcePool(self.rpname).create(self.manager, self.host_name)
-            except Manager.ExistenceException:
-                pass
-
-            # create rp
-            try:
-                ResourcePool(self.rpname).create(self.manager, self.host_name)
-            except Manager.ExistenceException as error:
-                self.assertTrue(True, error.message)
-
-            # destroy rp
-            try:
-                ResourcePool(self.rpname).destroy(self.manager)
-            except Manager.ExistenceException as error:
-                pass
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
-
-    def test_create_and_destroy_resource_pool_with_vms(self):
-        try:
-
-            # create resource pool
-            try:
-                ResourcePool(self.rpname).create(self.manager, self.host_name)
-            except Manager.ExistenceException:
-                pass
-
-            # create vm
-            try:
-                vmname = self.rpname + 'vm'
-                password = 'vyatta'
-                user = 'vyatta'
-                vm = VirtualMachine.VirtualMachine(vmname, user, password)
-                vm.create(self.manager, self.rpname, self.host_name)
-            except Manager.ExistenceException:
-                pass
-
-            # destroy resource pool with vm
-            try:
-                ResourcePool(self.rpname).destroy(self.manager, with_vms=True)
-            except Manager.ExistenceException:
-                pass
-
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
-
-    def test_try_to_create_resource_pools_with_same_name(self):
-        try:
-            # create first rp
-            try:
-                ResourcePool(self.rpname).create(self.manager, self.host_name)
-            except Manager.ExistenceException:
-                pass
-
-            # create second rp with same name
-            try:
-                ResourcePool(self.rpname).create(self.manager, self.host_name)
-            except Manager.ExistenceException:
-                self.assertTrue(True)
-
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
-        finally:
-            ResourcePool(self.rpname).destroy(self.manager)
-
-    def test_create_invalid_instance(self):
-        try:
-            ResourcePool(None)
+            ResourcePool(self.rpname).destroy(None)
         except AttributeError as error:
             self.assertTrue(True, error.message)
+
+    def test_try_to_create_with_invalid_manager(self):
+        try:
+            manager_address = 'invalid_address'
+            manager_user = 'root'
+            manager_password = 'vmware'
+            manager = Manager.Creator(manager_address, manager_user, manager_password)
+            ResourcePool(self.rpname).create(manager=manager)
+        except Manager.CreatorException as error:
+            self.assertTrue(True, error.message)
+
+
+def test_try_to_create_with_same_name(self):
+    try:
+        # destroy rp
+        try:
+            ResourcePool(self.rpname).destroy(self.manager)
+        except Manager.ExistenceException as error:
+            pass
+
+        # create rp
+        try:
+            ResourcePool(self.rpname).create(self.manager, self.host_name)
+        except Manager.ExistenceException:
+            pass
+
+        # create rp
+        try:
+            ResourcePool(self.rpname).create(self.manager, self.host_name)
+        except Manager.ExistenceException as error:
+            self.assertTrue(True, error.message)
+
+        # destroy rp
+        try:
+            ResourcePool(self.rpname).destroy(self.manager)
+        except Manager.ExistenceException as error:
+            pass
+    except Manager.CreatorException as error:
+        self.assertTrue(False, error.message)
+
+
+def test_create_and_destroy_resource_pool_with_vms(self):
+    try:
+
+        # create resource pool
+        try:
+            ResourcePool(self.rpname).create(self.manager, self.host_name)
+        except Manager.ExistenceException:
+            pass
+
+        # create vm
+        try:
+            vmname = self.rpname + 'vm'
+            password = 'vyatta'
+            user = 'vyatta'
+            vm = VirtualMachine.VirtualMachine(vmname, user, password)
+            vm.create(self.manager, self.rpname, self.host_name)
+        except Manager.ExistenceException:
+            pass
+
+        # destroy resource pool with vm
+        try:
+            ResourcePool(self.rpname).destroy(self.manager, with_vms=True)
+        except Manager.ExistenceException:
+            pass
+
+    except Manager.CreatorException as error:
+        self.assertTrue(False, error.message)
+
+
+def test_try_to_create_resource_pools_with_same_name(self):
+    try:
+        # create first rp
+        try:
+            ResourcePool(self.rpname).create(self.manager, self.host_name)
+        except Manager.ExistenceException:
+            pass
+
+        # create second rp with same name
+        try:
+            ResourcePool(self.rpname).create(self.manager, self.host_name)
+        except Manager.ExistenceException:
+            self.assertTrue(True)
+
+    except Manager.CreatorException as error:
+        self.assertTrue(False, error.message)
+    finally:
+        ResourcePool(self.rpname).destroy(self.manager)
+
+
+def test_create_invalid_instance(self):
+    try:
+        ResourcePool(None)
+    except AttributeError as error:
+        self.assertTrue(True, error.message)
 
 
 if __name__ == "__main__":
