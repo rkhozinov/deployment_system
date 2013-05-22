@@ -68,7 +68,7 @@ class TestVirtualMachine(unittest.TestCase):
         try:
             hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
             disk_space =  1024
-            vm = VirtualMa chine(name=self.vmname, user='user', password='password', hard_disk=hard_disk, disk_space=disk_space)
+            vm = VirtualMachine(name=self.vmname, user='user', password='password', hard_disk=hard_disk, disk_space=disk_space)
             self.assertIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(False, error.message)
