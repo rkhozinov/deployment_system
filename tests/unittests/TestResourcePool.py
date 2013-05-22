@@ -23,6 +23,13 @@ class TestResoursePool(unittest.TestCase):
         except AttributeError as error:
             self.assertTrue(False, error.message)
 
+    def test_try_create_invalid_instance(self):
+        try:
+            rpool = ResourcePool(None)
+            self.assertNotIsInstance(rpool, ResourcePool)
+        except AttributeError as error:
+            self.assertTrue(True, error.message)
+
     def test_create_and_destroy_empty_resource_pool_on_specific_host(self):
         try:
             # create rp
