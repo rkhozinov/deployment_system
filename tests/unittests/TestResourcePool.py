@@ -68,6 +68,15 @@ class TestResoursePool(unittest.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(True, error.message)
 
+    def test_try_to_destroy_with_invalid_manager(self):
+        try:
+            manager_address = 'invalid_address'
+            manager_user = 'root'
+            manager_password = 'vmware'
+            manager = Manager.Creator(manager_address, manager_user, manager_password)
+            ResourcePool(self.rpname).destroy(manager=manager)
+        except Manager.CreatorException as error:
+            self.assertTrue(True, error.message)
 
 def test_try_to_create_with_same_name(self):
     try:
