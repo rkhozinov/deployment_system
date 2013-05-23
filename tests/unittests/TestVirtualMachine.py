@@ -181,14 +181,12 @@ class TestVirtualMachine(unittest.TestCase):
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
     def test_add_hard_disk(self):
-
-        iso = '[datastore1] vyatta_multicast.iso'
-        networks = ['VLAN1002']
-        esx_host = 'vaytta-dell-1'
-        clear_vm = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
-        donor_vm = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
+        # todo: ends test
         clear_vm_name = self.vmname
         donor_vm_name = self.vmname + '_donor'
+        clear_vm = VirtualMachine(clear_vm_name, self.vmuser, self.vmpassword)
+        donor_vm = VirtualMachine(donor_vm_name, self.vmuser, self.vmpassword)
+
         vm_path = None
         try:
             # create resource pool
@@ -196,19 +194,17 @@ class TestVirtualMachine(unittest.TestCase):
                 self.manager.create_resource_pool(name=self.rpname)
             except Manager.ExistenceException:
                 pass
-
             try:
-                clear_vm.create(self.manager, esx_host, self.rpname)
+                clear_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
             except Manager.ExistenceException:
                 pass
             try:
-                donor_vm.create(self.manager, esx_host, self.rpname)
+                donor_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
             except Manager.ExistenceException:
                 pass
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-        disk_path = None
         try:
             vm_path = self.manager.get_vm_path(donor_vm)
             path_temp = vm_path.split(' ')
