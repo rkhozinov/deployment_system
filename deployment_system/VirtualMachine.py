@@ -37,6 +37,7 @@ class VirtualMachine(object):
         self.configuration = configuration
         self.iso = iso
         self.serial_port_path = None
+        self.path = None
 
     def create(self, manager, resource_pool_name, host_name=None):
         if not isinstance(manager, Manager.Creator):
@@ -223,8 +224,21 @@ class VirtualMachine(object):
         except pexpect.ExceptionPexpect as error:
             raise error
 
+    def get_path(self, manager):
+        if not isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the ESX manager")
+        try:
+            if not self.path:
+                self.path = manager.get_vm_path(self.name)
+            return self.path
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            pass
+
     def __connect_to_vm(self):
         pass
+
         # try:
         #     #connection_str = 'nc -U ' + os.path.normpath(self.vm.path + self.vm.name)
         #     connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.name, self.name)
@@ -236,14 +250,14 @@ class VirtualMachine(object):
         # except pexpect.ExceptionPexpect as error:
         #     raise error
 
-    # def cmd(self, command, expect=None):
-    #     try:
-    #         self.esx_session.sendline(command)
-    #         self.esx_session.expect(expect)
-    #         self.logger.info('Before: %s \n Command: %s \n After: %s' %
-    #                          (self.esx_session.before, command, self.esx_session.after))
-    #     except pexpect.ExceptionPexpect as error:
-    #         raise error
-    #
-    # def __del__(self):
-    #     self.esx_session.close(force=True)
+        # def cmd(self, command, expect=None):
+        #     try:
+        #         self.esx_session.sendline(command)
+        #         self.esx_session.expect(expect)
+        #         self.logger.info('Before: %s \n Command: %s \n After: %s' %
+        #                          (self.esx_session.before, command, self.esx_session.after))
+        #     except pexpect.ExceptionPexpect as error:
+        #         raise error
+        #
+        # def __del__(self):
+        #     self.esx_session.close(force=True)

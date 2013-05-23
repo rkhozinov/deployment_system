@@ -198,9 +198,31 @@ class TestVirtualMachine(unittest.TestCase):
                 self.assertEqual(vm_path, vm.path)
             except ExistenceException:
                 pass
-
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
+        finally:
+            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+
+    def test_try_to_get_path_with_invalid_manager(self):
+        try:
+            vm = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
+            try:
+                self.manager.create_resource_pool(name=self.rpname)
+            except Manager.ExistenceException:
+                pass
+            try:
+                vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
+            except Manager.ExistenceException:
+                pass
+            try:
+                manager = None
+                vm.get_path(manager)
+            except AttributeError as error:
+                self.assertTrue(True, error.message)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+        finally:
+            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
 
 def test_add_hard_disk(self):
