@@ -6,10 +6,10 @@ import unittest
 import logging
 from deployment_system.VirtualMachine import VirtualMachine
 import lib.Hatchery as Manager
-from deployment_system.TopologyReader import TopologyReader
 
 
 __author__ = 'rkhozinov'
+
 
 class TestVirtualMachine(unittest.TestCase):
     def setUp(self):
@@ -27,7 +27,7 @@ class TestVirtualMachine(unittest.TestCase):
         self.vmiso = '[datastore1] vyatta_multicast.iso'
         self.manager_address = '172.18.93.40'
         self.manager_user = 'root'
-        self.manager_password= 'vmware'
+        self.manager_password = 'vmware'
         self.manager = Manager.Creator(self.manager_address,
                                        self.manager_user,
                                        self.manager_password)
@@ -69,8 +69,9 @@ class TestVirtualMachine(unittest.TestCase):
     def test_create_instance_with_hard_disk(self):
         try:
             hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
-            disk_space =  1024
-            vm = VirtualMachine(name=self.vmname, user='user', password='password', hard_disk=hard_disk, disk_space=disk_space)
+            disk_space = 1024
+            vm = VirtualMachine(name=self.vmname, user='user', password='password', hard_disk=hard_disk,
+                                disk_space=disk_space)
             self.assertIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(False, error.message)
@@ -190,12 +191,20 @@ class TestVirtualMachine(unittest.TestCase):
         donor_vm_name = self.vmname + '_donor'
         vm_path = None
         try:
-            clear_vm.create(self.manager, esx_host, self.rpname)
-            donor_vm.create(self.manager, esx_host, self.rpname)
-            vm_path = self.manager.get_vm_path(donor_vm)
-            # TODO: add hard drive
-        except Manager.ExistenceException as error:
-            self.assertTrue(True, error.message)
+            # create resource pool
+            try:
+                self.manager.create_resource_pool(name=self.rpname)
+            except Manager.ExistenceException:
+                pass
+
+            try:
+                clear_vm.create(self.manager, esx_host, self.rpname)
+            except Manager.ExistenceException:
+                pass
+            try:
+                donor_vm.create(self.manager, esx_host, self.rpname)
+            except Manager.ExistenceException:
+                pass
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
@@ -210,6 +219,8 @@ class TestVirtualMachine(unittest.TestCase):
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertTrue(False, error.message)
+        finally:
+            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
     if __name__ == "__main__":
         unittest.main()
