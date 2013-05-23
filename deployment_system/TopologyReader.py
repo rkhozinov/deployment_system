@@ -6,8 +6,8 @@ from deployment_system.VirtualMachine import VirtualMachine
 
 class TopologyReader(object):
     # describe of sections
-    MANAGER = 'esx_manager'
-    HOST = 'esx_host'
+    MANAGER = 'esx_vcenter'
+    HOST = 'esx'
     SETTINGS = 'settings'
 
     # esx manager settings
