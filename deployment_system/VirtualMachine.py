@@ -159,17 +159,18 @@ class VirtualMachine(object):
             raise
 
     def configure(self, host_address, host_user, user_password, configuration=None):
+        pass
         #todo: add add_serial_port
         #todo: add connect to vm
-        if not configuration:
-            configuration = self.configuration
-        try:
-            for option in configuration:
-                self.cmd(option)
-
-        except pexpect.ExceptionPexpect:
-            raise
-        pass
+        # if not configuration:
+        #     configuration = self.configuration
+        # try:
+        #     for option in configuration:
+        #         self.cmd(option)
+        #
+        # except pexpect.ExceptionPexpect:
+        #     raise
+        # pass
 
     def power_on(self, manager):
         if not isinstance(manager, Manager.Creator):
@@ -210,38 +211,39 @@ class VirtualMachine(object):
 
             child = pexpect.spawn(connection_str)
             child.expect(".*assword:")
-            self.logger.info('Before: %s \n Command: %s \n After: %s' %
-                             (child.before, '', child.after))
+            # self.logger.info('Before: %s \n Command: %s \n After: %s' %
+            #                  (child.before, '', child.after))
 
             child.sendline("swordfish")
             child.expect(".*\# ")
-            self.logger.info('Before: %s \n Command: %s \n After: %s' %
-                             (child.before, '', child.after))
+            # self.logger.info('Before: %s \n Command: %s \n After: %s' %
+            #                  (child.before, '', child.after))
 
             return child
         except pexpect.ExceptionPexpect as error:
             raise error
 
     def __connect_to_vm(self):
-        try:
-            #connection_str = 'nc -U ' + os.path.normpath(self.vm.path + self.vm.name)
-            connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.name, self.name)
+        pass
+        # try:
+        #     #connection_str = 'nc -U ' + os.path.normpath(self.vm.path + self.vm.name)
+        #     connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.name, self.name)
+        #
+        #     self.cmd(connection_str + '\n', expect='.*ogin:')
+        #     self.cmd(self.user, expect='.*assword:')
+        #     self.cmd(self.password, expect='.*:')
+        #
+        # except pexpect.ExceptionPexpect as error:
+        #     raise error
 
-            self.cmd(connection_str + '\n', expect='.*ogin:')
-            self.cmd(self.user, expect='.*assword:')
-            self.cmd(self.password, expect='.*:')
-
-        except pexpect.ExceptionPexpect as error:
-            raise error
-
-    def cmd(self, command, expect=None):
-        try:
-            self.esx_session.sendline(command)
-            self.esx_session.expect(expect)
-            self.logger.info('Before: %s \n Command: %s \n After: %s' %
-                             (self.esx_session.before, command, self.esx_session.after))
-        except pexpect.ExceptionPexpect as error:
-            raise error
-
-    def __del__(self):
-        self.esx_session.close(force=True)
+    # def cmd(self, command, expect=None):
+    #     try:
+    #         self.esx_session.sendline(command)
+    #         self.esx_session.expect(expect)
+    #         self.logger.info('Before: %s \n Command: %s \n After: %s' %
+    #                          (self.esx_session.before, command, self.esx_session.after))
+    #     except pexpect.ExceptionPexpect as error:
+    #         raise error
+    #
+    # def __del__(self):
+    #     self.esx_session.close(force=True)
