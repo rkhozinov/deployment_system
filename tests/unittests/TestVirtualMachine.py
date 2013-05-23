@@ -11,7 +11,6 @@ from deployment_system.TopologyReader import TopologyReader
 
 __author__ = 'rkhozinov'
 
-
 class TestVirtualMachine(unittest.TestCase):
     def setUp(self):
         self.config_path = '/home/automator/Repos/deplyment_system/tests/etc/etc/topology.ini'
