@@ -14,7 +14,7 @@ __author__ = 'rkhozinov'
 
 class TestVirtualMachine(unittest.TestCase):
     def setUp(self):
-        self.config_path = '../etc/topology.ini'
+        self.config_path = '../../etc/topology.ini'
         self.treader = TopologyReader(self.config_path)
 
         self.rpname = 'test_pool2'
