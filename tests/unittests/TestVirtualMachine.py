@@ -13,7 +13,7 @@ __author__ = 'rkhozinov'
 
 class TestVirtualMachine(unittest.TestCase):
     def setUp(self):
-        self.config_path = '/home/automator/Repos/deplyment_system/tests/etc/etc/topology.ini'
+        self.config_path = '/home/automator/Repos/deplyment_system/tests/etc/topology.ini'
         self.treader = TopologyReader(self.config_path)
 
         self.rpname = 'test_pool2'
@@ -30,6 +30,7 @@ class TestVirtualMachine(unittest.TestCase):
                                        self.treader.manager_password)
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
+        self.logger.critical(self.config_path)
 
     def test_create_instance(self):
         try:
