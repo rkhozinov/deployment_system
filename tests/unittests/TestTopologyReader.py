@@ -12,7 +12,7 @@ __author__ = 'rkhozinov'
 
 class TestTopologyReader(unittest.TestCase):
     def setUp(self):
-        self.config_path = '../etc/topology.ini'
+        self.config_path = '../../etc/topology.ini'
 
     def test_config_read(self):
         try:
