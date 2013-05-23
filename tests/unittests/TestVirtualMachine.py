@@ -13,24 +13,26 @@ __author__ = 'rkhozinov'
 
 class TestVirtualMachine(unittest.TestCase):
     def setUp(self):
-        self.config_path = '/home/automator/Repos/deplyment_system/tests/etc/topology.ini'
-        self.treader = TopologyReader(self.config_path)
+        # self.config_path = '/home/automator/Repos/deplyment_system/tests/etc/topology.ini'
+        # self.treader = TopologyReader(self.config_path)
 
         self.rpname = 'test_pool2'
         self.vmname = 'pipe_client3'
         self.vmuser = 'vyatta'
         self.vmpassword = 'vyatta'
-        self.host_name = self.treader.host_name
-        self.host_address = self.treader.host_address
-        self.host_user = self.treader.host_user
-        self.host_password = self.treader.host_password
+        self.host_name = '172.18.93.30'
+        self.host_address = '172.18.30.30'
+        self.host_user = 'root'
+        self.host_password = 'swordfish'
         self.vmiso = '[datastore1] vyatta_multicast.iso'
-        self.manager = Manager.Creator(self.treader.manager_address,
-                                       self.treader.manager_user,
-                                       self.treader.manager_password)
+        self.manager_address = '172.18.93.40'
+        self.manager_user = 'root'
+        self.manager_password= 'vmware'
+        self.manager = Manager.Creator(self.manager_address,
+                                       self.manager_user,
+                                       self.manager_password)
         self.logger = logging.getLogger(__name__)
         logging.basicConfig()
-        self.logger.critical(self.config_path)
 
     def test_create_instance(self):
         try:
