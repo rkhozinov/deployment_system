@@ -5,6 +5,7 @@ import lib.Hatchery as Manager
 
 class VirtualMachine(object):
     DISK_DEFAULT_SPACE = 2048
+    MEMORY_DEFAULT_SIZE = 512
     SERIAL_PORTS_DIR = 'serial_ports'
 
     def __init__(self, name, user, password, memory=512, cpu=2, disk_space=None, hard_disk=None,
@@ -21,7 +22,10 @@ class VirtualMachine(object):
             raise AttributeError("Couldn't specify a disk space for the hard disk '%s'" % hard_disk)
 
         if disk_space:
-            self.disk_space = int(disk_space) * 1024
+            try:
+                self.disk_space = int(disk_space) * 1024
+            except Exception:
+                self.disk_space = self.DISK_DEFAULT_SPACE * 1024
         else:
             self.disk_space = self.DISK_DEFAULT_SPACE * 1024
 
@@ -46,13 +50,15 @@ class VirtualMachine(object):
             raise AttributeError("Couldn't specify the resource pool name")
 
         try:
-            manager.create_vm_old(self.name, host_name, self.iso,
+            manager.create_vm_old(vmname=self.name,
+                                  esx_hostname=host_name,
+                                  iso=self.iso,
                                   resource_pool='/' + resource_pool_name,
                                   networks=self.connected_networks,
-                                  annotation=self.description,
+                                  description=self.description,
                                   memorysize=self.memory,
                                   cpucount=self.cpu,
-                                  disksize=self.disk_space)
+                                  disk_space=self.disk_space)
 
         except Manager.ExistenceException:
             raise
@@ -110,13 +116,6 @@ class VirtualMachine(object):
         for cmd in commands:
             child.sendline(cmd)
 
-    def __connect_to_vm_host(self, host_address, host_password, host_user):
-        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
-        child.expect(".*assword:")
-        child.sendline(host_password + "\r")
-        child.expect(".*\# ")
-        return child
-
     def add_hard_disk(self, manager, host_address, host_user, host_password):
 
         vmdk_flat_name = "%s-flat.vmdk" % self.hard_disk[:-5]
@@ -148,6 +147,18 @@ class VirtualMachine(object):
         except Manager.CreatorException:
             raise
 
+    def get_path(self, manager):
+        if not isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the ESX manager")
+        try:
+            if not self.path:
+                self.path = manager.get_vm_path(self.name)
+            return self.path
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            pass
+
     def destroy(self, manager):
         if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the ESX manager")
@@ -158,20 +169,6 @@ class VirtualMachine(object):
             raise
         except Manager.CreatorException:
             raise
-
-    def configure(self, host_address, host_user, user_password, configuration=None):
-        pass
-        #todo: add add_serial_port
-        #todo: add connect to vm
-        # if not configuration:
-        #     configuration = self.configuration
-        # try:
-        #     for option in configuration:
-        #         self.cmd(option)
-        #
-        # except pexpect.ExceptionPexpect:
-        #     raise
-        # pass
 
     def power_on(self, manager):
         if not isinstance(manager, Manager.Creator):
@@ -192,6 +189,27 @@ class VirtualMachine(object):
             raise
         except Manager.CreatorException:
             raise
+
+    def configure(self, host_address, host_user, user_password, configuration=None):
+        pass
+        #todo: add add_serial_port
+        #todo: add connect to vm
+        # if not configuration:
+        #     configuration = self.configuration
+        # try:
+        #     for option in configuration:
+        #         self.cmd(option)
+        #
+        # except pexpect.ExceptionPexpect:
+        #     raise
+        # pass
+
+    def __connect_to_vm_host(self, host_address, host_password, host_user):
+        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+        child.expect(".*assword:")
+        child.sendline(host_password + "\r")
+        child.expect(".*\# ")
+        return child
 
     def __connect_to_host(self, host_address, host_user, host_password):
         """
@@ -223,18 +241,6 @@ class VirtualMachine(object):
             return child
         except pexpect.ExceptionPexpect as error:
             raise error
-
-    def get_path(self, manager):
-        if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the ESX manager")
-        try:
-            if not self.path:
-                self.path = manager.get_vm_path(self.name)
-            return self.path
-        except Manager.ExistenceException:
-            raise
-        except Manager.CreatorException:
-            pass
 
     def __connect_to_vm(self):
         pass
