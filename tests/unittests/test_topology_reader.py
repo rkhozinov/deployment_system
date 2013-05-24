@@ -50,7 +50,6 @@ class TestTopologyReader(unittest.TestCase):
         finally:
             manager._disconnect_from_esx()
 
-
     def test_get_vms_from_config(self):
         config = TopologyReader(self.config_path)
         try:
@@ -62,7 +61,6 @@ class TestTopologyReader(unittest.TestCase):
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertFalse(False, error.message)
-
 
     def test_create_vms_from_config(self):
         manager = None
@@ -76,16 +74,13 @@ class TestTopologyReader(unittest.TestCase):
                                       manager_password=config.manager_password)
 
             for net in config.get_networks():
-                if net.isolated:
+                try:
+                    if net.isolated:
                         Switch(net.name).create(manager, config.host_name).add_network(net, manager, config.host_name)
-                else:
+                    else:
                         Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
-
-
-            config = TopologyReader(self.config_path)
-            manager = Manager.Creator(manager_address=config.manager_address,
-                                      manager_user=config.manager_user,
-                                      manager_password=config.manager_password)
+                except Manager.ExistenceException:
+                    pass
             try:
                 ResourcePool(name=self.rpname).create(manager=manager)
             except Manager.ExistenceException:
@@ -95,6 +90,8 @@ class TestTopologyReader(unittest.TestCase):
             try:
                 for vm in vms:
                     vm.create(manager=manager, resource_pool_name=self.rpname, host_name=config.host_name)
+                    vm.add_serial_port(manager=manager, host_address=config.host_address,
+                                       host_user=config.host_user, host_password=config.host_password)
             except Manager.ExistenceException:
                 pass
         except ConfigParser.Error as error:
@@ -104,42 +101,52 @@ class TestTopologyReader(unittest.TestCase):
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
-            ResourcePool(self.rpname).destroy(manager, with_vms=True)
+            pass
+            #ResourcePool(self.rpname).destroy(manager, with_vms=True)
 
     def test_create_networks_from_config(self):
         manager = None
         config = None
-        sw_name = 'test_switch'
+        sw_name = self.rpname
         try:
             config = TopologyReader(self.config_path)
             manager = Manager.Creator(manager_address=config.manager_address,
                                       manager_user=config.manager_user,
                                       manager_password=config.manager_password)
 
-            for net in config.get_networks():
-                try:
-                    if net.isolated:
-                        Switch(net.name).create(manager, config.host_name).add_network(net, manager, config.host_name)
-                    else:
-                        Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
-                except Manager.ExistenceException:
-                    pass
+            shared_switch = Switch(self.rpname)
+            networks = config.get_networks()
 
-            # destroy isolated networks
-            for net in config.get_networks():
-                try:
+            #destroy isolated networks
+            try:
+                if shared_switch:
+                    shared_switch.destroy(manager, config.host_name)
+
+                for net in networks:
                     if net.isolated:
-                        Switch(net.name).destroy(manager, config.host_name)
+                        Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
+            except Manager.ExistenceException:
+                print "FIRST BLOOD"
+
+            shared_switch.create(manager, config.host_name)
+
+            try:
+                for net in networks:
+                    if net.isolated:
+                        switch = Switch(self.rpname + '_' + net.name).create(manager, config.host_name)
+                        switch.add_network(net, manager, config.host_name)
                     else:
-                        Switch(sw_name).destroy(manager, config.host_name)
-                except Manager.ExistenceException:
-                    pass
+                        shared_switch.add_network(net, manager, config.host_name)
+            except:
+                print 'ALL BAD'
+
         except ConfigParser.Error as error:
             self.assertTrue(False, error.message)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertTrue(False, error.message)
+
 
 if __name__ == "__main__":
     unittest.main()
