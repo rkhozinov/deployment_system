@@ -18,7 +18,7 @@ class TestVirtualMachine(unittest.TestCase):
         self.vmuser = 'vyatta'
         self.vmpassword = 'vyatta'
         self.host_name = '172.18.93.30'
-        self.host_address = '172.18.30.30'
+        self.host_address = '172.18.93.30'
         self.host_user = 'root'
         self.host_password = 'swordfish'
         self.vmiso = '[datastore1] vyatta_multicast.iso'
@@ -185,7 +185,8 @@ class TestVirtualMachine(unittest.TestCase):
                 vm.create(manager=self.manager, host_name=self.host_name, resource_pool_name=self.rpname)
             except Manager.ExistenceException:
                 pass
-                # add serial port to vm
+
+            # add serial port to vm
             try:
                 vm.add_serial_port(self.manager, self.host_address, self.host_user, self.host_password)
             except Manager.ExistenceException:
@@ -194,96 +195,98 @@ class TestVirtualMachine(unittest.TestCase):
             # turn vm power on
             vm.power_on(self.manager)
 
-            # turn vm power off
+            #turn vm power off
             vm.power_off(self.manager)
 
-        except Exception as error:
-            self.assertTrue(False, error.message)
-        finally:
-            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
-
-    def test_create_and_get_path(self):
-        try:
-            vm = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
-            try:
-                self.manager.create_resource_pool(name=self.rpname)
-            except Manager.ExistenceException:
-                pass
-            try:
-                vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
-            except Manager.ExistenceException:
-                pass
-
-            try:
-                vm_path = vm.get_path(self.manager)
-                self.assertIn(vm.name, vm_path)
-                self.assertEqual(vm_path, vm.path)
-            except ExistenceException:
-                pass
         except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
-        finally:
-            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
-
-    def test_try_to_get_path_with_invalid_manager(self):
-        try:
-            vm = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
-            try:
-                self.manager.create_resource_pool(name=self.rpname)
-            except Manager.ExistenceException:
-                pass
-            try:
-                vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
-            except Manager.ExistenceException:
-                pass
-            try:
-                manager = None
-                vm.get_path(manager)
-            except AttributeError as error:
-                self.assertTrue(True, error.message)
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
-        finally:
-            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
-
-
-    def test_add_hard_disk(self):
-        # todo: end test
-        clear_vm_name = self.vmname
-        donor_vm_name = self.vmname + '_donor'
-        clear_vm = VirtualMachine(clear_vm_name, self.vmuser, self.vmpassword)
-        donor_vm = VirtualMachine(donor_vm_name, self.vmuser, self.vmpassword)
-
-        try:
-            # create resource pool
-            try:
-                self.manager.create_resource_pool(name=self.rpname)
-            except Manager.ExistenceException:
-                pass
-            try:
-                clear_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
-            except Manager.ExistenceException:
-                pass
-            try:
-                donor_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
-            except Manager.ExistenceException:
-                pass
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
-
-        try:
-            vm_path = self.manager.get_vm_path(donor_vm.name)
-            path_temp = vm_path.split(' ')
-            vm_datastore = path_temp[0][1:-1]
-            vm_folder = path_temp[1].split('/')[0]
-            disk_path = '/vmfs/volumes/%s/%s/%s.vmdk' % (vm_datastore, vm_folder, vm_folder)
-        except ExistenceException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
+        def test_create_and_get_path(self):
+            try:
+                vm = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
+                try:
+                    self.manager.create_resource_pool(name=self.rpname)
+                except Manager.ExistenceException:
+                    pass
+                try:
+                    vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
+                except Manager.ExistenceException:
+                    pass
 
-if __name__ == "__main__":
-    unittest.main()
+                try:
+                    vm_path = vm.get_path(self.manager)
+                    self.assertIn(vm.name, vm_path)
+                    self.assertEqual(vm_path, vm.path)
+                except ExistenceException:
+                    pass
+            except Manager.CreatorException as error:
+                self.assertTrue(False, error.message)
+            finally:
+                self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+
+        def test_try_to_get_path_with_invalid_manager(self):
+            try:
+                vm = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
+                try:
+                    self.manager.create_resource_pool(name=self.rpname)
+                except Manager.ExistenceException:
+                    pass
+                try:
+                    vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
+                except Manager.ExistenceException:
+                    pass
+                try:
+                    manager = None
+                    vm.get_path(manager)
+                except AttributeError as error:
+                    self.assertTrue(True, error.message)
+            except Manager.CreatorException as error:
+                self.assertTrue(False, error.message)
+            finally:
+                self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+
+
+        def test_add_hard_disk(self):
+            # todo: end test
+            clear_vm_name = self.vmname
+            donor_vm_name = self.vmname + '_donor'
+            clear_vm = VirtualMachine(clear_vm_name, self.vmuser, self.vmpassword)
+            donor_vm = VirtualMachine(donor_vm_name, self.vmuser, self.vmpassword)
+
+            try:
+                # create resource pool
+                try:
+                    self.manager.create_resource_pool(name=self.rpname)
+                except Manager.ExistenceException:
+                    pass
+                try:
+                    clear_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
+                except Manager.ExistenceException:
+                    pass
+                try:
+                    donor_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
+                except Manager.ExistenceException:
+                    pass
+            except Manager.CreatorException as error:
+                self.assertTrue(False, error.message)
+
+            try:
+                vm_path = self.manager.get_vm_path(donor_vm.name)
+                path_temp = vm_path.split(' ')
+                vm_datastore = path_temp[0][1:-1]
+                vm_folder = path_temp[1].split('/')[0]
+                disk_path = '/vmfs/volumes/%s/%s/%s.vmdk' % (vm_datastore, vm_folder, vm_folder)
+            except ExistenceException as error:
+                self.assertTrue(False, error.message)
+            except Exception as error:
+                self.assertTrue(False, error.message)
+            finally:
+                self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+
+
+    if __name__ == "__main__":
+        unittest.main()
