@@ -103,18 +103,23 @@ class VirtualMachine(object):
         commands.append('sed -i \'$ a serial0.pipe.endPoint = "server" \' ' + vmx_config_path)
 
         # connect to ESX host
-        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
-        child.expect(".*assword:")
-        child.sendline(host_password + "\r")
-        child.expect(".*\# ")
+        child = None
+        try:
+            child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+            child.expect(".*assword:")
+            child.sendline(host_password)
+            child.expect(".*\# ", timeout=2)
+            # delete existence serial port options from the configuration file
+            child.sendline("sed -e '/^serial0/d' %s > tmp1 && mv tmp1 %s"
+                           % (vmx_config_path, vmx_config_path))
 
-        # delete existence serial port options from the configuration file
-        child.sendline("sed -e '/^serial0/d' %s > tmp && cat tmp > %s && rm tmp"
-                       % (vmx_config_path, vmx_config_path))
-
-        # send commands to ESX host
-        for cmd in commands:
-            child.sendline(cmd)
+            # send commands to ESX host
+            for cmd in commands:
+                child.sendline(cmd)
+        except Exception as error:
+            raise Manager.CreatorException("Can't connect to host via ssh")
+        finally:
+            child.close()
 
     def add_hard_disk(self, manager, host_address, host_user, host_password):
 
