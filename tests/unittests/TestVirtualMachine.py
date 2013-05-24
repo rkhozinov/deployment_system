@@ -13,11 +13,8 @@ __author__ = 'rkhozinov'
 
 class TestVirtualMachine(unittest.TestCase):
     def setUp(self):
-        # self.config_path = '/home/automator/Repos/deplyment_system/tests/etc/topology.ini'
-        # self.treader = TopologyReader(self.config_path)
-
         self.rpname = 'test_pool2'
-        self.vmname = 'pipe_client3'
+        self.vmname = 'test_VM'
         self.vmuser = 'vyatta'
         self.vmpassword = 'vyatta'
         self.host_name = '172.18.93.30'
@@ -75,6 +72,8 @@ class TestVirtualMachine(unittest.TestCase):
             self.assertIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(False, error.message)
+        except Exception as error:
+            self.assertTrue(False, error.message)
 
 
     def test_try_create_instance_with_hard_disk_without_space(self):
@@ -84,6 +83,29 @@ class TestVirtualMachine(unittest.TestCase):
             self.assertIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(True, error.message)
+        except Exception as error:
+            self.assertTrue(False, error.message)
+
+    def test_try_create_instance_with_all_parameters(self):
+        try:
+            hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
+            vm = VirtualMachine(name=self.vmname,
+                                user='user',
+                                password='password',
+                                hard_disk=hard_disk,
+                                memory=512,
+                                cpu=2,
+                                disk_space=2048,
+                                connected_networks=[],
+                                iso='/vfms/volumes/datastore1/image.iso',
+                                description='VM descr',
+                                neighbours=[],
+                                configuration=[])
+            self.assertIsInstance(vm, VirtualMachine)
+        except AttributeError as error:
+            self.assertTrue(False, error.message)
+        except Exception as error:
+            self.assertTrue(False, error.message)
 
     def test_create_and_destroy(self):
         # create resource pool
@@ -226,7 +248,7 @@ class TestVirtualMachine(unittest.TestCase):
 
 
     def test_add_hard_disk(self):
-        # todo: ends test
+        # todo: end test
         clear_vm_name = self.vmname
         donor_vm_name = self.vmname + '_donor'
         clear_vm = VirtualMachine(clear_vm_name, self.vmuser, self.vmpassword)
