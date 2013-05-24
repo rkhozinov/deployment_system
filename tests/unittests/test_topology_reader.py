@@ -118,30 +118,24 @@ class TestTopologyReader(unittest.TestCase):
             networks = config.get_networks()
 
             #destroy isolated networks
-            try:
-                if shared_switch:
-                    shared_switch.destroy(manager, config.host_name)
+            if shared_switch:
+                shared_switch.destroy(manager, config.host_name)
 
-                for net in networks:
-                    if net.isolated:
-                        Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
-            except Manager.ExistenceException:
-                print "FIRST BLOOD"
+            for net in networks:
+                if net.isolated:
+                    Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
 
             shared_switch.create(manager, config.host_name)
 
-            try:
-                for net in networks:
-                    if net.isolated:
-                        switch = Switch(self.rpname + '_' + net.name).create(manager, config.host_name)
-                        switch.add_network(net, manager, config.host_name)
-                    else:
-                        shared_switch.add_network(net, manager, config.host_name)
-            except:
-                print 'ALL BAD'
+            for net in networks:
+                if net.isolated:
+                    sw_name = self.rpname + '_' + net.name
+                    Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
+                else:
+                    shared_switch.add_network(net, manager, config.host_name)
 
-        except ConfigParser.Error as error:
-            self.assertTrue(False, error.message)
+
+
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
