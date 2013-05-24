@@ -77,9 +77,7 @@ class TopologyReader(object):
             self.host_password = self.config.get(self.HOST, self.HOST_PASSWORD)
 
             self.iso = self.config.get(self.SETTINGS, self.ISO)
-            # list of networks
             self.networks = self.__str_to_list(self.config.get(self.SETTINGS, self.NETWORKS))
-            # list of virtual machines
             self.vms = self.__str_to_list(self.config.get(self.SETTINGS, self.VMS))
         except ConfigParser.Error as error:
             self.logger.critical(error.message)
@@ -119,6 +117,8 @@ class TopologyReader(object):
         except ConfigParser.NoOptionError:
             raise
         except ConfigParser.ParsingError:
+            raise
+        except:
             raise
 
         try:
@@ -173,7 +173,8 @@ class TopologyReader(object):
                               iso=iso,
                               description=description,
                               neighbours=neighbours,
-                              configuration=config)
+                              configuration=config,
+                              hard_disk=hard_disk)
 
 
     def __get_network(self, net):
