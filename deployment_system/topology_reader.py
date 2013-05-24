@@ -4,7 +4,11 @@ from deployment_system.network import Network
 from deployment_system.virtual_machine import VirtualMachine
 
 
+
 class TopologyReader(object):
+
+    DEFAULT_PORTS_COUNT = 120
+
     # describe of sections
     MANAGER = 'esx_vcenter'
     HOST = 'esx'
@@ -195,13 +199,23 @@ class TopologyReader(object):
         isolated = None
         ports = None
         try:
-            promiscuous = self.config.getboolean(net, self.NET_PROMISCUOUS)
-            isolated = self.config.getboolean(net, self.NET_ISOLATED)
-            ports = self.config.getint(net, self.NET_PORTS)
+            try:
+                promiscuous = self.config.getboolean(net, self.NET_PROMISCUOUS)
+            except ConfigParser.NoOptionError:
+                pass
+            try:
+                isolated = self.config.getboolean(net, self.NET_ISOLATED)
+            except ConfigParser.NoOptionError:
+                pass
+            try:
+                ports = self.config.getint(net, self.NET_PORTS)
+            except ConfigParser.NoOptionError:
+                ports = self.DEFAULT_PORTS_COUNT
+
         except ConfigParser.NoOptionError:
             pass
         except ConfigParser.ParsingError as error:
-            raise error
+            raise
 
         return Network(name=net, vlan=vlan, ports=ports, promiscuous=promiscuous, isolated=isolated)
 
@@ -217,10 +231,12 @@ class TopologyReader(object):
             for vm in self.vms:
                 vm_lst.append(self.__get_vm(vm))
             return vm_lst
-        except ConfigParser.ParsingError as error:
-            raise error
-        except ConfigParser.NoSectionError as error:
-            raise error
+        except ConfigParser.ParsingError:
+            raise
+        except ConfigParser.NoSectionError:
+            raise
+        except:
+            raise
 
 
     def get_networks(self):
