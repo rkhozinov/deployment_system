@@ -545,9 +545,8 @@ class Creator:
         for n in config_target.Network:
             if n.Network.Accessible and networks.count(n.Network.Name):
                 _networks.append(n.Network.Name)
-        if not _networks and len(networks) != 0:
-            _networks = []
-            pass
+        if len(networks) != len(_networks):
+            raise CreatorException("Couldn't find all networks")
             #raise ExistenceException("Couldn't find network")
 
 
