@@ -11,6 +11,11 @@ from pysphere.vi_task import VITask
 
 
 # An object of class Creator contain esx address and user credentials
+DEFAULT_MEMORY_SIZE = 1024
+DEFAULT_CPU_COUNT = 1
+DEFAULT_DISK_SIZE = 1048576
+
+
 class CreatorException(Exception): pass
 
 
@@ -298,8 +303,8 @@ class Creator:
             self._disconnect_from_esx()
 
     def create_vm_old(self, vmname, esx_hostname=None, iso=None, datacenter=None, resource_pool='/', networks=None,
-                      datastore=None, annotation=None, create_hard_drive=True, guestosid="debian4Guest", memorysize=512,
-                      cpucount=1, disksize=1048576):
+                      datastore=None, description=None, create_hard_drive=True, guestosid="debian4Guest",
+                      memorysize=512, cpucount=1, disk_space=1048576):
         """
         Creates virtual machine
         :param vmname: name of virtual machine
@@ -315,43 +320,53 @@ class Creator:
         :param datastore: name of datastore, which will be contain VM files; if not
             specified, VM will be placed in first datastore, which is avaliable
             for chosen host
-        :param annotation: description for VM
+        :param description: description for VM
         :param guestosid: ID for guest OS; full list
             http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.vm.GuestOsDescriptor.GuestOsIdentifier.html
         :param memorysize: size of RAM, which will be avaliable on VM, in Mb
         :param cpucount: count of CPU, which will be avaliable on VM
         :param create_hard_drive: if True, new .vmdk disk will be created and added to VM
-        :param disksize: hard drive's maximal size, in Kb
+        :param disk_space: hard drive's maximal size, in Kb
         """
-        if not networks: networks = []
-        parameter = {}
+        params = {}
+
         if vmname:
-            parameter['vm_name'] = vmname
+            params['vm_name'] = vmname
         else:
             raise AttributeError("Couldn't specify a virtual machine name")
 
         if iso:
-            parameter['iso'] = iso
+            params['iso'] = iso
         if datacenter:
-            parameter['datacenter_name'] = datacenter
+            params['datacenter_name'] = datacenter
         if datastore:
-            parameter['datastore_name'] = datastore
+            params['datastore_name'] = datastore
         if resource_pool:
-            parameter['resource_pool_name'] = resource_pool
+            params['resource_pool_name'] = resource_pool
+        if not networks:
+            networks = []
         if networks:
-            parameter['networks'] = networks
-        if not annotation:
-            parameter['annotation'] = "Description of %s" % vmname
+            params['networks'] = networks
+        if not description:
+            params['description'] = "Description of %s" % vmname
         else:
-            parameter['annotation'] = annotation
+            params['description'] = description
 
-        parameter['esx_hostname'] = esx_hostname
-        parameter['hard_drive'] = create_hard_drive
-        parameter['guestosid'] = guestosid
-        parameter['memory_size'] = memorysize
-        parameter['cpu_count'] = cpucount
-        parameter['disk_size'] = disksize
-        self.create_vm(parameter)
+        params['esx_hostname'] = esx_hostname
+        params['hard_drive'] = create_hard_drive
+        params['guestosid'] = guestosid
+        params['memory_size'] = memorysize
+        params['cpu_count'] = cpucount
+        params['disk_size'] = disk_space
+
+        try:
+            self.create_vm(params)
+        except ExistenceException as error:
+            raise
+        except CreatorException as error:
+            raise
+        except Exception as error:
+            raise
 
     def create_vm(self, vm_options):
         """
@@ -363,7 +378,7 @@ class Creator:
         'datastore_name'
         'resource_pool_name'
         'networks'
-        'annotation'
+        'description'
         'esx_hostname'
         'hard_drive'
         'guestosid'
@@ -389,53 +404,55 @@ class Creator:
                 pass
 
         # HOSTNAME
-        hosts = self.esx_server.get_hosts().values()
+        hosts = self.esx_server.get_hosts()
         try:
             esx_hostname = vm_options['esx_hostname']
-            if not esx_hostname in hosts:
+            if not esx_hostname in hosts.values():
                 raise CreatorException("Couldn't find host '%s'" % esx_hostname)
         except KeyError:
-            if len(hosts) > 1:
+            if len(hosts.values()) > 1:
                 raise CreatorException("More than 1 host - must specify ESX Hostname")
-            elif not hosts:
-                raise CreatorException("Couldn't find avaliable host")
+            elif not hosts.values():
+                raise CreatorException("Couldn't find available host")
             esx_hostname = hosts[0]
             # MOR and PROPERTIES
-        hostmor = [k for k, v in self.esx_server.get_hosts().items() if v == esx_hostname][0]
+        hostmor = [k for k, v in hosts.items() if v == esx_hostname][0]
         hostprop = VIProperty(self.esx_server, hostmor)
 
 
         #DATACENTER - FIX EXCEPTION
         # todo: fix self.esx_server.get_datacenters().values()
+        dcs = self.esx_server.get_datacenters()
+        dc_values = dcs.values()
         try:
-            datacenter_name = vm_options['datacenter_name']
-            if not datacenter_name in self.esx_server.get_datacenters().values():
-                raise CreatorException("Coulnd't find datacenter \""
-                                       + datacenter_name + "\"")
+            dc_name = vm_options['datacenter_name']
+            if not dc_name in dc_values:
+                raise CreatorException("Couldn't find datacenter '%s'" + dc_name)
         except KeyError:
-            if len(self.esx_server.get_datacenters().values()) > 1:
+            if len(dc_values) > 1:
                 raise CreatorException("More than 1 datacenter - must specify ESX Hostname")
-            elif not self.esx_server.get_datacenters().values():
-                raise CreatorException("Could't find avaliable datacenter")
-            datacenter_name = self.esx_server.get_datacenters().values()[0]
+            elif not dc_values:
+                raise CreatorException("Couldn't find available datacenter")
+            dc_name = dc_values[0]
             # MOR and PROPERTIES
-        dcmor = [k for k, v in self.esx_server.get_datacenters().items() if v == datacenter_name][0]
+        dcmor = [k for k, v in dcs.items() if v == dc_name][0]
         dcprops = VIProperty(self.esx_server, dcmor)
 
         #DATASTORE
+        dcs = hostprop.datastore
         try:
-            datastore_name = vm_options['datastore_name']
+            ds_name = vm_options['datastore_name']
             ds_list = []
-            for ds in hostprop.datastore:
+            for ds in dcs:
                 ds_list.append(ds.name)
-            if not datastore_name in ds_list:
-                raise CreatorException("Couldn't find datastore or datastore is not avaliable")
+            if not ds_name in ds_list:
+                raise CreatorException("Couldn't find datastore or datastore is not available")
         except KeyError:
-            if len(hostprop.datastore) > 1:
+            if len(dcs) > 1:
                 raise CreatorException("More than 1 datastore on ESX - must specify datastore name")
-            elif not hostprop.datastore:
-                raise CreatorException("Could't find avaliable datastore")
-            datastore_name = hostprop.datastore[0].name
+            elif not dcs:
+                raise CreatorException("Couldn't find available datastore")
+            ds_name = dcs[0].name
 
         # RESOURCE POOL
         resource_pool_name = ''
@@ -450,12 +467,12 @@ class Creator:
         finally:
             rpmor = self._fetch_resource_pool(resource_pool_name, esx_hostname)
             if not rpmor:
-                raise CreatorException("Couldn't find resource pool '{0}'".format(resource_pool_name))
+                raise CreatorException("Couldn't find resource pool '%s'" % resource_pool_name)
 
         # NETWORKS
         try:
             networks = list(vm_options['networks'])
-        except KeyError:
+        except Exception:
             networks = []
 
         try:
@@ -469,9 +486,9 @@ class Creator:
 
         # Description
         try:
-            annotation = vm_options['annotation']
+            description = vm_options['description']
         except KeyError:
-            annotation = "Description for VM %s" % vm_name
+            description = "Description for VM %s" % vm_name
 
         try:
             guestosid = vm_options['guestosid']
@@ -482,19 +499,20 @@ class Creator:
             memory_size = int(vm_options['memory_size'])
             if memory_size <= 0:
                 raise CreatorException('Disk size must be greater than 0')
-        except KeyError:
-            memory_size = 1024  # MB
+        except Exception:
+            memory_size = DEFAULT_MEMORY_SIZE  # MB
+
         try:
             cpu_count = int(vm_options['cpu_count'])
-        except KeyError:
-            cpu_count = 1
+        except Exception:
+            cpu_count = DEFAULT_CPU_COUNT
 
         try:
             disk_size = int(vm_options['disk_size'])
             if disk_size <= 0:
                 raise CreatorException('Disk size must be greater than 0')
-        except KeyError:
-            disk_size = 1048576  # KB
+        except Exception:
+            disk_size = DEFAULT_DISK_SIZE  # KB
 
         crprops = self._fetch_computer_resource(dcprops, hostmor)
         vmfmor = dcprops.vmFolder._obj
@@ -522,23 +540,27 @@ class Creator:
         defaul_devs = config_option.DefaultDevice
 
         #get network name
+        # todo: fix creating if not valid vm. Turn logging. Write message of unavailable network, but create vm
         _networks = []
         for n in config_target.Network:
             if n.Network.Accessible and networks.count(n.Network.Name):
                 _networks.append(n.Network.Name)
         if not _networks and len(networks) != 0:
-            raise CreatorException("Couldn't find network")
+            _networks = []
+            pass
+            #raise ExistenceException("Couldn't find network")
+
 
             #get datastore
         ds = None
         for d in config_target.Datastore:
-            if d.Datastore.Accessible and d.Datastore.Name == datastore_name:
+            if d.Datastore.Accessible and d.Datastore.Name == ds_name:
                 ds = d.Datastore.Datastore
-                datastore_name = d.Datastore.Name
+                ds_name = d.Datastore.Name
                 break
         if not ds:
-            raise CreatorException("Datastore is not avaliable")
-        volume_name = "[%s]" % datastore_name
+            raise CreatorException("Datastore is not available")
+        volume_name = "[%s]" % ds_name
 
         #add parameters to the create vm task
         create_vm_request = VI.CreateVM_TaskRequestMsg()
@@ -547,7 +569,7 @@ class Creator:
         vmfiles.set_element_vmPathName(volume_name)
         config.set_element_files(vmfiles)
         config.set_element_name(vm_name)
-        config.set_element_annotation(annotation)
+        config.set_element_annotation(description)
         config.set_element_memoryMB(memory_size)
         config.set_element_numCPUs(cpu_count)
         config.set_element_guestId(guestosid)
@@ -628,6 +650,7 @@ class Creator:
         host_mor = create_vm_request.new_host(hostmor)
         host_mor.set_attribute_type(hostmor.get_attribute_type())
         create_vm_request.set_element_host(host_mor)
+
         #CREATE THE VM - add option "wait"
         taskmor = self.esx_server._proxy.CreateVM_Task(create_vm_request)._returnval
         task = VITask(taskmor, self.esx_server)
@@ -648,12 +671,13 @@ class Creator:
         num_ports = int(num_ports)
 
         self._connect_to_esx()
+        hosts = None
         try:
+            hosts = self.esx_server.get_hosts()
             if esx_hostname:
-                host_system = [k for k, v in self.esx_server.get_hosts().items()
-                               if v == esx_hostname][0]
+                host_system = [k for k, v in hosts.items() if v == esx_hostname][0]
             else:
-                host_system = self.esx_server.get_hosts().keys()[0]
+                host_system = hosts.keys()[0]
         except IndexError:
             raise CreatorException("Couldn't find host")
         if not host_system:
@@ -674,6 +698,7 @@ class Creator:
         request.set_element_vswitchName(name)
 
         spec = request.new_spec()
+        # TODO: fix magic number
         spec.set_element_numPorts(num_ports + 8)
         request.set_element_spec(spec)
 
@@ -1033,8 +1058,7 @@ class Creator:
 
         return rpmor
 
-        # todo: add comment
-
+    # todo: add comment
     def _fetch_computer_resource(self, datacenter_props, host):
         """
 
