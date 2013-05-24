@@ -1,7 +1,7 @@
 import logging
 import ConfigParser
-from deployment_system.Network import Network
-from deployment_system.VirtualMachine import VirtualMachine
+from deployment_system.network import Network
+from deployment_system.virtual_machine import VirtualMachine
 
 
 class TopologyReader(object):

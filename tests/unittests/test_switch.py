@@ -1,12 +1,12 @@
-from deployment_system.Network import Network
+from deployment_system.network import Network
 
 __author__ = 'rkhozinov'
 import logging
 
 import unittest2
 
-from deployment_system.Switch import Switch
-import lib.Hatchery as Manager
+from deployment_system.switch import Switch
+import lib.hatchery as Manager
 
 
 class TestSwitch(unittest2.TestCase):

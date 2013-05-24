@@ -1,6 +1,6 @@
 import pexpect
 
-import lib.Hatchery as Manager
+import lib.hatchery as Manager
 
 
 class VirtualMachine(object):

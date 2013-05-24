@@ -6,10 +6,10 @@ import ConfigParser
 
 import logging
 
-import lib.Hatchery as vm_manager
+import lib.hatchery as vm_manager
 from lib.console import run_vnc_command as vnc_cmd
 from lib.console import get_telnet as telnet
-from lib.Hatchery import CreatorException
+from lib.hatchery import CreatorException
 
 
 parser = OptionParser()

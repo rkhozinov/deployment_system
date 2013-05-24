@@ -1,6 +1,6 @@
 import cProfile
 
-import lib.Hatchery as Manager
+import lib.hatchery as Manager
 
 
 __author__ = 'rkhozinov'

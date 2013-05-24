@@ -1,7 +1,7 @@
 import unittest
-from deployment_system import VirtualMachine
-from deployment_system.ResourcePool import ResourcePool
-import lib.Hatchery as Manager
+from deployment_system import virtual_machine
+from deployment_system.resource_pool import ResourcePool
+import lib.hatchery as Manager
 
 
 __author__ = 'rkhozinov'
@@ -121,7 +121,7 @@ class TestResoursePool(unittest.TestCase):
                 vmname = self.rpname + 'vm'
                 password = 'vyatta'
                 user = 'vyatta'
-                vm = VirtualMachine.VirtualMachine(vmname, user, password)
+                vm = virtual_machine.VirtualMachine(vmname, user, password)
                 vm.create(self.manager, self.rpname, self.host_name)
             except Manager.ExistenceException:
                 pass

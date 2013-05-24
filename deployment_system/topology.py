@@ -1,9 +1,9 @@
 import ConfigParser
-from ResourcePool import ResourcePool
-from Switch import Switch
-from TopologyReader import TopologyReader
-import lib.Hatchery as vm_manager
-from lib.Hatchery import CreatorException
+from resource_pool import ResourcePool
+from switch import Switch
+from topology_reader import TopologyReader
+import lib.hatchery as vm_manager
+from lib.hatchery import CreatorException
 
 
 class Topology(object):

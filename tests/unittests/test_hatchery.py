@@ -4,7 +4,7 @@ import cProfile
 
 import unittest2
 
-import lib.Hatchery as Manager
+import lib.hatchery as Manager
 
 
 class TestHatchery(unittest2.TestCase):

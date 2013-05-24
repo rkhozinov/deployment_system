@@ -1,11 +1,11 @@
-from lib.Hatchery import ExistenceException
+from lib.hatchery import ExistenceException
 
 __author__ = 'rkhozinov'
 
 import unittest
 import logging
-from deployment_system.VirtualMachine import VirtualMachine
-import lib.Hatchery as Manager
+from deployment_system.virtual_machine import VirtualMachine
+import lib.hatchery as Manager
 
 
 __author__ = 'rkhozinov'

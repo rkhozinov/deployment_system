@@ -1,12 +1,12 @@
 import ConfigParser
 import unittest
-from deployment_system.ResourcePool import ResourcePool
-from deployment_system.Switch import Switch
+from deployment_system.resource_pool import ResourcePool
+from deployment_system.switch import Switch
 
-from deployment_system.TopologyReader import TopologyReader
-from deployment_system.VirtualMachine import VirtualMachine
-from deployment_system.Network import Network
-import lib.Hatchery as Manager
+from deployment_system.topology_reader import TopologyReader
+from deployment_system.virtual_machine import VirtualMachine
+from deployment_system.network import Network
+import lib.hatchery as Manager
 
 __author__ = 'rkhozinov'
 
@@ -67,7 +67,21 @@ class TestTopologyReader(unittest.TestCase):
     def test_create_vms_from_config(self):
         manager = None
         config = None
+        sw_name = 'test_switch'
+
         try:
+            config = TopologyReader(self.config_path)
+            manager = Manager.Creator(manager_address=config.manager_address,
+                                      manager_user=config.manager_user,
+                                      manager_password=config.manager_password)
+
+            for net in config.get_networks():
+                if net.isolated:
+                        Switch(net.name).create(manager, config.host_name).add_network(net, manager, config.host_name)
+                else:
+                        Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
+
+
             config = TopologyReader(self.config_path)
             manager = Manager.Creator(manager_address=config.manager_address,
                                       manager_user=config.manager_user,
