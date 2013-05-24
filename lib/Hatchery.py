@@ -698,8 +698,7 @@ class Creator:
         request.set_element_vswitchName(name)
 
         spec = request.new_spec()
-        # TODO: fix magic number
-        spec.set_element_numPorts(num_ports + 8)
+        spec.set_element_numPorts(num_ports)
         request.set_element_spec(spec)
 
         try:
