@@ -148,7 +148,7 @@ class VirtualMachine(object):
         child.close()
 
         try:
-            manager.add_existence_vmdk(disk_name=self.name, vm_path_esx_style=vm_path_esx_style, space=self.disk_space)
+            manager.add_existence_vmdk(vm_name=self.name, path=self.hard_disk, space=self.disk_space)
         except Manager.CreatorException:
             raise
 
@@ -174,6 +174,9 @@ class VirtualMachine(object):
             raise
         except Manager.CreatorException:
             raise
+
+    def destroy_with_files(self, manager, host_name, host_user, host_password):
+        pass
 
     def power_on(self, manager):
         if not isinstance(manager, Manager.Creator):
