@@ -121,34 +121,36 @@ class VirtualMachine(object):
         finally:
             child.close()
 
-    def add_hard_disk(self, manager, host_address, host_user, host_password):
+    def add_hard_disk(self, manager, host_address, host_user, host_password, hard_disk=None):
 
-        vmdk_flat_name = "%s-flat.vmdk" % self.hard_disk[:-5]
+        if hard_disk:
+            self.hard_disk = hard_disk
 
         try:
             vm_path = manager.get_vm_path(self.name)
-        except Manager.CreatorException:
-            raise
 
-        path_tmp = vm_path.split(' ')
-        datastore = path_tmp[0][1:-1]
-        vm_path = path_tmp[1].split('/')[0]
-        vm_path = '/vmfs/volumes/%s/%s/' % (datastore, vm_path)
-        disk_name = self.hard_disk.split('/')[-1]
-        vm_path_esx_style = "[%s] %s/%s" % (datastore, vm_path, disk_name)
+            path_tmp = vm_path.split(' ')
+            datastore = path_tmp[0][1:-1]
+            disk_name = self.hard_disk.split('/')[-1]
+            vm_path_esx = path_tmp[1].split('/')[0]
+            vm_path_esx_style = "[%s] %s/%s" % (datastore, vm_path_esx, disk_name)
 
-        commands = []
-        commands.append('cp -f "%s" "%s"' % (self.hard_disk, vm_path))
-        commands.append('cp -f "%s" "%s"' % (vmdk_flat_name, vm_path))
+            # special esx file
+            vmdk_flat_name = "%s-flat.vmdk" % self.hard_disk[:-5]
+            # .vmdk path on ESX
+            vm_path = '/vmfs/volumes/%s/%s/' % (datastore, vm_path_esx)
 
-        child = self.__connect_to_vm_host(host_address, host_password, host_user)
+            commands = []
+            commands.append('cp -f "%s" "%s"' % (self.hard_disk, vm_path))
+            commands.append('cp -f "%s" "%s"' % (vmdk_flat_name, vm_path))
 
-        for cmd in commands:
-            child.sendline(cmd)
-        child.close()
+            child = self.__connect_to_vm_host(host_address, host_password, host_user)
 
-        try:
-            manager.add_existence_vmdk(vm_name=self.name, path=self.hard_disk, space=self.disk_space)
+            for cmd in commands:
+                child.sendline(cmd)
+            child.close()
+
+            manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style, space=self.disk_space)
         except Manager.CreatorException:
             raise
 
@@ -159,10 +161,10 @@ class VirtualMachine(object):
             if not self.path:
                 self.path = manager.get_vm_path(self.name)
             return self.path
-        except Manager.ExistenceException:
-            raise
         except Manager.CreatorException:
-            pass
+            raise
+        except Exception:
+            raise
 
     def destroy(self, manager):
         if not isinstance(manager, Manager.Creator):
