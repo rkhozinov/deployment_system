@@ -217,13 +217,13 @@ class TestVirtualMachine(unittest.TestCase):
             except Manager.ExistenceException:
                 pass
 
-            try:
-                vm_path = vm.get_path(self.manager)
-                self.assertIn(vm.name, vm_path)
-                self.assertEqual(vm_path, vm.path)
-            except ExistenceException:
-                pass
+            vm_path = vm.get_path(self.manager)
+            self.assertIn(vm.name, vm_path)
+            self.assertEqual(vm_path, vm.path)
+
         except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+        except Exception as error:
             self.assertTrue(False, error.message)
         finally:
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
@@ -246,45 +246,49 @@ class TestVirtualMachine(unittest.TestCase):
                 self.assertTrue(True, error.message)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
+        except Exception as error:
+            self.assertTrue(False, error.message)
         finally:
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
     def test_add_hard_disk(self):
-        # todo: end test
         clear_vm_name = self.vmname + '_clear'
         donor_vm_name = self.vmname + '_donor'
         clear_vm = VirtualMachine(clear_vm_name, self.vmuser, self.vmpassword)
         donor_vm = VirtualMachine(donor_vm_name, self.vmuser, self.vmpassword)
-        vmdk_donor = None
         try:
             # create resource pool
             try:
                 self.manager.create_resource_pool(name=self.rpname)
             except Manager.ExistenceException:
                 pass
+
+            # create
             try:
                 clear_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
             except Manager.ExistenceException:
                 pass
             try:
                 donor_vm.create(manager=self.manager, resource_pool_name=self.rpname, host_name=self.host_name)
-                vm_path = donor_vm.get_path(self.manager)
-                vm_path_spilt = vm_path.split(" ")
-                vmdk_donor = "/vmfs/volumes/%s/%s.vmdk" % (vm_path_spilt[0][1:-1], vm_path_spilt[1][:-4] )
             except Manager.ExistenceException:
                 pass
-        except Manager.CreatorException as error:
-            self.assertTrue(False, error.message)
 
-        try:
-            clear_vm.hard_disk = vmdk_donor
-            clear_vm.add_hard_disk(self.manager, self.host_name,self.host_user,self.host_password)
-        except ExistenceException as error:
+            vm_path = None
+            vm_path = donor_vm.get_path(manager=self.manager)
+
+            vm_path_spilt = vm_path.split(" ")
+            vmdk_donor = "/vmfs/volumes/%s/%s.vmdk" % (vm_path_spilt[0][1:-1], vm_path_spilt[1][:-4] )
+
+            try:
+                clear_vm.add_hard_disk(self.manager, self.host_name, self.host_user, self.host_password,
+                                       hard_disk=vmdk_donor)
+            except ExistenceException:
+                pass
+        except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
-            pass
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
 
