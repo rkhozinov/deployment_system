@@ -144,7 +144,7 @@ class VirtualMachine(object):
             commands.append('cp -f "%s" "%s"' % (self.hard_disk, vm_path))
             commands.append('cp -f "%s" "%s"' % (vmdk_flat_name, vm_path))
 
-            child = self.__connect_to_vm_host(host_address, host_password, host_user)
+            child = self._connect_to_vm_host(host_address, host_password, host_user)
 
             for cmd in commands:
                 child.sendline(cmd)
@@ -200,80 +200,81 @@ class VirtualMachine(object):
         except Manager.CreatorException:
             raise
 
-    def configure(self, host_address, host_user, user_password, configuration=None):
-        pass
-        #todo: add add_serial_port
-        #todo: add connect to vm
-        # if not configuration:
-        #     configuration = self.configuration
-        # try:
-        #     for option in configuration:
-        #         self.cmd(option)
-        #
-        # except pexpect.ExceptionPexpect:
-        #     raise
-        # pass
+    def configure(self, host_address, host_user, host_password, configuration=None):
+        if not host_address:
+            raise AttributeError("Couldn't specify ESX host address")
 
-    def __connect_to_vm_host(self, host_address, host_password, host_user):
-        child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
-        child.expect(".*assword:")
-        child.sendline(host_password + "\r")
-        child.expect(".*\# ")
-        return child
+        if not host_user:
+            raise AttributeError("Couldn't specify ESX host user")
 
-    def __connect_to_host(self, host_address, host_user, host_password):
-        """
-        Connects to ESX host for configure virtual machine
-        :param host_address:
-        :param host_user:
-        :param host_password:
-        :return: :raise:
-        """
+        if not host_password:
+            raise AttributeError("Couldn't specify ESX host password")
+
+        if not configuration:
+            configuration = self.configuration
+
+        # connect to vm host
         try:
-            connection_str = 'ssh %s@%s' % (host_user, host_address)
+            vmctrl = self._connect_to_vm_host(host_address=host_address,
+                                              host_user=host_user,
+                                              host_password=host_password)
+        except Manager.CreatorException:
+            raise
 
-            # session = pexpect.spawn(connection_str)
-            # session.expect('.*assword:')
-            # self.logger.info(session.after)
-            #
-            # self.cmd(host_password, expect='.*\#')
+        # todo: check 'already login'
+        # # try logout
 
-            child = pexpect.spawn(connection_str)
+        # vmctrl.sendline('exit')
+        # try:
+        #     if vmctrl.expect(".*[\#:\$]", timeout=2) == 0:
+        #         vmctrl.sendline('exit')
+        # except Exception:
+        #     pass
+
+        # connect to vm via netcat
+        # pipe files for netcat are in specific directory on ESX datastore
+        connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
+        vmctrl.sendline(connection_str)
+
+        # input credentials
+        vmctrl.sendline(self.user)
+        vmctrl.expect('.*assword:')
+        vmctrl.sendline(self.password)
+        vmctrl.expect('.*[\#:\$]')
+
+        # configure vm
+        # todo: need check connected nics to vm
+        try:
+            for option in configuration:
+                vmctrl.sendline(option)
+        except Exception:
+            raise Manager.CreatorException("Couldn't configure the virtual machine '%s'" % self.name)
+        finally:
+            vmctrl.close()
+
+
+    def _connect_to_vm_host(self, host_address, host_user, host_password):
+        """
+        Connects to ESX host via SSH
+
+        @rtype : pexpect
+        @param host_address: ESX host address
+        @param host_user: ESX host user
+        @param host_password: ESX host password
+        @return: pexpect object with open ssh session
+        @raise: CreatorException
+        """
+        child = None
+        try:
+            child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
             child.expect(".*assword:")
-            # self.logger.info('Before: %s \n Command: %s \n After: %s' %
-            #                  (child.before, '', child.after))
-
-            child.sendline("swordfish")
-            child.expect(".*\# ")
-            # self.logger.info('Before: %s \n Command: %s \n After: %s' %
-            #                  (child.before, '', child.after))
-
+            child.sendline(host_password)
+            child.expect(".*\# ", timeout=2)
             return child
-        except pexpect.ExceptionPexpect as error:
-            raise error
+        except Exception:
+            child.close()
+            raise Manager.CreatorException("Can't connect to host via ssh")
+
 
     def __connect_to_vm(self):
         pass
-
-        # try:
-        #     #connection_str = 'nc -U ' + os.path.normpath(self.vm.path + self.vm.name)
-        #     connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.name, self.name)
-        #
-        #     self.cmd(connection_str + '\n', expect='.*ogin:')
-        #     self.cmd(self.user, expect='.*assword:')
-        #     self.cmd(self.password, expect='.*:')
-        #
-        # except pexpect.ExceptionPexpect as error:
-        #     raise error
-
-        # def cmd(self, command, expect=None):
-        #     try:
-        #         self.esx_session.sendline(command)
-        #         self.esx_session.expect(expect)
-        #         self.logger.info('Before: %s \n Command: %s \n After: %s' %
-        #                          (self.esx_session.before, command, self.esx_session.after))
-        #     except pexpect.ExceptionPexpect as error:
-        #         raise error
-        #
-        # def __del__(self):
-        #     self.esx_session.close(force=True)
