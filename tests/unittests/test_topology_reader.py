@@ -101,8 +101,7 @@ class TestTopologyReader(unittest.TestCase):
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
-            pass
-            #ResourcePool(self.rpname).destroy(manager, with_vms=True)
+            ResourcePool(self.rpname).destroy(manager, with_vms=True)
 
     def test_create_networks_from_config(self):
         manager = None
@@ -134,12 +133,77 @@ class TestTopologyReader(unittest.TestCase):
                 else:
                     shared_switch.add_network(net, manager, config.host_name)
 
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+        except Exception as error:
+            self.assertTrue(False, error.message)
 
+    def test_create_and_configure_some_vm_and_networks(self):
+        manager = None
+        try:
+            config = TopologyReader(self.config_path)
+            manager = Manager.Creator(manager_address=config.manager_address,
+                                      manager_user=config.manager_user,
+                                      manager_password=config.manager_password)
+
+            # DESTROY VIRTUAL MACHINES
+            vms = config.get_virtual_machines()
+            for vm in vms:
+                try:
+                    vm.destroy(manager)
+                except Manager.ExistenceException:
+                    pass
+
+
+            # DESTROY NETWORKS
+            shared_switch = Switch(self.rpname)
+            networks = config.get_networks()
+
+            # destroy shared switch with connected networks
+            if shared_switch:
+                shared_switch.destroy(manager, config.host_name)
+
+            # destroy isolated networks
+            for net in networks:
+                if net.isolated:
+                    Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
+
+            shared_switch.create(manager, config.host_name)
+
+            # CREATE NETWORKS
+            for net in networks:
+                # create isolated networks
+                if net.isolated:
+                    sw_name = self.rpname + '_' + net.name
+                    Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
+                else:
+                    # create simple networks on shared switch
+                    shared_switch.add_network(net, manager, config.host_name)
+
+            # CREATE VIRTUAL MACHINES
+            try:
+                ResourcePool(name=self.rpname).create(manager=manager)
+            except Manager.ExistenceException:
+                pass
+
+            vms = config.get_virtual_machines()
+            try:
+                for vm in vms:
+                    vm.create(manager=manager, resource_pool_name=self.rpname, host_name=config.host_name)
+                    vm.add_serial_port(manager=manager, host_address=config.host_address,
+                                       host_user=config.host_user, host_password=config.host_password)
+                    vm.power_on(manager)
+
+                    vm.configure(config.host_address, config.host_user, config.host_password)
+            except Manager.ExistenceException:
+                pass
 
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertTrue(False, error.message)
+        finally:
+            ResourcePool(self.rpname).destroy(manager, with_vms=True)
 
 
 if __name__ == "__main__":
