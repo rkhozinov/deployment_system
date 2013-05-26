@@ -62,7 +62,6 @@ class TestVirtualMachine(unittest.TestCase):
         except AttributeError as error:
             self.assertTrue(True, error.message)
 
-
     def test_create_instance_with_hard_disk(self):
         try:
             hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
@@ -74,7 +73,6 @@ class TestVirtualMachine(unittest.TestCase):
             self.assertTrue(False, error.message)
         except Exception as error:
             self.assertTrue(False, error.message)
-
 
     def test_try_create_instance_with_hard_disk_without_space(self):
         try:
@@ -291,6 +289,31 @@ class TestVirtualMachine(unittest.TestCase):
         finally:
             self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
+    def test_connect_to_vm_host(self):
+        virtual_machine = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
+        rctrl = None
+        try:
+            rctrl = virtual_machine._connect_to_vm_host(self.host_address,
+                                                        self.host_user,
+                                                        self.host_password)
+            output = rctrl.sendline('ls')
+            self.assertIsNotNone(output)
+
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
+        finally:
+            rctrl.close()
+
+    def test_configure_vm(self):
+        virtual_machine = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
+        configuration = ('configure',
+                         'set int eth eth0 address 10.10.10.1/25',
+                         'set int eth eth1 address 100.10.10.1/25',
+                         'commit', 'save', 'exit', 'exit')
+        try:
+            virtual_machine.configure(self.host_address, self.host_user, self.host_password, configuration)
+        except Manager.CreatorException as error:
+            self.assertTrue(False, error.message)
 
     if __name__ == "__main__":
         unittest.main()
