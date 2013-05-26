@@ -124,7 +124,6 @@ class TestHatchery(unittest2.TestCase):
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
-
     def test_add_network_to_switch(self):
         try:
             try:
