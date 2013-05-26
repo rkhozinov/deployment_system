@@ -231,20 +231,19 @@ class VirtualMachine(object):
         # except Exception:
         #     pass
 
-        # connect to vm via netcat
-        # pipe files for netcat are in specific directory on ESX datastore
-        connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
-        vmctrl.sendline(connection_str)
-
-        # input credentials
-        vmctrl.sendline(self.user)
-        vmctrl.expect('.*assword:')
-        vmctrl.sendline(self.password)
-        vmctrl.expect('.*[\#:\$]')
-
         # configure vm
-        # todo: need check connected nics to vm
+        # todo: fix me
         try:
+            # connect to vm via netcat
+            # pipe files for netcat are in specific directory on ESX datastore
+            connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
+            vmctrl.sendline(connection_str)
+
+            # input credentials
+            vmctrl.sendline(self.user)
+            vmctrl.expect('.*assword:')
+            vmctrl.sendline(self.password)
+            vmctrl.expect('.*[\#:\$]')
             for option in configuration:
                 vmctrl.sendline(option)
         except Exception:
@@ -274,7 +273,3 @@ class VirtualMachine(object):
         except Exception:
             child.close()
             raise Manager.CreatorException("Can't connect to host via ssh")
-
-
-    def __connect_to_vm(self):
-        pass
