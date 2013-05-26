@@ -285,6 +285,8 @@ class Creator:
             raise ExistenceException("Couldn't find VM '%s' - %s" % (vmname, error.message))
 
         try:
+            if vm.is_powered_on() or vm.is_powering_off() or vm.is_reverting():
+                vm.power_off()
             request = VI.Destroy_TaskRequestMsg()
             _this = request.new__this(vm._mor)
             _this.set_attribute_type(vm._mor.get_attribute_type())
