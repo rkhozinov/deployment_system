@@ -2,7 +2,7 @@ import ConfigParser
 from resource_pool import ResourcePool
 from switch import Switch
 from topology_reader import TopologyReader
-import lib.hatchery as vm_manager
+import lib.hatchery as Manager
 from lib.hatchery import CreatorException
 
 
@@ -24,7 +24,7 @@ class Topology(object):
             self.vm_lst = self.config.get_virtual_machines()
             self.networks_lst = self.config.get_networks()
             self.host_name = self.config.host_name
-            self.manager = vm_manager.Creator(self.resource_pool,
+            self.manager = Manager.Creator(self.resource_pool,
                                               self.config.host_user,
                                               self.config.host_password)
         except CreatorException as error:
