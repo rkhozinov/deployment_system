@@ -6,6 +6,7 @@ from deployment_system.switch import Switch
 from deployment_system.topology_reader import TopologyReader
 from deployment_system.virtual_machine import VirtualMachine
 from deployment_system.network import Network
+import time
 import lib.hatchery as Manager
 
 __author__ = 'rkhozinov'
