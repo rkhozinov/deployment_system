@@ -1,13 +1,14 @@
 import ConfigParser
 import unittest
+import time
+
 from deployment_system.resource_pool import ResourcePool
 from deployment_system.switch import Switch
-
 from deployment_system.topology_reader import TopologyReader
 from deployment_system.virtual_machine import VirtualMachine
 from deployment_system.network import Network
-import time
 import lib.hatchery as Manager
+
 
 __author__ = 'rkhozinov'
 
@@ -175,7 +176,6 @@ class TestTopologyReader(unittest.TestCase):
                     except:
                         pass
 
-
             shared_switch.create(manager, config.host_name)
 
             # CREATE NETWORKS
@@ -196,27 +196,23 @@ class TestTopologyReader(unittest.TestCase):
 
             vms = config.get_virtual_machines()
 
-            try:
-                for vm in vms:
-                    try:
-                        vm.create(manager=manager, resource_pool_name=self.rpname, host_name=config.host_name)
-                    except Manager.ExistenceException:
-                        pass
-                    try:
-                        vm.add_serial_port(manager=manager, host_address=config.host_address,
+            for vm in vms:
+                try:
+                    vm.create(manager=manager, resource_pool_name=self.rpname, host_name=config.host_name)
+                except Manager.ExistenceException:
+                    pass
+                try:
+                    vm.add_serial_port(manager=manager, host_address=config.host_address,
                                        host_user=config.host_user, host_password=config.host_password)
-                    except Manager.ExistenceException:
-                        pass
-                    try:
-                        vm.power_on(manager)
-                    except Manager.ExistenceException:
-                        pass
-
-            except Manager.ExistenceException:
-                pass
+                except Manager.ExistenceException:
+                    pass
+                try:
+                    vm.power_on(manager)
+                except Manager.ExistenceException:
+                    pass
 
             #todo: add boot-time
-            if len(vm)<2:
+            if len(vms) < 2:
                 time.sleep(30)
 
             for vm in vms:
@@ -227,8 +223,7 @@ class TestTopologyReader(unittest.TestCase):
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
-            pass
-            #ResourcePool(self.rpname).destroy(manager, with_vms=True)
+            ResourcePool(self.rpname).destroy(manager, with_vms=True)
 
 
 if __name__ == "__main__":
