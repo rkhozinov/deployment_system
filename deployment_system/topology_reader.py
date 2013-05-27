@@ -44,8 +44,8 @@ class TopologyReader(object):
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
     VM_ISO = 'iso'
-    VM_USER = 'user'
-    VM_PASSWORD = 'password'
+    # VM_USER = 'user'
+    # VM_PASSWORD = 'password'
     # VM_NEIGHBOURS = 'neighbours'
     VM_HARD_DISK = 'hard_disk'
 
@@ -89,10 +89,10 @@ class TopologyReader(object):
             self.networks = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.NETWORKS))
             self.logger.info("Network list was read successfully: {nets}".format(nets=self.networks))
             self.vms = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.VMS))
-            self.logger.info("VM list was read successfully: {vms}".format(vms=self.networks))
-        except ConfigParser.Error as error:
-            self.logger.critical(error.message)
-            raise error
+            self.logger.info("VM list was read successfully: {vms}".format(vms=self.vms))
+        except ConfigParser.Error as e:
+            self.logger.error(e.message)
+            raise e
 
     def __str_to_list(self, string):
         """
@@ -121,12 +121,12 @@ class TopologyReader(object):
         :return: VirtualMachine instance
         :raise:  ConfigParser.NoOptionError, ConfigParser.ParsingError
         """
-        login, password = None
-        try:
-            password = self.config.get(vm, self.VM_PASSWORD)
-            login = self.config.get(vm, self.VM_USER)
-        except Exception as e:
-            self.logger.error(e.message)
+
+        # try:
+        #     password = self.config.get(vm, self.VM_PASSWORD)
+        #     login = self.config.get(vm, self.VM_USER)
+        # except Exception as e:
+        #     self.logger.error(e.message)
 
         try:
             description = self.config.get(vm, self.VM_DESCR)
@@ -180,8 +180,8 @@ class TopologyReader(object):
             self.logger.info("Will be used default iso image %s for '%s'" % (self.iso, vm))
 
         return VirtualMachine(name=vm,
-                              user=login,
-                              password=password,
+                              # user=login,
+                              # password=password,
                               memory=memory,
                               cpu=cpu,
                               disk_space=disk_space,
