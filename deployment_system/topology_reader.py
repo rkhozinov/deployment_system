@@ -81,8 +81,8 @@ class TopologyReader(object):
             self.host_password = self.config.get(self.HOST, self.HOST_PASSWORD)
 
             self.iso = self.config.get(self.SETTINGS, self.ISO)
-            self.networks = self.__str_to_list(self.config.get(self.SETTINGS, self.NETWORKS))
-            self.vms = self.__str_to_list(self.config.get(self.SETTINGS, self.VMS))
+            self.networks = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.NETWORKS))
+            self.vms = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.VMS))
         except ConfigParser.Error as error:
             self.logger.critical(error.message)
             raise error

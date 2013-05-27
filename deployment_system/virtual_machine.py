@@ -1,4 +1,5 @@
 import pexpect
+import time
 
 import lib.hatchery as Manager
 
@@ -239,7 +240,7 @@ class VirtualMachine(object):
         except Manager.CreatorException:
             raise
 
-        # todo: check 'already login'
+        # todo: check 'already login' - not here!
         # # try logout
 
         # vmctrl.sendline('exit')
@@ -250,20 +251,23 @@ class VirtualMachine(object):
         #     pass
 
         # configure vm
-        # todo: fix me
+        # todo: add waiting time
         try:
             # connect to vm via netcat
             # pipe files for netcat are in specific directory on ESX datastore
             connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
             vmctrl.sendline(connection_str)
+            time.sleep(1)
 
-            # input credentials
-            vmctrl.sendline(self.user)
-            vmctrl.expect('.*assword:')
-            vmctrl.sendline(self.password)
-            vmctrl.expect('.*[\#:\$]')
+            # input credentials - not nessesary, given in configuration
+            # vmctrl.sendline(self.user)
+            # vmctrl.expect('.*assword:')
+            # vmctrl.sendline(self.password)
+            # vmctrl.expect('.*[\#:\$]')
             for option in configuration:
                 vmctrl.sendline(option)
+                time.sleep(1)
+            print vmctrl.after
         except Exception:
             raise Manager.CreatorException("Couldn't configure the virtual machine '%s'" % self.name)
         finally:

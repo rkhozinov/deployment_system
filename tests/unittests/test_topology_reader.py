@@ -211,9 +211,16 @@ class TestTopologyReader(unittest.TestCase):
                     except Manager.ExistenceException:
                         pass
 
-                    #vm.configure(config.host_address, config.host_user, config.host_password)
             except Manager.ExistenceException:
                 pass
+
+            #todo: add boot-time
+            if len(vm)<2:
+                time.sleep(30)
+
+            for vm in vms:
+                vm.configure(config.host_address, config.host_user, config.host_password)
+
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
