@@ -4,9 +4,7 @@ from deployment_system.network import Network
 from deployment_system.virtual_machine import VirtualMachine
 
 
-
 class TopologyReader(object):
-
     DEFAULT_PORTS_COUNT = 120
 
     # describe of sections
@@ -46,10 +44,9 @@ class TopologyReader(object):
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
     VM_ISO = 'iso'
-    VM_NEIGHBOURS = 'neighbours'
     VM_USER = 'user'
     VM_PASSWORD = 'password'
-    VM_NEIGHBOURS = 'neighbours'
+    # VM_NEIGHBOURS = 'neighbours'
     VM_HARD_DISK = 'hard_disk'
 
     def __init__(self, config_path):
@@ -59,17 +56,20 @@ class TopologyReader(object):
         :raise: ConfigParser.Error
         """
         self.logger = logging.getLogger(__name__)
-        logging.basicConfig()
+        logging.basicConfig(format='%(asctime)s %(levelname)s:%(name)s:%(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 
         try:
             # init config
             self.config = ConfigParser.RawConfigParser()
             self.config.read(config_path)
+            self.logger.info('Configuration {config} was read successfully'.format(config=config_path))
+
 
             # esx manager settings
             self.manager_address = self.config.get(self.MANAGER, self.MANAGER_ADDRESS)
             self.manager_user = self.config.get(self.MANAGER, self.MANAGER_USER)
             self.manager_password = self.config.get(self.MANAGER, self.MANAGER_PASSWORD)
+            self.logger.info('ESX vCenter credentials was read successfully')
 
             # esx host settings
             # need for creating esx entities
@@ -79,14 +79,20 @@ class TopologyReader(object):
             self.host_address = self.config.get(self.HOST, self.HOST_ADDRESS)
             self.host_user = self.config.get(self.HOST, self.HOST_USER)
             self.host_password = self.config.get(self.HOST, self.HOST_PASSWORD)
+            self.logger.info('ESX host credentials was read successfully')
 
-            self.iso = self.config.get(self.SETTINGS, self.ISO)
-            self.networks = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.NETWORKS))
-            self.vms = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.VMS))
+            try:
+                self.iso = self.config.get(self.SETTINGS, self.ISO)
+            except ConfigParser.NoOptionError:
+                self.logger.info("Common iso image not specified")
+
+            self.networks = self.__str_to_list(self.config.get(self.SETTINGS, self.NETWORKS))
+            self.logger.info("Network list was read successfully: {nets}".format(nets=self.networks))
+            self.vms = self.__str_to_list(self.config.get(self.SETTINGS, self.VMS))
+            self.logger.info("VM list was read successfully: {vms}".format(vms=self.networks))
         except ConfigParser.Error as error:
             self.logger.critical(error.message)
             raise error
-
 
     def __str_to_list(self, string):
         """
@@ -118,7 +124,8 @@ class TopologyReader(object):
         try:
             password = self.config.get(vm, self.VM_PASSWORD)
             login = self.config.get(vm, self.VM_USER)
-        except ConfigParser.NoOptionError:
+        except Exception as e:
+            self.logger.error(e.message)
             raise
         except ConfigParser.ParsingError:
             raise
@@ -129,43 +136,52 @@ class TopologyReader(object):
             description = self.config.get(vm, self.VM_DESCR)
         except:
             description = None
+            self.logger.info("Not specified description for '%s'" % vm)
         try:
             memory = self.config.get(vm, self.VM_MEM)
         except:
+            self.logger.info("Not specified memory for '%s'" % vm)
             memory = None
         try:
             cpu = self.config.get(vm, self.VM_CPU)
         except:
+            self.logger.info("Not specified cpu count for '%s'" % vm)
             cpu = None
         try:
             hard_disk = self.config.get(vm, self.VM_HARD_DISK)
         except:
+            self.logger.info("Not specified hard disk for '%s'" % vm)
             hard_disk = None
         try:
             disk_space = self.config.get(vm, self.VM_DISK_SPACE)
         except:
+            self.logger.info("Not specified disk space for '%s'" % vm)
             disk_space = None
         try:
             config = self.__str_to_list_strip(self.config.get(vm, self.VM_CONFIG))
         except:
+            self.logger.info("Not specified configuration for '%s'" % vm)
             config = None
         try:
-            connected_networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
+            networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
         except:
-            connected_networks = None
-        try:
-            neighbours = self.__str_to_list(self.config.get(vm, self.VM_NEIGHBOURS))
-        except:
-            neighbours = None
+            self.logger.info("Not specified networks for '%s'" % vm)
+            networks = None
+            # try:
+            #     neighbours = self.__str_to_list(self.config.get(vm, self.VM_NEIGHBOURS))
+            # except:
+            #     neighbours = None
 
         try:
             iso = self.config.get(vm, self.VM_ISO)
         except:
+            self.logger.info("Not specified iso image for '%s'" % vm)
             iso = None
 
         # if not specific a iso-image for this vm then will be used the common iso-image
-        if not iso:
+        if not iso and self.iso:
             iso = self.iso
+            self.logger.info("Will be used default iso image %s for '%s'" % (self.iso, vm))
 
         return VirtualMachine(name=vm,
                               user=login,
@@ -173,10 +189,9 @@ class TopologyReader(object):
                               memory=memory,
                               cpu=cpu,
                               disk_space=disk_space,
-                              connected_networks=connected_networks,
+                              connected_networks=networks,
                               iso=iso,
                               description=description,
-                              neighbours=neighbours,
                               configuration=config,
                               hard_disk=hard_disk)
 
@@ -193,6 +208,7 @@ class TopologyReader(object):
         try:
             vlan = self.config.get(net, self.NET_VLAN)
         except ConfigParser.Error as error:
+            self.logger.error("Couldn't specify VLAN for '%s'" % net)
             raise error
 
         promiscuous = None
@@ -251,6 +267,7 @@ class TopologyReader(object):
                 networks.append(self.__get_network(net))
             return networks
         except ConfigParser.Error as error:
+            self.logger.error(error.message)
             raise error
 
 
