@@ -1,4 +1,6 @@
 import ConfigParser
+import logging
+
 from resource_pool import ResourcePool
 from switch import Switch
 from topology_reader import TopologyReader
@@ -10,13 +12,21 @@ class Topology(object):
     def __init__(self, config_path, resource_pool):
         """
         Initialize a topology
+
         :param config_path: configuration file
         :param resource_pool: stack name for topology
         """
+        self.logger = logging.getLogger(__name__)
+        logging.basicConfig()
+
         if not config_path:
-            raise AttributeError("Couldn't specify configuration file name")
+            ae = AttributeError("Couldn't specify configuration file name")
+            self.logger.error(ae.message)
+            raise ae
         if not resource_pool:
-            raise AttributeError("Couldn't specify resource pool name")
+            ae = AttributeError("Couldn't specify resource pool name")
+            self.logger.error(ae.message)
+            raise ae
 
         try:
             self.config = TopologyReader(config_path)
@@ -25,11 +35,13 @@ class Topology(object):
             self.networks_lst = self.config.get_networks()
             self.host_name = self.config.host_name
             self.manager = Manager.Creator(self.resource_pool,
-                                              self.config.host_user,
-                                              self.config.host_password)
+                                           self.config.host_user,
+                                           self.config.host_password)
         except CreatorException as error:
+            self.logger.error(error.message)
             raise error
         except ConfigParser.Error as error:
+            self.logger.error(error.message)
             raise error
 
     def create(self):
