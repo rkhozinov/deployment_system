@@ -17,7 +17,7 @@ class Topology(object):
         :param resource_pool: stack name for topology
         """
         self.logger = logging.getLogger(__name__)
-        logging.basicConfig()
+        logging.basicConfig(format='%(asctime)s %(message)s',datefmt='%m/%d/%Y %H:%M:%S')
 
         if not config_path:
             ae = AttributeError("Couldn't specify configuration file name")
