@@ -479,6 +479,8 @@ class Creator:
 
         try:
             iso = vm_options['iso']
+            #todo: hide magic
+            iso = iso[iso.find(ds_name) + len(ds_name) +1 : ]
         except KeyError:
             iso = None
         try:
