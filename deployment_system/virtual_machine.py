@@ -177,8 +177,26 @@ class VirtualMachine(object):
         except Manager.CreatorException:
             raise
 
-    def destroy_with_files(self, manager, host_name, host_user, host_password):
-        pass
+    def destroy_with_files(self, manager, host_address, host_user, host_password):
+        path = self.get_path(manager)
+        datastore = path.split(" ")[0][1:-1]
+        vm_folder = path.split(" ")[1].split("/")[0]
+        vm_path = "/vmfs/volumes/%s/%s"%(path,vm_folder)
+        self.destroy(manager)
+
+        try:
+            child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+            child.expect(".*assword:")
+            child.sendline(host_password)
+            child.expect(".*\# ", timeout=2)
+            child.sendline("rm -r %s"%vm_path)
+            child.close()
+        except Exception:
+            #TODO add checks
+            pass
+
+
+
 
     def power_on(self, manager):
         if not isinstance(manager, Manager.Creator):
