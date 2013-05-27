@@ -86,9 +86,9 @@ class TopologyReader(object):
             except ConfigParser.NoOptionError:
                 self.logger.info("Common iso image not specified")
 
-            self.networks = self.__str_to_list(self.config.get(self.SETTINGS, self.NETWORKS))
+            self.networks = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.NETWORKS))
             self.logger.info("Network list was read successfully: {nets}".format(nets=self.networks))
-            self.vms = self.__str_to_list(self.config.get(self.SETTINGS, self.VMS))
+            self.vms = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.VMS))
             self.logger.info("VM list was read successfully: {vms}".format(vms=self.networks))
         except ConfigParser.Error as error:
             self.logger.critical(error.message)
@@ -121,16 +121,12 @@ class TopologyReader(object):
         :return: VirtualMachine instance
         :raise:  ConfigParser.NoOptionError, ConfigParser.ParsingError
         """
+        login, password = None
         try:
             password = self.config.get(vm, self.VM_PASSWORD)
             login = self.config.get(vm, self.VM_USER)
         except Exception as e:
             self.logger.error(e.message)
-            raise
-        except ConfigParser.ParsingError:
-            raise
-        except:
-            raise
 
         try:
             description = self.config.get(vm, self.VM_DESCR)
@@ -163,7 +159,7 @@ class TopologyReader(object):
             self.logger.info("Not specified configuration for '%s'" % vm)
             config = None
         try:
-            networks = self.__str_to_list(self.config.get(vm, self.VM_NETWORKS))
+            networks = self.__str_to_list_strip(self.config.get(vm, self.VM_NETWORKS))
         except:
             self.logger.info("Not specified networks for '%s'" % vm)
             networks = None
