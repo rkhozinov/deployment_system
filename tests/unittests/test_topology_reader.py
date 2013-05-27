@@ -89,15 +89,17 @@ class TestTopologyReader(unittest.TestCase):
                 pass
 
             vms = config.get_virtual_machines()
-            try:
-                for vm in vms:
+
+            for vm in vms:
+                try:
                     vm.create(manager=manager, resource_pool_name=self.rpname, host_name=config.host_name)
+                except Manager.ExistenceException:
+                    pass
+                try:
                     vm.add_serial_port(manager=manager, host_address=config.host_address,
                                        host_user=config.host_user, host_password=config.host_password)
-            except Manager.ExistenceException:
-                pass
-        except ConfigParser.Error as error:
-            self.assertTrue(False, error.message)
+                except Manager.ExistenceException:
+                    pass
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
@@ -167,7 +169,6 @@ class TestTopologyReader(unittest.TestCase):
             except:
                 pass
 
-
             # destroy isolated networks
             for net in networks:
                 if net.isolated:
@@ -176,9 +177,9 @@ class TestTopologyReader(unittest.TestCase):
                     except:
                         pass
 
+            # CREATE NETWORKS
             shared_switch.create(manager, config.host_name)
 
-            # CREATE NETWORKS
             for net in networks:
                 # create isolated networks
                 if net.isolated:
@@ -217,7 +218,6 @@ class TestTopologyReader(unittest.TestCase):
 
             for vm in vms:
                 vm.configure(config.host_address, config.host_user, config.host_password)
-
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:
