@@ -160,13 +160,20 @@ class TestTopologyReader(unittest.TestCase):
             networks = config.get_networks()
 
             # destroy shared switch with connected networks
-            if shared_switch:
+            try:
                 shared_switch.destroy(manager, config.host_name)
+            except:
+                pass
+
 
             # destroy isolated networks
             for net in networks:
                 if net.isolated:
-                    Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
+                    try:
+                        Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
+                    except:
+                        pass
+
 
             shared_switch.create(manager, config.host_name)
 
@@ -204,7 +211,7 @@ class TestTopologyReader(unittest.TestCase):
                     except Manager.ExistenceException:
                         pass
 
-                    vm.configure(config.host_address, config.host_user, config.host_password)
+                    #vm.configure(config.host_address, config.host_user, config.host_password)
             except Manager.ExistenceException:
                 pass
         except Manager.CreatorException as error:
@@ -212,7 +219,8 @@ class TestTopologyReader(unittest.TestCase):
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
-            ResourcePool(self.rpname).destroy(manager, with_vms=True)
+            pass
+            #ResourcePool(self.rpname).destroy(manager, with_vms=True)
 
 
 if __name__ == "__main__":
