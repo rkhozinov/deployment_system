@@ -11,7 +11,7 @@ class VirtualMachine(object):
 
     def __init__(self, name, user, password, memory=512, cpu=2, disk_space=None, hard_disk=None,
                  connected_networks=None, iso=None,
-                 description=None, neighbours=None, configuration=None):
+                 description=None, configuration=None):
 
         if not name:
             raise AttributeError("Couldn't specify a virtual machine name")
@@ -37,7 +37,6 @@ class VirtualMachine(object):
         self.cpu = cpu
         self.hard_disk = hard_disk
         self.description = description
-        self.neighbours = neighbours
         self.connected_networks = connected_networks
         self.configuration = configuration
         self.iso = iso
@@ -182,7 +181,7 @@ class VirtualMachine(object):
         path = self.get_path(manager)
         datastore = path.split(" ")[0][1:-1]
         vm_folder = path.split(" ")[1].split("/")[0]
-        vm_path = "/vmfs/volumes/%s/%s"%(path,vm_folder)
+        vm_path = "/vmfs/volumes/%s/%s" % (path, vm_folder)
         self.destroy(manager)
 
         try:
@@ -190,13 +189,11 @@ class VirtualMachine(object):
             child.expect(".*assword:")
             child.sendline(host_password)
             child.expect(".*\# ", timeout=2)
-            child.sendline("rm -r %s"%vm_path)
+            child.sendline("rm -r %s" % vm_path)
             child.close()
         except Exception:
             #TODO add checks
             pass
-
-
 
 
     def power_on(self, manager):
