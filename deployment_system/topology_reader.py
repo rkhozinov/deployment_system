@@ -171,8 +171,8 @@ class TopologyReader(object):
         try:
             iso = self.config.get(vm, self.VM_ISO)
         except:
-            self.logger.info("Not specified iso image for '%s'" % vm)
             iso = None
+            self.logger.info("Not specified iso image for '%s'" % vm)
 
         # if not specific a iso-image for this vm then will be used the common iso-image
         if not iso and self.iso:
@@ -214,23 +214,21 @@ class TopologyReader(object):
             try:
                 promiscuous = self.config.getboolean(net, self.NET_PROMISCUOUS)
             except ConfigParser.NoOptionError:
-                pass
+                self.logger.info("'%s' will be used in not promiscuous mode" % net)
             try:
                 isolated = self.config.getboolean(net, self.NET_ISOLATED)
             except ConfigParser.NoOptionError:
-                pass
+                self.logger.info("'%s' will be used in not isolated mode" % net)
             try:
                 ports = self.config.getint(net, self.NET_PORTS)
             except ConfigParser.NoOptionError:
                 ports = self.DEFAULT_PORTS_COUNT
-
-        except ConfigParser.NoOptionError:
-            pass
-        except ConfigParser.ParsingError as error:
+                self.logger.info("For '%s' will be used %s ports" % (net, self.DEFAULT_PORTS_COUNT))
+        except ConfigParser.ParsingError as e:
+            self.logger.error(e.message)
             raise
 
         return Network(name=net, vlan=vlan, ports=ports, promiscuous=promiscuous, isolated=isolated)
-
 
     def get_virtual_machines(self):
         """
@@ -243,11 +241,8 @@ class TopologyReader(object):
             for vm in self.vms:
                 vm_lst.append(self.__get_vm(vm))
             return vm_lst
-        except ConfigParser.ParsingError:
-            raise
-        except ConfigParser.NoSectionError:
-            raise
-        except:
+        except ConfigParser.ParsingError as e:
+            self.logger.error(e.message)
             raise
 
 
@@ -262,15 +257,6 @@ class TopologyReader(object):
             for net in self.networks:
                 networks.append(self.__get_network(net))
             return networks
-        except ConfigParser.Error as error:
+        except Exception as error:
             self.logger.error(error.message)
             raise error
-
-
-
-
-
-
-
-
-
