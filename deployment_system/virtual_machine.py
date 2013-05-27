@@ -9,16 +9,16 @@ class VirtualMachine(object):
     MEMORY_DEFAULT_SIZE = 512
     SERIAL_PORTS_DIR = 'serial_ports'
 
-    def __init__(self, name, user, password, memory=512, cpu=2, disk_space=None, hard_disk=None,
+    def __init__(self, name, memory=512, cpu=2, disk_space=None, hard_disk=None,
                  connected_networks=None, iso=None,
                  description=None, configuration=None):
 
         if not name:
             raise AttributeError("Couldn't specify a virtual machine name")
-        if not user:
-            raise AttributeError("Couldn't specify a virtual machine user")
-        if not password:
-            raise AttributeError("Couldn't specify a virtual machine password")
+        # if not user:
+        #     raise AttributeError("Couldn't specify a virtual machine user")
+        # if not password:
+        #     raise AttributeError("Couldn't specify a virtual machine password")
         if hard_disk and not disk_space:
             raise AttributeError("Couldn't specify a disk space for the hard disk '%s'" % hard_disk)
 
@@ -31,8 +31,8 @@ class VirtualMachine(object):
             self.disk_space = self.DISK_DEFAULT_SPACE * 1024
 
         self.name = name
-        self.user = user
-        self.password = password
+        # self.user = user
+        # self.password = password
         self.memory = memory
         self.cpu = cpu
         self.hard_disk = hard_disk
