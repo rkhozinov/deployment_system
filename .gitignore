@@ -18,6 +18,8 @@ develop-eggs
 
 # Installer logs
 pip-log.txt
+.log
+.out
 
 # Unit test / coverage reports
 .coverage
