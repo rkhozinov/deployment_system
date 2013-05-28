@@ -222,7 +222,7 @@ class TestTopologyReader(unittest.TestCase):
 
             #todo: add boot-time
             if len(vms) < 2:
-                time.sleep(10)
+                time.sleep(30)
 
             for vm in vms:
                 vm.configure(config.host_address, config.host_user, config.host_password)
