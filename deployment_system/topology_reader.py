@@ -146,6 +146,8 @@ class TopologyReader(object):
             cpu = None
         try:
             hard_disk = self.config.get(vm, self.VM_HARD_DISK)
+            if 'False' in hard_disk:
+                hard_disk = False
         except:
             self.logger.debug("Not specified hard disk for '%s'" % vm)
             hard_disk = None
@@ -171,13 +173,14 @@ class TopologyReader(object):
 
         try:
             iso = self.config.get(vm, self.VM_ISO)
-
+            if 'False' in iso:
+                iso = False
         except:
             iso = None
             self.logger.debug("Not specified iso image for '%s'" % vm)
 
         # if not specific a iso-image for this vm then will be used the common iso-image
-        if not iso and self.iso:
+        if not iso == False and (self.iso and not iso):
             iso = self.iso
             self.logger.debug("Will be used default iso image %s for '%s'" % (self.iso, vm))
 

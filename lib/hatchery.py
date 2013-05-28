@@ -472,8 +472,11 @@ class Creator:
 
         try:
             iso = vm_options['iso']
-            #todo: hide magic
-            iso = iso[iso.find(ds_name) + len(ds_name) + 1:]
+            if iso == False:
+                iso = None
+            else:
+                #todo: hide magic
+                iso = iso[iso.find(ds_name) + len(ds_name) + 1:]
         except KeyError:
             iso = None
         try:
@@ -538,11 +541,13 @@ class Creator:
 
         #get network name
         # todo: fix creating if not valid vm. Turn logging. Write message of unavailable network, but create vm
-        _networks = []
-        for n in config_target.Network:
-            if n.Network.Accessible and networks.count(n.Network.Name):
-                _networks.append(n.Network.Name)
-        if len(networks) != len(_networks):
+        avaliable_networks = 0
+        for net in networks:
+            for n in config_target.Network:
+                if n.Network.Accessible and n.Network.Name == net:
+                    avaliable_networks += 1
+                    break
+        if len(networks) != avaliable_networks:
             raise CreatorException("Couldn't find all networks")
             #raise ExistenceException("Couldn't find network")
 
@@ -623,7 +628,7 @@ class Creator:
             devices.append(disk_spec)
 
         #add a NIC. the network Name must be set as the device name to create the NIC.
-        for network_name in _networks:
+        for network_name in networks:
             nic_spec = config.new_deviceChange()
             nic_spec.set_element_operation("add")
             nic_ctlr = VI.ns0.VirtualPCNet32_Def("nic_ctlr").pyclass()
@@ -920,7 +925,7 @@ class Creator:
         except Exception:
             raise ExistenceException("Couldn't find the virtual machine %s" % vm_name)
 
-        unit_number = 0
+        unit_number = -1
         for disk in vm._disks:
             unit_number = max(unit_number, disk['device']['unitNumber'])
         unit_number += 1

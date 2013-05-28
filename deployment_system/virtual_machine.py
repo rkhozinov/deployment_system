@@ -61,7 +61,8 @@ class VirtualMachine(object):
                                   description=self.description,
                                   memorysize=self.memory,
                                   cpucount=self.cpu,
-                                  disk_space=self.disk_space)
+                                  disk_space=self.disk_space,
+                                  create_hard_drive = not bool(self.hard_disk))
             self.logger.info("Virtual machine '%s' was created successfully" % self.name)
         except Manager.ExistenceException as e:
             self.logger.error(e.message)
@@ -158,10 +159,11 @@ class VirtualMachine(object):
             commands.append('cp -f "%s" "%s"' % (self.hard_disk, vm_path))
             commands.append('cp -f "%s" "%s"' % (vmdk_flat_name, vm_path))
 
-            child = self._connect_to_vm_host(host_address, host_password, host_user)
+            child = self._connect_to_vm_host(host_address, host_user, host_password)
 
             for cmd in commands:
                 child.sendline(cmd)
+            time.sleep(10)
             child.close()
 
             manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style, space=self.disk_space)
@@ -207,7 +209,7 @@ class VirtualMachine(object):
         path = self.get_path(manager)
         datastore = path.split(" ")[0][1:-1]
         vm_folder = path.split(" ")[1].split("/")[0]
-        vm_path = "/vmfs/volumes/%s/%s" % (path, vm_folder)
+        vm_path = "/vmfs/volumes/%s/%s" % (datastore, vm_folder)
 
         try:
             self.destroy(manager)
@@ -282,37 +284,30 @@ class VirtualMachine(object):
             self.logger.error(e.message)
             raise
 
-        # todo: check 'already login' - not here!
-        # # try logout
-
-        # vmctrl.sendline('exit')
-        # try:
-        #     if vmctrl.expect(".*[\#:\$]", timeout=2) == 0:
-        #         vmctrl.sendline('exit')
-        # except Exception:
-        #     pass
 
         # configure vm
         # todo: add waiting time
+        # todo: check existance of vm
         try:
             # connect to vm via netcat
             # pipe files for netcat are in specific directory on ESX datastore
+
             connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
             vmctrl.sendline(connection_str)
             time.sleep(1)
             self.logger.info("Virtual machine '%s' was connected successfully" % self.name)
 
-            # input credentials - not nessesary, given in configuration
-            # vmctrl.sendline(self.user)
-            # vmctrl.expect('.*assword:')
-            # vmctrl.sendline(self.password)
-            # vmctrl.expect('.*[\#:\$]')
+
             for option in configuration:
-                vmctrl.sendline(option)
-                # vmctrl.expect("*")
+                output_start = option.find('@exp')
+                send = option[:output_start]
+                expected = option[output_start+5:]
+                vmctrl.sendline(send)
+                vmctrl.expect(expected)
                 self.logger.info("Option '%s' was sent successfully to virtual machine '%s'" % (option, self.name))
-                # self.logger.info("Response from the virtual machine '%s': %s" % (self.name, vmctrl.after))
                 time.sleep(1)
+                # for vmctrl.after need e.g. vmctrl.expect("#")
+                # self.logger.info("Response from the virtual machine '%s': %s" % (self.name, vmctrl.after))
                 # print vmctrl.after
             self.logger.info("Virtual machine '%s' was configured successfully" % self.name)
         except Exception:

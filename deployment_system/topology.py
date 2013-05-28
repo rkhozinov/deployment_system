@@ -50,6 +50,7 @@ class Topology(object):
 
 
     def create(self):
+
         try:
             # creates a resource pool for store virtual machines
             ResourcePool(self.resource_pool).create(self.manager)
@@ -79,6 +80,10 @@ class Topology(object):
                 vm.create(self.manager, self.resource_pool, self.host_name)
                 vm.add_serial_port(manager=self.manager, host_address=self.host_address,
                                    host_user=self.host_user, host_password=self.host_password)
+                if vm.hard_disk:
+                    vm.add_hard_disk(manager=self.manager, host_address=self.host_address,
+                                   host_user=self.host_user, host_password=self.host_password,
+                                   hard_disk=vm.hard_disk)
                 vm.power_on(self.manager)
 
             #todo: add boot-time

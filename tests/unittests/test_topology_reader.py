@@ -143,6 +143,7 @@ class TestTopologyReader(unittest.TestCase):
             self.assertTrue(False, error.message)
 
     def test_create_and_configure_some_vm_and_networks(self):
+        # DO NOT TOUCH!
         manager = None
         try:
             config = TopologyReader(self.config_path)
@@ -154,47 +155,49 @@ class TestTopologyReader(unittest.TestCase):
             vms = config.get_virtual_machines()
             for vm in vms:
                 try:
-                    vm.destroy(manager)
+                    vm.destroy_with_files(manager,host_address=config.host_address,
+                                       host_user=config.host_user, host_password=config.host_password)
                 except Manager.ExistenceException:
                     pass
 
 
-            # DESTROY NETWORKS
-            shared_switch = Switch(self.rpname)
-            networks = config.get_networks()
+            # # DESTROY NETWORKS
+            # shared_switch = Switch(self.rpname)
+            # networks = config.get_networks()
+            #
+            # # destroy shared switch with connected networks
+            # try:
+            #     shared_switch.destroy(manager, config.host_name)
+            # except:
+            #     pass
+            #
+            # # destroy isolated networks
+            # for net in networks:
+            #     if net.isolated:
+            #         try:
+            #             Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
+            #         except:
+            #             pass
+            #
+            # # CREATE NETWORKS
+            # shared_switch.create(manager, config.host_name)
+            #
+            # for net in networks:
+            #     # create isolated networks
+            #     if net.isolated:
+            #         sw_name = self.rpname + '_' + net.name
+            #         Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
+            #     else:
+            #         # create simple networks on shared switch
+            #         shared_switch.add_network(net, manager, config.host_name)
+            #
+            # # CREATE VIRTUAL MACHINES
+            # try:
+            #     ResourcePool(name=self.rpname).create(manager=manager)
+            # except Manager.ExistenceException:
+            #     pass
 
-            # destroy shared switch with connected networks
-            try:
-                shared_switch.destroy(manager, config.host_name)
-            except:
-                pass
-
-            # destroy isolated networks
-            for net in networks:
-                if net.isolated:
-                    try:
-                        Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
-                    except:
-                        pass
-
-            # CREATE NETWORKS
-            shared_switch.create(manager, config.host_name)
-
-            for net in networks:
-                # create isolated networks
-                if net.isolated:
-                    sw_name = self.rpname + '_' + net.name
-                    Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
-                else:
-                    # create simple networks on shared switch
-                    shared_switch.add_network(net, manager, config.host_name)
-
-            # CREATE VIRTUAL MACHINES
-            try:
-                ResourcePool(name=self.rpname).create(manager=manager)
-            except Manager.ExistenceException:
-                pass
-
+            # dublicate?
             vms = config.get_virtual_machines()
 
             for vm in vms:
@@ -207,6 +210,11 @@ class TestTopologyReader(unittest.TestCase):
                                        host_user=config.host_user, host_password=config.host_password)
                 except Manager.ExistenceException:
                     pass
+
+                if vm.hard_disk:
+                    vm.add_hard_disk(manager=manager, host_address=config.host_address,
+                                   host_user=config.host_user, host_password=config.host_password,
+                                   hard_disk=vm.hard_disk)
                 try:
                     vm.power_on(manager)
                 except Manager.ExistenceException:
@@ -214,7 +222,7 @@ class TestTopologyReader(unittest.TestCase):
 
             #todo: add boot-time
             if len(vms) < 2:
-                time.sleep(30)
+                time.sleep(10)
 
             for vm in vms:
                 vm.configure(config.host_address, config.host_user, config.host_password)
@@ -223,7 +231,8 @@ class TestTopologyReader(unittest.TestCase):
         except Exception as error:
             self.assertTrue(False, error.message)
         finally:
-            ResourcePool(self.rpname).destroy(manager, with_vms=True)
+            pass
+            #ResourcePool(self.rpname).destroy(manager, with_vms=True)
 
 
 if __name__ == "__main__":
