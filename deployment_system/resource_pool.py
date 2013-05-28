@@ -1,4 +1,5 @@
-import lib.hatchery as Manager
+import logging
+from lib import hatchery as Manager
 
 
 class ResourcePool(object):
@@ -9,23 +10,31 @@ class ResourcePool(object):
         :param name: ESXi name of a resource pool
         :raise: AttributeException
         """
+        self.logger = logging.getLogger(self.__module__)
         if name:
             self.name = name
         else:
-            raise AttributeError("Couldn't specify the name of the resource pool")
+            msg = "Couldn't specify the name of the resource pool"
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
     def create(self, manager, host_name=None):
         """
         Creates a ESXi resource pool
         :raise: AttributeException, CreatorException
         """
-        if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the esx manager")
+        if not manager:
+            msg = "Couldn't specify the ESX manager"
+            self.logger.error(msg)
+            raise AttributeError("Couldn't specify ESX manager")
         try:
             manager.create_resource_pool(name=self.name, esx_hostname=host_name)
-        except Manager.ExistenceException:
+            self.logger.info("Resource pool '{}' successfully created".format(self.name))
+        except Manager.ExistenceException as e:
+            self.logger.warning(e.message)
             raise
-        except Manager.CreatorException:
+        except Manager.CreatorException as e:
+            self.logger.error(e.message)
             raise
 
     def destroy(self, manager, with_vms=False):
@@ -35,15 +44,22 @@ class ResourcePool(object):
                          if False - save vms and move its to the up resource pool
         :raise: CreatorException
         """
-        if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the esx manager")
+        if not manager:
+            msg = "Couldn't specify the ESX manager"
+            self.logger.error(msg)
+            raise AttributeError("Couldn't specify ESX manager")
 
         try:
             if with_vms:
                 manager.destroy_resource_pool_with_vms(self.name)
+                self.logger.info("Resource pool '{}' successfully destroyed (VMs not destroyed)".format(self.name))
             else:
                 manager.destroy_resource_pool(self.name)
-        except Manager.ExistenceException:
+                self.logger.info("Resource pool '{}' successfully destroyed (VMs also destroyed)".format(self.name))
+        except Manager.ExistenceException as e:
+            msg = '%s. %s' % (e.message, 'Nothing could be destroyed')
+            self.logger.warning(msg)
             raise
-        except Manager.CreatorException:
+        except Manager.CreatorException as e:
+            self.logger.error(e.message)
             raise
