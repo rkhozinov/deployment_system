@@ -1,3 +1,4 @@
+import logging
 import lib.hatchery as Manager
 
 
@@ -10,15 +11,20 @@ class Switch(object):
         :param ports: number of ports
         :param host_name: esx host address
         """
+        self.logger = logging.getLogger(self.__module__)
         if name:
             self.name = name
         else:
-            raise AttributeError("Couldn't specify a switch name")
+            msg = "Couldn't specify a switch name"
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
         if ports:
             self.ports = int(ports)
         else:
-            raise AttributeError("Couldn't specify a switch ports count")
+            msg = "Couldn't specify a switch ports"
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
     def add_network(self, network, manager, host_name):
         """
@@ -29,11 +35,17 @@ class Switch(object):
         :raise: CreatorException, AttributeError, ExistenceException
         """
         if not network:
-            raise AttributeError("Couldn't specify network")
+            msg = "Couldn't specify network"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         if not manager:
-            raise AttributeError("Couldn't specify ESX manager")
+            msg = "Couldn't specify ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         if not host_name:
-            raise AttributeError("Couldn't specify ESX host name")
+            msg = "Couldn't specify ESX host name"
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
         try:
             manager.add_port_group(switch_name=self.name,
@@ -41,10 +53,14 @@ class Switch(object):
                                    esx_hostname=host_name,
                                    vlan_id=network.vlan,
                                    promiscuous=network.promiscuous)
-        except Manager.ExistenceException:
+            self.logger.info("Network '{net}' successfully added to virtual switch '{switch}'".format(net=network.name,
+                                                                                                      switch=self.name))
+        except Manager.ExistenceException as e:
+            self.logger.error(e.message)
             raise
-        except Manager.CreatorException:
-            raise
+        except Exception as e:
+            self.logger.error(e.message)
+            raise Manager.CreatorException(e)
 
     def create(self, manager, host_name):
         """
@@ -54,15 +70,22 @@ class Switch(object):
         :raise: ManagerException, AttributeError, ExistenceException
         """
         if not manager:
-            raise AttributeError("Couldn't specify ESX manager")
+            msg = "Couldn't specify ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         if not host_name:
-            raise AttributeError("Couldn't specify ESX host name")
+            msg = "Couldn't specify ESX host name"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         try:
             manager.create_virtual_switch(self.name, self.ports, host_name)
+            self.logger.info("Virtual switch '{}' successfully created".format(self.name))
             return self
-        except Manager.ExistenceException:
+        except Manager.ExistenceException as e:
+            self.logger.error(e.message)
             raise
-        except Manager.CreatorException:
+        except Manager.CreatorException as e:
+            self.logger.error(e.message)
             raise
 
     def destroy(self, manager, host_name):
@@ -73,12 +96,20 @@ class Switch(object):
         :raise: AttributeError, ExistenceException, CreatorException
         """
         if not manager:
-            raise AttributeError("Couldn't specify ESX manager")
+            msg = "Couldn't specify ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         if not host_name:
-            raise AttributeError("Couldn't specify ESX host name")
+            msg = "Couldn't specify ESX host name"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         try:
             manager.destroy_virtual_switch(self.name, host_name)
-        except Manager.ExistenceException:
+            self.logger.info("Virtual switch '{}' successfully destroyed".format(self.name))
+        except Manager.ExistenceException as e:
+            msg = '%s. %s' % (e.message, 'Nothing could be destroyed')
+            self.logger.warning(msg)
             raise
-        except Manager.CreatorException:
+        except Manager.CreatorException as e:
+            self.logger.error(e.message)
             raise
