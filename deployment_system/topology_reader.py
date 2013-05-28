@@ -158,6 +158,8 @@ class TopologyReader(object):
             disk_space = None
         try:
             config = self.__str_to_list_strip(self.config.get(vm, self.VM_CONFIG))
+            if False in config:
+                config = False
         except:
             self.logger.debug("Not specified configuration for '%s'" % vm)
             config = None

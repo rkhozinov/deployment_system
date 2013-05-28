@@ -91,7 +91,8 @@ class Topology(object):
                 time.sleep(30)
 
             for vm in self.vms:
-                vm.configure(host_address=self.host_address, host_user=self.host_user, host_password=self.host_password)
+                if not (vm.configuration == False) :
+                    vm.configure(host_address=self.host_address, host_user=self.host_user, host_password=self.host_password)
 
         except Exception as e:
             self.logger.error(e.message)
