@@ -5,6 +5,8 @@ import pexpect
 
 import lib.hatchery as Manager
 
+HD_COPY_TIMEOUT = 900
+
 
 class VirtualMachine(object):
     DISK_DEFAULT_SPACE = 2048
@@ -62,7 +64,7 @@ class VirtualMachine(object):
                                   memorysize=self.memory,
                                   cpucount=self.cpu,
                                   disk_space=self.disk_space,
-                                  create_hard_drive = not bool(self.hard_disk))
+                                  create_hard_drive=not bool(self.hard_disk))
             self.logger.info("Virtual machine '%s' was created successfully" % self.name)
         except Manager.ExistenceException as e:
             self.logger.error(e.message)
@@ -163,7 +165,7 @@ class VirtualMachine(object):
 
             for cmd in commands:
                 child.sendline(cmd)
-            time.sleep(10)
+                child.expect(".*\# ", timeout=HD_COPY_TIMEOUT)
             child.close()
 
             manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style, space=self.disk_space)
@@ -297,11 +299,10 @@ class VirtualMachine(object):
             time.sleep(1)
             self.logger.info("Virtual machine '%s' was connected successfully" % self.name)
 
-
             for option in configuration:
                 output_start = option.find('@exp')
                 send = option[:output_start]
-                expected = option[output_start+5:]
+                expected = option[output_start + 5:]
                 vmctrl.sendline(send)
                 vmctrl.expect(expected)
                 self.logger.info("Option '%s' was sent successfully to virtual machine '%s'" % (option, self.name))
