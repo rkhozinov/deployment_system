@@ -15,7 +15,7 @@ class VirtualMachine(object):
 
     def __init__(self, name, memory=512, cpu=2, disk_space=None, hard_disk=None,
                  connected_networks=None, iso=None,
-                 description=None, configuration=None):
+                 description=None, configuration=None, vnc_port=None):
 
         self.logger = logging.getLogger(self.__module__)
         if not name:
@@ -47,6 +47,8 @@ class VirtualMachine(object):
         self.iso = iso
         self.serial_port_path = None
         self.path = None
+        self.vnc_port = vnc_port
+
 
     def create(self, manager, resource_pool_name, host_name=None):
         if not isinstance(manager, Manager.Creator):

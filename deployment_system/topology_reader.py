@@ -48,6 +48,7 @@ class TopologyReader(object):
     # VM_PASSWORD = 'password'
     # VM_NEIGHBOURS = 'neighbours'
     VM_HARD_DISK = 'hard_disk'
+    VNC_PORT = 'vnc_port'
 
     def __init__(self, config_path):
         """
@@ -94,6 +95,7 @@ class TopologyReader(object):
         except ConfigParser.Error as e:
             self.logger.error(e.message)
             raise e
+
 
     def __str_to_list(self, string):
         """
@@ -168,6 +170,12 @@ class TopologyReader(object):
         except:
             self.logger.debug("Not specified networks for '%s'" % vm)
             networks = None
+
+        try:
+            vnc_port = self.config.get(vm, self.VNC_PORT)
+        except:
+            self.logger.debug("Not specified vnc port for '%s'" % vm)
+            vnc_port = None
             # try:
             #     neighbours = self.__str_to_list(self.config.get(vm, self.VM_NEIGHBOURS))
             # except:
@@ -196,7 +204,8 @@ class TopologyReader(object):
                               iso=iso,
                               description=description,
                               configuration=config,
-                              hard_disk=hard_disk)
+                              hard_disk=hard_disk,
+                              vnc_port=vnc_port)
 
 
     def __get_network(self, net):
