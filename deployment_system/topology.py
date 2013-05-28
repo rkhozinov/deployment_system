@@ -70,23 +70,29 @@ class Topology(object):
                     Switch(sw_name).create(self.manager, self.host_name).add_network(net, self.manager, self.host_name)
                 else:
                     # create simple networks on shared switch
+                    net.name = "%s_%s" % (self.resource_pool, net.name)
                     shared_switch.add_network(net, self.manager, self.host_name)
 
             # creates virtual machines
-            vm_name = None
             for vm in self.vms:
-                vm_name = "{}_{}".format(self.resource_pool, vm.name)
-                vm.name = vm_name
+                vm.name = "{}_{}".format(self.resource_pool, vm.name)
+
+                for i in range(len(vm.connected_networks)):
+                    tmp = [k for k in self.networks if k.name == vm.connected_networks[i]]
+                    if tmp:
+                        vm.connected_networks[i] = "%s_%s"%(self.resource_pool, vm.connected_networks[i])
+
+
                 vm.create(self.manager, self.resource_pool, self.host_name)
                 vm.add_serial_port(manager=self.manager, host_address=self.host_address,
                                    host_user=self.host_user, host_password=self.host_password)
                 if vm.hard_disk:
                     vm.add_hard_disk(manager=self.manager, host_address=self.host_address,
-                                   host_user=self.host_user, host_password=self.host_password,
-                                   hard_disk=vm.hard_disk)
+                                     host_user=self.host_user, host_password=self.host_password,
+                                     hard_disk=vm.hard_disk)
                 if vm.vnc_port:
                     vm.add_vnc_access(manager=self.manager, host_address=self.host_address,
-                                   host_user=self.host_user, host_password=self.host_password)
+                                      host_user=self.host_user, host_password=self.host_password)
                 vm.power_on(self.manager)
 
             #todo: add boot-time
@@ -94,8 +100,9 @@ class Topology(object):
                 time.sleep(30)
 
             for vm in self.vms:
-                if not (vm.configuration == False) :
-                    vm.configure(host_address=self.host_address, host_user=self.host_user, host_password=self.host_password)
+                if not (vm.configuration == False):
+                    vm.configure(host_address=self.host_address, host_user=self.host_user,
+                                 host_password=self.host_password)
 
         except Exception as e:
             self.logger.error(e.message)
