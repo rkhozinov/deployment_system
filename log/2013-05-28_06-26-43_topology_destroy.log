@@ -1,3 +1,0 @@
-05/28/2013 06:26:44 WARNING resource_pool: Couldn't find resource pool 'topology'. Nothing could be destroyed
-05/28/2013 06:26:53 WARNING switch: Couldn't find virtual switch 'sw_topology'. Nothing could be destroyed
-05/28/2013 06:27:03 WARNING switch: Couldn't find virtual switch 'sw_topology_net2'. Nothing could be destroyed
