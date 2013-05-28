@@ -1,0 +1,38 @@
+05/28/2013 05:35:50 INFO topology_reader: Configuration /home/rkhozinov/PycharmProjects/deployment_system/tests/etc/topology.ini was read successfully
+05/28/2013 05:35:50 INFO topology_reader: ESX vCenter credentials was read successfully
+05/28/2013 05:35:50 INFO topology_reader: ESX host name was read successfully
+05/28/2013 05:35:50 INFO topology_reader: ESX host credentials was read successfully
+05/28/2013 05:35:50 INFO topology_reader: Common iso image is specified to '/vfms/volumes/datastore1/vyatta_ds.iso'
+05/28/2013 05:35:50 INFO topology_reader: Network list was read successfully: ['net1', 'net2', 'net3']
+05/28/2013 05:35:50 INFO topology_reader: VM list was read successfully: ['vm_test1', 'vm_test2', 'vm_test3']
+05/28/2013 05:35:50 INFO topology_reader: Not specified memory for 'vm_test1'
+05/28/2013 05:35:50 INFO topology_reader: Not specified cpu count for 'vm_test1'
+05/28/2013 05:35:50 INFO topology_reader: Not specified hard disk for 'vm_test2'
+05/28/2013 05:35:50 INFO topology_reader: Not specified hard disk for 'vm_test3'
+05/28/2013 05:35:50 INFO topology_reader: 'net1' will be used in promiscuous mode
+05/28/2013 05:35:50 INFO topology_reader: 'net2' will be used in promiscuous mode
+05/28/2013 05:35:50 INFO topology_reader: 'net2' will be used in isolated mode
+05/28/2013 05:35:50 INFO topology_reader: 'net3' will be used in promiscuous mode
+05/28/2013 05:35:51 INFO resource_pool: Resource pool 'topology' successfully created
+05/28/2013 05:36:00 INFO switch: Virtual switch 'sw_topology' successfully created
+05/28/2013 05:36:09 INFO switch: Network 'net1' successfully added to virtual switch 'sw_topology'
+05/28/2013 05:36:20 INFO switch: Virtual switch 'sw_topology_net2' successfully created
+05/28/2013 05:36:29 INFO switch: Network 'net2' successfully added to virtual switch 'sw_topology_net2'
+05/28/2013 05:36:37 INFO switch: Network 'net3' successfully added to virtual switch 'sw_topology'
+05/28/2013 05:36:51 INFO virtual_machine: Virtual machine topology_vm_test1 was successfully created
+05/28/2013 05:36:53 INFO virtual_machine: Successfully connection to virtual machine 'topology_vm_test1'
+05/28/2013 05:36:54 INFO virtual_machine: Serial port for virtual machine 'topology_vm_test1' was successfully added and available on '/vmfs/volumes/datastore1/serial_ports/topology_vm_test1'
+05/28/2013 05:37:00 INFO virtual_machine: Virtual machine's 'topology_vm_test1' power is turned on
+05/28/2013 05:37:13 INFO virtual_machine: Virtual machine topology_vm_test2 was successfully created
+05/28/2013 05:37:15 INFO virtual_machine: Successfully connection to virtual machine 'topology_vm_test2'
+05/28/2013 05:37:16 INFO virtual_machine: Serial port for virtual machine 'topology_vm_test2' was successfully added and available on '/vmfs/volumes/datastore1/serial_ports/topology_vm_test2'
+05/28/2013 05:37:21 INFO virtual_machine: Virtual machine's 'topology_vm_test2' power is turned on
+05/28/2013 05:37:35 INFO virtual_machine: Virtual machine topology_vm_test3 was successfully created
+05/28/2013 05:37:36 INFO virtual_machine: Successfully connection to virtual machine 'topology_vm_test3'
+05/28/2013 05:37:37 INFO virtual_machine: Serial port for virtual machine 'topology_vm_test3' was successfully added and available on '/vmfs/volumes/datastore1/serial_ports/topology_vm_test3'
+05/28/2013 05:37:43 INFO virtual_machine: Virtual machine's 'topology_vm_test3' power is turned on
+05/28/2013 05:37:44 INFO virtual_machine: ESX host '172.18.93.30' was connected successfully
+05/28/2013 05:37:45 INFO virtual_machine: Virtual machine 'topology_vm_test1' was connected successfully
+05/28/2013 05:37:45 ERROR virtual_machine: Couldn't configure the virtual machine 'topology_vm_test1'
+05/28/2013 05:37:45 ERROR topology: Couldn't configure the virtual machine 'topology_vm_test1'
+05/28/2013 05:37:45 ERROR main: Couldn't configure the virtual machine 'topology_vm_test1'

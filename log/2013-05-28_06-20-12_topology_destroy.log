@@ -1,0 +1,19 @@
+05/28/2013 06:20:12 INFO topology_reader: Configuration /home/rkhozinov/PycharmProjects/deployment_system/tests/etc/topology.ini was read successfully
+05/28/2013 06:20:12 INFO topology_reader: ESX vCenter credentials was read successfully
+05/28/2013 06:20:12 INFO topology_reader: ESX host name was read successfully
+05/28/2013 06:20:12 INFO topology_reader: ESX host credentials was read successfully
+05/28/2013 06:20:12 INFO topology_reader: Common iso image is specified to '/vfms/volumes/datastore1/vyatta_ds.iso'
+05/28/2013 06:20:12 INFO topology_reader: Network list was read successfully: ['net1', 'net2', 'net3']
+05/28/2013 06:20:12 INFO topology_reader: VM list was read successfully: ['vm_test1', 'vm_test2', 'vm_test3']
+05/28/2013 06:20:12 INFO topology_reader: Not specified memory for 'vm_test1'
+05/28/2013 06:20:12 INFO topology_reader: Not specified cpu count for 'vm_test1'
+05/28/2013 06:20:12 INFO topology_reader: Not specified hard disk for 'vm_test2'
+05/28/2013 06:20:12 INFO topology_reader: Not specified hard disk for 'vm_test3'
+05/28/2013 06:20:12 INFO topology_reader: 'net1' will be used in promiscuous mode
+05/28/2013 06:20:12 INFO topology_reader: 'net2' will be used in promiscuous mode
+05/28/2013 06:20:12 INFO topology_reader: 'net2' will be used in isolated mode
+05/28/2013 06:20:12 INFO topology_reader: 'net3' will be used in promiscuous mode
+05/28/2013 06:20:13 WARNING resource_pool: Couldn't find resource pool 'topology'. Nothing could be destroyed
+05/28/2013 06:20:22 WARNING switch: Couldn't find virtual switch 'sw_topology'. Nothing could be destroyed
+05/28/2013 06:20:30 WARNING switch: Couldn't find virtual switch 'sw_topology_net2'. Nothing could be destroyed
+05/28/2013 06:20:30 ERROR main: ncalls

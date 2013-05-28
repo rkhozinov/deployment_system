@@ -1,0 +1,42 @@
+05/28/2013 05:24:44 INFO topology_reader: Configuration /home/rkhozinov/PycharmProjects/deployment_system/tests/etc/topology.ini was read successfully
+05/28/2013 05:24:44 INFO topology_reader: ESX vCenter credentials was read successfully
+05/28/2013 05:24:44 INFO topology_reader: ESX host name was read successfully
+05/28/2013 05:24:44 INFO topology_reader: ESX host credentials was read successfully
+05/28/2013 05:24:44 INFO topology_reader: Common iso image is specified to '/vfms/volumes/datastore1/vyatta_ds.iso'
+05/28/2013 05:24:44 INFO topology_reader: Network list was read successfully: ['net1', 'net2', 'net3']
+05/28/2013 05:24:44 INFO topology_reader: VM list was read successfully: ['vm_test1', 'vm_test2', 'vm_test3']
+05/28/2013 05:24:44 INFO topology_reader: Not specified memory for 'vm_test1'
+05/28/2013 05:24:44 INFO topology_reader: Not specified cpu count for 'vm_test1'
+05/28/2013 05:24:44 INFO topology_reader: Not specified hard disk for 'vm_test2'
+05/28/2013 05:24:44 INFO topology_reader: Not specified hard disk for 'vm_test3'
+05/28/2013 05:24:44 INFO topology_reader: 'net1' will be used in promiscuous mode
+05/28/2013 05:24:44 INFO topology_reader: 'net2' will be used in promiscuous mode
+05/28/2013 05:24:44 INFO topology_reader: 'net2' will be used in isolated mode
+05/28/2013 05:24:44 INFO topology_reader: 'net3' will be used in promiscuous mode
+05/28/2013 05:24:45 INFO resource_pool: Resource pool 'topology' successfully created
+05/28/2013 05:24:55 INFO switch: Virtual switch 'sw_topology' successfully created
+05/28/2013 05:25:04 INFO switch: Network 'net1' successfully added to virtual switch 'sw_topology'
+05/28/2013 05:25:14 INFO switch: Virtual switch 'sw_topology_net2' successfully created
+05/28/2013 05:25:24 INFO switch: Network 'net2' successfully added to virtual switch 'sw_topology_net2'
+05/28/2013 05:25:34 INFO switch: Network 'net3' successfully added to virtual switch 'sw_topology'
+05/28/2013 05:25:48 INFO virtual_machine: Virtual machine topology_vm_test1 was successfully created
+05/28/2013 05:25:51 INFO virtual_machine: Successfully connection to virtual machine 'topology_vm_test1'
+05/28/2013 05:25:52 INFO virtual_machine: Serial port for virtual machine 'topology_vm_test1' was successfully added and available on '/vmfs/volumes/datastore1/serial_ports/topology_vm_test1'
+05/28/2013 05:25:59 INFO virtual_machine: Virtual machine's 'topology_vm_test1' power is turned on
+05/28/2013 05:26:13 INFO virtual_machine: Virtual machine topology_vm_test2 was successfully created
+05/28/2013 05:26:16 INFO virtual_machine: Successfully connection to virtual machine 'topology_vm_test2'
+05/28/2013 05:26:17 INFO virtual_machine: Serial port for virtual machine 'topology_vm_test2' was successfully added and available on '/vmfs/volumes/datastore1/serial_ports/topology_vm_test2'
+05/28/2013 05:26:24 INFO virtual_machine: Virtual machine's 'topology_vm_test2' power is turned on
+05/28/2013 05:26:39 INFO virtual_machine: Virtual machine topology_vm_test3 was successfully created
+05/28/2013 05:26:42 INFO virtual_machine: Successfully connection to virtual machine 'topology_vm_test3'
+05/28/2013 05:26:43 INFO virtual_machine: Serial port for virtual machine 'topology_vm_test3' was successfully added and available on '/vmfs/volumes/datastore1/serial_ports/topology_vm_test3'
+05/28/2013 05:26:50 INFO virtual_machine: Virtual machine's 'topology_vm_test3' power is turned on
+05/28/2013 05:26:50 INFO virtual_machine: ESX host '172.18.93.30' was connected successfully
+05/28/2013 05:26:52 INFO virtual_machine: Virtual machine 'topology_vm_test1' was connected successfully
+05/28/2013 05:27:00 INFO virtual_machine: Virtual machine 'topology_vm_test1' was configured successfully
+05/28/2013 05:27:02 INFO virtual_machine: ESX host '172.18.93.30' was connected successfully
+05/28/2013 05:27:03 INFO virtual_machine: Virtual machine 'topology_vm_test2' was connected successfully
+05/28/2013 05:27:10 INFO virtual_machine: Virtual machine 'topology_vm_test2' was configured successfully
+05/28/2013 05:27:12 INFO virtual_machine: ESX host '172.18.93.30' was connected successfully
+05/28/2013 05:27:13 INFO virtual_machine: Virtual machine 'topology_vm_test3' was connected successfully
+05/28/2013 05:27:21 INFO virtual_machine: Virtual machine 'topology_vm_test3' was configured successfully
