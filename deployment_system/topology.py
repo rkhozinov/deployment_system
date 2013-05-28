@@ -84,6 +84,9 @@ class Topology(object):
                     vm.add_hard_disk(manager=self.manager, host_address=self.host_address,
                                    host_user=self.host_user, host_password=self.host_password,
                                    hard_disk=vm.hard_disk)
+                if vm.vnc_port:
+                    vm.add_vnc_access(manager=self.manager, host_address=self.host_address,
+                                   host_user=self.host_user, host_password=self.host_password)
                 vm.power_on(self.manager)
 
             #todo: add boot-time

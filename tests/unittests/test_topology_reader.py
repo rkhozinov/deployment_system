@@ -205,16 +205,19 @@ class TestTopologyReader(unittest.TestCase):
                     vm.create(manager=manager, resource_pool_name=self.rpname, host_name=config.host_name)
                 except Manager.ExistenceException:
                     pass
-                try:
-                    vm.add_serial_port(manager=manager, host_address=config.host_address,
-                                       host_user=config.host_user, host_password=config.host_password)
-                except Manager.ExistenceException:
-                    pass
+                # try:
+                #     vm.add_serial_port(manager=manager, host_address=config.host_address,
+                #                        host_user=config.host_user, host_password=config.host_password)
+                # except Manager.ExistenceException:
+                #     pass
 
                 if vm.hard_disk:
                     vm.add_hard_disk(manager=manager, host_address=config.host_address,
                                    host_user=config.host_user, host_password=config.host_password,
                                    hard_disk=vm.hard_disk)
+                if vm.vnc_port:
+                    vm.add_vnc_access(manager=manager, host_address=config.host_address,
+                                   host_user=config.host_user, host_password=config.host_password)
                 try:
                     vm.power_on(manager)
                 except Manager.ExistenceException:

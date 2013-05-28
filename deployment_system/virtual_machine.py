@@ -180,6 +180,58 @@ class VirtualMachine(object):
             self.logger.error(e.message)
             raise
 
+    def add_vnc_access(self, manager, host_address, host_user, host_password):
+
+        if not isinstance(manager, Manager.Creator):
+            raise AttributeError("Couldn't specify the ESX manager")
+        if not host_address:
+            raise AttributeError("Couldn't specify the ESX host address")
+        if not host_user:
+            raise AttributeError("Couldn't specify the ESX host user")
+        if not host_password:
+            raise AttributeError("Couldn't specify the ESX host password")
+
+        try:
+            # try to get vm path
+            path = manager.get_vm_path(self.name)
+        except Manager.ExistenceException:
+            raise
+        except Manager.CreatorException:
+            raise
+
+        path_temp = path.split(' ')
+        datastore = path_temp[0][1:-1]
+        vmx_config_path = '/vmfs/volumes/' + datastore + '/' + path_temp[1]
+
+        # commands for adding a vnc access to the vm configuration file
+        commands = []
+        commands.append('sed -i \'$ a RemoteDisplay.vnc.enabled = "TRUE"\' ' + vmx_config_path)
+        commands.append('sed -i \'$ a RemoteDisplay.vnc = "%s" \' '%self.vnc_port + vmx_config_path)
+
+        # connect to ESX host
+        child = None
+        try:
+            child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+            child.expect(".*assword:")
+            child.sendline(host_password)
+            child.expect(".*\# ", timeout=2)
+            self.logger.info("Successfully connection to virtual machine '%s'" % self.name)
+            # delete existence vnc options from the configuration file
+            child.sendline("sed -e '/^RemoteDisplay/d' %s > tmp1 && mv tmp1 %s"
+                           % (vmx_config_path, vmx_config_path))
+            # send commands to ESX host
+            for cmd in commands:
+                child.sendline(cmd)
+            self.logger.info("VNC access for virtual machine '%s' was added successfully and available on '%s'" % (
+                self.name, self.vnc_port))
+
+        except Exception:
+            msg = "Can't connect to host via ssh"
+            self.logger.error(msg)
+            raise Manager.CreatorException(msg)
+        finally:
+            child.close()
+
     def get_path(self, manager):
         if not isinstance(manager, Manager.Creator):
             raise AttributeError("Couldn't specify the ESX manager")
