@@ -163,14 +163,13 @@ class Creator:
         try:
             self.esx_server._proxy.CreateResourcePool(req)
         except Exception as inst:
+            self._disconnect_from_esx()
             inst = str(inst)
             if "already exist" in inst:
-                message = "- '" + name + "'" + "already exist"
-                raise ExistenceException("Couldn't create resource pool " + message)
+                raise ExistenceException("Couldn't create resource pool '%s', because it already exist" % name)
             else:
                 raise CreatorException("Couldn't create the resource pool with name '%s'" % name)
 
-        self._disconnect_from_esx()
 
     def destroy_resource_pool(self, name, esx_hostname=None):
         """
@@ -190,9 +189,7 @@ class Creator:
             rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
                            if v == rp_name]
         except IndexError:
-            raise ExistenceException("Couldn't find resource pool")
-        if len(rp_mor_temp) == 0:
-            raise ExistenceException("Couldn't find resource pool " + name)
+            raise ExistenceException("Couldn't find resource pool '%s'" % name)
 
         rpmor = ''
         if esx_hostname:
@@ -215,11 +212,10 @@ class Creator:
 
         try:
             self.esx_server._proxy.Destroy_Task(req)
-            self._disconnect_from_esx()
+            # self._disconnect_from_esx()
         except Exception:
-            raise
-        finally:
             self._disconnect_from_esx()
+            raise
 
 
     def destroy_resource_pool_with_vms(self, name, esx_hostname=None):
@@ -243,9 +239,7 @@ class Creator:
             rp_mor_temp = [k for k, v in self.esx_server.get_resource_pools().items()
                            if v == rp_name]
         except IndexError:
-            raise CreatorException("Couldn't find resource pool")
-        if len(rp_mor_temp) == 0:
-            raise CreatorException("Couldn't find resource pool")
+            raise CreatorException("Couldn't find resource pool '%s'" % name)
 
         rpmor = ''
         if esx_hostname:
@@ -259,7 +253,7 @@ class Creator:
         elif len(rp_mor_temp) == 1:
             rpmor = rp_mor_temp[0]
         else:
-            raise CreatorException("ESX Hostname must be specified")
+            raise ExistenceException("Couldn't find resource pool '%s'" % name)
 
         prop = VIProperty(self.esx_server, rpmor)
         vms = [str(k.name) for k in prop.vm]
@@ -267,7 +261,7 @@ class Creator:
             self.destroy_vm(k)
         self.destroy_resource_pool(rp_name[10:], esx_hostname)
 
-        self._disconnect_from_esx()
+        # self._disconnect_from_esx()
 
     def destroy_vm(self, vmname):
         """
@@ -300,9 +294,8 @@ class Creator:
             if status != task.STATE_SUCCESS:
                 raise CreatorException("Couldn't destroy vm - " + task.get_error_message())
         except Exception:
-            raise CreatorException("Couldn't destroy the virtual machine %s" % vmname)
-        finally:
             self._disconnect_from_esx()
+            raise CreatorException("Couldn't destroy the virtual machine %s" % vmname)
 
     def create_vm_old(self, vmname, esx_hostname=None, iso=None, datacenter=None, resource_pool='/', networks=None,
                       datastore=None, description=None, create_hard_drive=True, guestosid="debian4Guest",
@@ -480,7 +473,7 @@ class Creator:
         try:
             iso = vm_options['iso']
             #todo: hide magic
-            iso = iso[iso.find(ds_name) + len(ds_name) +1 : ]
+            iso = iso[iso.find(ds_name) + len(ds_name) + 1:]
         except KeyError:
             iso = None
         try:
@@ -659,9 +652,9 @@ class Creator:
         task = VITask(taskmor, self.esx_server)
         task.wait_for_state([task.STATE_SUCCESS, task.STATE_ERROR])
         if task.get_state() == task.STATE_ERROR:
+            self._disconnect_from_esx()
             raise CreatorException("Error creating vm: %s" % task.get_error_message())
 
-        self._disconnect_from_esx()
 
     def create_virtual_switch(self, name, num_ports, esx_hostname=None):
         """
@@ -709,7 +702,7 @@ class Creator:
         except Exception:
             raise CreatorException("Couldn't create Switch")
 
-        self._disconnect_from_esx()
+        # self._disconnect_from_esx()
 
     def destroy_virtual_switch(self, name, esx_hostname=None):
         """
@@ -748,8 +741,8 @@ class Creator:
             except Exception:
                 raise CreatorException("Couldn't remove virtual switch '%s'" % name)
         else:
-            raise ExistenceException("Couldn't find virtual switch %s" % name)
-        self._disconnect_from_esx()
+            raise ExistenceException("Couldn't find virtual switch '%s'" % name)
+        # self._disconnect_from_esx()
 
     def add_port_group(self, switch_name, vlan_name, esx_hostname=None,
                        vlan_id=4095, promiscuous=False):
@@ -767,12 +760,13 @@ class Creator:
 
         vlan_id = int(vlan_id)
 
+        hosts=self.esx_server.get_hosts()
         try:
             if esx_hostname:
-                host_system = [k for k, v in self.esx_server.get_hosts().items()
+                host_system = [k for k, v in hosts.items()
                                if v == esx_hostname][0]
             else:
-                host_system = self.esx_server.get_hosts().keys()[0]
+                host_system = hosts.keys()[0]
         except Exception:
             raise CreatorException("Couldn't find host")
 
@@ -802,12 +796,14 @@ class Creator:
         except Exception as inst:
             message = str(inst)
             if 'already exist' in message:
-                message = ' - The specified key, vlan_name, or identifier already exists.'
-                raise ExistenceException("Error with creation port group" + message)
+                raise ExistenceException(
+                    "Couldn't create network '%s:%s' on switch '%s', because it already exists" % vlan_name,
+                    vlan_id, switch_name)
             else:
-                raise CreatorException("Error with creation port group" + message)
+                raise CreatorException("Couldn't create network '%s:%s' on switch '%s'" % vlan_name,
+                                       vlan_id, switch_name)
 
-        self._disconnect_from_esx()
+        # self._disconnect_from_esx()
 
     def is_connected(self):
         """
@@ -836,7 +832,6 @@ class Creator:
             vm = self.esx_server.get_vm_by_name(vmname)
             if not vm.is_powered_on() and not vm.is_powering_on():
                 vm.power_on()
-            self._disconnect_from_esx()
         except Exception as error:
             self._disconnect_from_esx()
             raise CreatorException(error)
@@ -859,7 +854,6 @@ class Creator:
             vm = self.esx_server.get_vm_by_name(vmname)
             if not vm.is_powered_off() and not vm.is_powering_off():
                 vm.power_off()
-            self._disconnect_from_esx()
         except Exception as error:
             self._disconnect_from_esx()
             raise CreatorException(error)
@@ -884,7 +878,6 @@ class Creator:
                 vm.reset()
             else:
                 vm.power_on()
-            self._disconnect_from_esx()
         except Exception as error:
             self._disconnect_from_esx()
             raise CreatorException(error)
@@ -907,12 +900,12 @@ class Creator:
         try:
             return vm.get_property('path')
         except Exception as error:
-            raise CreatorException(error)
-        finally:
             self._disconnect_from_esx()
+            raise CreatorException(error)
 
 
-    #todo: REVIEW ME
+            pass
+        #todo: REVIEW ME
     def add_existence_vmdk(self, vm_name, path, space):
         """
         Add existence hard drive (.vmdk) to the virtual machine
@@ -972,8 +965,8 @@ class Creator:
         status = vi_task.wait_for_state([vi_task.STATE_SUCCESS,
                                          vi_task.STATE_ERROR])
         if status == vi_task.STATE_ERROR:
+            self._disconnect_from_esx()
             raise CreatorException("ERROR CONFIGURING VM:%s" % vi_task.get_error_message())
-        self._disconnect_from_esx()
 
     # todo: add comment
     def _get_portgroup_name(self, name, esx_hostname=None):
@@ -1001,10 +994,10 @@ class Creator:
         for pg in prop.configManager.networkSystem.networkInfo.portgroup:
             if pg.spec.name.lower() == name.lower():
                 real_name = pg.spec.name
-                self._disconnect_from_esx()
+                # self._disconnect_from_esx()
                 return real_name
 
-        self._disconnect_from_esx()
+        # self._disconnect_from_esx()
         return None
 
 
@@ -1022,7 +1015,7 @@ class Creator:
             exist = True
         except:
             pass
-        self._disconnect_from_esx()
+        # self._disconnect_from_esx()
         return exist
 
     # todo: add comment
