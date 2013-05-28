@@ -1,9 +1,11 @@
+import ConfigParser
 import logging
+import time
 
-from resource_pool import ResourcePool
-from switch import Switch
-from topology_reader import TopologyReader
-import lib.hatchery as Manager
+from .resource_pool import ResourcePool
+from .switch import Switch
+from .topology_reader import TopologyReader
+from lib import hatchery as Manager
 
 
 class Topology(object):
@@ -14,8 +16,7 @@ class Topology(object):
         :param config_path: configuration file
         :param resource_pool: stack name for topology
         """
-        self.logger = logging.getLogger(__name__)
-        logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+        self.logger = logging.getLogger(self.__module__)
 
         if not config_path:
             ae = AttributeError("Couldn't specify configuration file name")
@@ -29,68 +30,103 @@ class Topology(object):
         try:
             self.config = TopologyReader(config_path)
             self.resource_pool = resource_pool
-            self.vm_lst = self.config.get_virtual_machines()
-            self.networks_lst = self.config.get_networks()
+            self.vms = self.config.get_virtual_machines()
+            self.networks = self.config.get_networks()
             self.host_name = self.config.host_name
-            self.manager = Manager.Creator(self.resource_pool,
-                                           self.config.host_user,
-                                           self.config.host_password)
+            self.host_password = self.config.host_password
+            self.host_user = self.config.host_user
+            self.host_address = self.config.host_address
+        except ConfigParser.Error as e:
+            self.logger.error(e.message)
+            raise e
+
+        try:
+            self.manager = Manager.Creator(self.config.manager_address,
+                                           self.config.manager_user,
+                                           self.config.manager_password)
         except Exception as e:
             self.logger.error(e.message)
             raise e
+
 
     def create(self):
         try:
             # creates a resource pool for store virtual machines
             ResourcePool(self.resource_pool).create(self.manager)
+            # self.logger.info('Resource pool {} successfully created'.format(self.resource_pool))
 
             # creates networks and switches
-            for net in self.networks_lst:
-                if net.isolated:
-                    sw_name = self.config.SWITCH_PREFIX + '_' + self.resource_pool + '_' + net.name
-                else:
-                    sw_name = self.config.SWITCH_PREFIX + '_' + self.resource_pool
 
-                switch = Switch(sw_name, net.ports)
-                switch.create(self.manager, self.config.host_name)
-                self.logger.info("Virtual switch '{}' was successfully created".format(switch.name))
-                switch.add_network(network=net, manager=self.manager, host_name=self.config.host_name)
-                self.logger.info(
-                    "Network '{net}' was successfully added to switch {sw_name}".format(net=net, sw_name=switch.name))
+            # CREATE NETWORKS
+            shared_sw_name = '%s_%s' % (self.config.SWITCH_PREFIX, self.resource_pool)
+            shared_switch = Switch(shared_sw_name)
+            shared_switch.create(self.manager, self.host_name)
+
+            for net in self.networks:
+                # create isolated networks
+                if net.isolated:
+                    sw_name = "%s_%s_%s" % (self.config.SWITCH_PREFIX, self.resource_pool, net.name)
+                    Switch(sw_name).create(self.manager, self.host_name).add_network(net, self.manager, self.host_name)
+                else:
+                    # create simple networks on shared switch
+                    shared_switch.add_network(net, self.manager, self.host_name)
 
             # creates virtual machines
             vm_name = None
-            for vm in self.vm_lst:
-                vm_name = self.resource_pool + '_' + vm_name
-                vm.create(vm_name, host_name=self.config.host_address)
-                self.logger.info("Virtual machine '{vn_name} was successfully created'".format(vm_name))
+            for vm in self.vms:
+                vm_name = "{}_{}".format(self.resource_pool, vm.name)
+                vm.name = vm_name
+                vm.create(self.manager, self.resource_pool, self.host_name)
+                vm.add_serial_port(manager=self.manager, host_address=self.host_address,
+                                   host_user=self.host_user, host_password=self.host_password)
+                vm.power_on(self.manager)
+
+            #todo: add boot-time
+            if len(self.vms) < 2:
+                time.sleep(30)
+
+            for vm in self.vms:
+                vm.configure(host_address=self.host_address, host_user=self.host_user, host_password=self.host_password)
+
         except Exception as e:
             self.logger.error(e.message)
             raise e
 
-    def destroy(self, destroy_virtual_machines=False):
+    def destroy(self, destroy_virtual_machines=False, destroy_networks=False):
+
         try:
             # destroys resource pool with vms
-            ResourcePool(self.resource_pool).destroy(destroy_virtual_machines, with_vms=True)
-        except Manager.ExistenceException as e:
-            self.logger.warning(e.message)
+            ResourcePool(self.resource_pool).destroy(self.manager, with_vms=destroy_virtual_machines)
+            # self.logger.debug("Resource pool '{} successfully created".format(self.resource_pool))
+        except Manager.ExistenceException:
+            pass
+        except Manager.CreatorException:
+            raise
+        except Exception as e:
+            self.logger.error(e.message)
+            raise e
 
 
         # destroys shared switch with connected networks
-        try:
-            sw_name = self.resource_pool
-            Switch(sw_name).destroy(self.manager, self.config.host_name)
-            self.logger.info("Shared switch '{sw_name}' was successfully deleted".format(sw_name))
-        except Exception as e:
-            self.logger.warning(e.message)
+        if destroy_networks:
+            try:
+                sw_name = '{prefix}_{rpname}'.format(prefix=self.config.SWITCH_PREFIX, rpname=self.resource_pool)
+                Switch(sw_name).destroy(self.manager, self.config.host_name)
+                # self.logger.info("Shared switch '{}' was successfully destroyed".format(sw_name))
+            except Manager.ExistenceException:
+                pass
+            except Manager.CreatorException:
+                pass
+                # self.logger.error(e.message)
 
-        # destroys switch with isolated networks
-        for net in self.networks_lst:
-            if net.isolated:
-                try:
-                    sw_name = self.resource_pool + '_' + net.name
-                    Switch(sw_name).destroy(self.manager, self.config.host_name)
-                    self.logger.info("Isolated switch '{sw_name}' was successfully deleted".format(sw_name))
-                except Exception as e:
-                    self.logger.warning(e.message)
+            # destroys switch with isolated networks
+            for net in self.networks:
+                if net.isolated:
+                    try:
+                        sw_name = '{}_{}_{}'.format(self.config.SWITCH_PREFIX, self.resource_pool, net.name)
+                        Switch(sw_name).destroy(self.manager, self.config.host_name)
+                        # self.logger.info("Isolated switch '{}' was successfully destroyed".format(sw_name))
+                    except Manager.CreatorException:
+                        pass
+                        # self.logger.error(e.message)
 
