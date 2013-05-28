@@ -1,7 +1,7 @@
 import logging
 import ConfigParser
-from deployment_system.network import Network
-from deployment_system.virtual_machine import VirtualMachine
+from .network import Network
+from .virtual_machine import VirtualMachine
 
 
 class TopologyReader(object):
@@ -55,41 +55,42 @@ class TopologyReader(object):
         :param config_path: topology configuration file
         :raise: ConfigParser.Error
         """
-        self.logger = logging.getLogger(__name__)
-        logging.basicConfig(format='%(asctime)s %(levelname)s:%(name)s:%(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+        self.logger = logging.getLogger(self.__module__)
 
         try:
             # init config
             self.config = ConfigParser.RawConfigParser()
             self.config.read(config_path)
-            self.logger.info('Configuration {config} was read successfully'.format(config=config_path))
+            self.logger.debug('Configuration {config} was read successfully'.format(config=config_path))
 
 
             # esx manager settings
             self.manager_address = self.config.get(self.MANAGER, self.MANAGER_ADDRESS)
             self.manager_user = self.config.get(self.MANAGER, self.MANAGER_USER)
             self.manager_password = self.config.get(self.MANAGER, self.MANAGER_PASSWORD)
-            self.logger.info('ESX vCenter credentials was read successfully')
+            self.logger.debug('ESX vCenter credentials was read successfully')
 
             # esx host settings
             # need for creating esx entities
             self.host_name = self.config.get(self.HOST, self.HOST_NAME)
+            self.logger.debug('ESX host name was read successfully')
 
             # esx address and credentials need for virtual machine configuration
             self.host_address = self.config.get(self.HOST, self.HOST_ADDRESS)
             self.host_user = self.config.get(self.HOST, self.HOST_USER)
             self.host_password = self.config.get(self.HOST, self.HOST_PASSWORD)
-            self.logger.info('ESX host credentials was read successfully')
+            self.logger.debug('ESX host credentials was read successfully')
 
             try:
                 self.iso = self.config.get(self.SETTINGS, self.ISO)
+                self.logger.debug("Common iso image is specified to '%s'" % self.iso)
             except ConfigParser.NoOptionError:
-                self.logger.info("Common iso image not specified")
+                self.logger.debug("Common iso image is not specified")
 
             self.networks = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.NETWORKS))
-            self.logger.info("Network list was read successfully: {nets}".format(nets=self.networks))
+            self.logger.debug("Network list was read successfully: {nets}".format(nets=self.networks))
             self.vms = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.VMS))
-            self.logger.info("VM list was read successfully: {vms}".format(vms=self.vms))
+            self.logger.debug("VM list was read successfully: {vms}".format(vms=self.vms))
         except ConfigParser.Error as e:
             self.logger.error(e.message)
             raise e
@@ -132,36 +133,36 @@ class TopologyReader(object):
             description = self.config.get(vm, self.VM_DESCR)
         except:
             description = None
-            self.logger.info("Not specified description for '%s'" % vm)
+            self.logger.debug("Not specified description for '%s'" % vm)
         try:
             memory = self.config.get(vm, self.VM_MEM)
         except:
-            self.logger.info("Not specified memory for '%s'" % vm)
+            self.logger.debug("Not specified memory for '%s'" % vm)
             memory = None
         try:
             cpu = self.config.get(vm, self.VM_CPU)
         except:
-            self.logger.info("Not specified cpu count for '%s'" % vm)
+            self.logger.debug("Not specified cpu count for '%s'" % vm)
             cpu = None
         try:
             hard_disk = self.config.get(vm, self.VM_HARD_DISK)
         except:
-            self.logger.info("Not specified hard disk for '%s'" % vm)
+            self.logger.debug("Not specified hard disk for '%s'" % vm)
             hard_disk = None
         try:
             disk_space = self.config.get(vm, self.VM_DISK_SPACE)
         except:
-            self.logger.info("Not specified disk space for '%s'" % vm)
+            self.logger.debug("Not specified disk space for '%s'" % vm)
             disk_space = None
         try:
             config = self.__str_to_list_strip(self.config.get(vm, self.VM_CONFIG))
         except:
-            self.logger.info("Not specified configuration for '%s'" % vm)
+            self.logger.debug("Not specified configuration for '%s'" % vm)
             config = None
         try:
             networks = self.__str_to_list_strip(self.config.get(vm, self.VM_NETWORKS))
         except:
-            self.logger.info("Not specified networks for '%s'" % vm)
+            self.logger.debug("Not specified networks for '%s'" % vm)
             networks = None
             # try:
             #     neighbours = self.__str_to_list(self.config.get(vm, self.VM_NEIGHBOURS))
@@ -170,14 +171,15 @@ class TopologyReader(object):
 
         try:
             iso = self.config.get(vm, self.VM_ISO)
+
         except:
             iso = None
-            self.logger.info("Not specified iso image for '%s'" % vm)
+            self.logger.debug("Not specified iso image for '%s'" % vm)
 
         # if not specific a iso-image for this vm then will be used the common iso-image
         if not iso and self.iso:
             iso = self.iso
-            self.logger.info("Will be used default iso image %s for '%s'" % (self.iso, vm))
+            self.logger.debug("Will be used default iso image %s for '%s'" % (self.iso, vm))
 
         return VirtualMachine(name=vm,
                               # user=login,
@@ -213,17 +215,19 @@ class TopologyReader(object):
         try:
             try:
                 promiscuous = self.config.getboolean(net, self.NET_PROMISCUOUS)
+                self.logger.debug("'%s' will be used in promiscuous mode" % net)
             except ConfigParser.NoOptionError:
-                self.logger.info("'%s' will be used in not promiscuous mode" % net)
+                self.logger.debug("'%s' will be used in not promiscuous mode" % net)
             try:
                 isolated = self.config.getboolean(net, self.NET_ISOLATED)
+                self.logger.debug("'%s' will be used in isolated mode" % net)
             except ConfigParser.NoOptionError:
-                self.logger.info("'%s' will be used in not isolated mode" % net)
+                pass
             try:
                 ports = self.config.getint(net, self.NET_PORTS)
             except ConfigParser.NoOptionError:
                 ports = self.DEFAULT_PORTS_COUNT
-                self.logger.info("For '%s' will be used %s ports" % (net, self.DEFAULT_PORTS_COUNT))
+                self.logger.debug("For '%s' will be used %s ports" % (net, self.DEFAULT_PORTS_COUNT))
         except ConfigParser.ParsingError as e:
             self.logger.error(e.message)
             raise
