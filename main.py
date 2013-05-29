@@ -32,7 +32,7 @@ args = parser.parse_args()
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
                     format='\t%(module)-16s: %(message)-4s')
-
+os.mkdir(os.curdir + 'log')
 LOG_FILENAME = '../log/%s_%s_%s.log' % (datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), args.rpname, args.action)
 PROFILE_FILE_NAME = '%s.%s' % (LOG_FILENAME.split('.log')[0], 'out')
 
