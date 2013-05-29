@@ -32,9 +32,13 @@ args = parser.parse_args()
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
                     format='\t%(module)-16s: %(message)-4s')
-log_dir = os.curdir + 'log'
-os.mkdir(log_dir)
-LOG_FILENAME = '%s/%s_%s_%s.log' % (log_dir, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), args.rpname, args.action)
+log_dir = '../log'
+try:
+    os.mkdir(log_dir)
+except:
+    pass
+LOG_FILENAME = '%s/%s_%s_%s.log' % (
+log_dir, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), args.rpname, args.action)
 PROFILE_FILE_NAME = '%s.%s' % (LOG_FILENAME.split('.log')[0], 'out')
 
 log_file = logging.FileHandler(filename=LOG_FILENAME, mode='w')
@@ -58,7 +62,7 @@ if args.action == 'create':
         Topology(config_path=args.config, resource_pool=args.rpname).create()
         profiler.disable()
         profiler.dump_stats(PROFILE_FILE_NAME)
-        profiler.print_stats(sort='time')
+        # profiler.print_stats(sort='time')
     except Exception as e:
         logger.error(e.message)
     finally:
@@ -72,7 +76,7 @@ elif args.action == 'destroy':
                                                                              destroy_networks=True)
         profiler.disable()
         profiler.dump_stats(PROFILE_FILE_NAME)
-        profiler.print_stats(sort='time')
+        # profiler.print_stats(sort='time')
     except Exception as e:
         logger.error(e.message)
     finally:
