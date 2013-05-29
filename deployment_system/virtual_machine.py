@@ -20,7 +20,7 @@ import pexpect
 
 import lib.hatchery as Manager
 
-HD_COPY_TIMEOUT = 900
+COPY_TIMEOUT = 900
 
 
 class VirtualMachine(object):
@@ -34,25 +34,20 @@ class VirtualMachine(object):
 
         self.logger = logging.getLogger(self.__module__)
         if not name:
-            raise AttributeError("Couldn't specify a virtual machine name")
-            # if not user:
-        #     raise AttributeError("Couldn't specify a virtual machine user")
-        # if not password:
-        #     raise AttributeError("Couldn't specify a virtual machine password")
+            msg = "Couldn't specify a virtual machine name"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         if hard_disk and not disk_space:
-            raise AttributeError("Couldn't specify a disk space for the hard disk '%s'" % hard_disk)
+            msg = "Couldn't specify a disk space for the hard disk '%s'" % hard_disk
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
-        if disk_space:
-            try:
-                self.disk_space = int(disk_space) * 1024
-            except Exception:
-                self.disk_space = self.DISK_DEFAULT_SPACE * 1024
-        else:
+        try:
+            self.disk_space = int(disk_space) * 1024
+        except Exception:
             self.disk_space = self.DISK_DEFAULT_SPACE * 1024
 
         self.name = name
-        # self.user = user
-        # self.password = password
         self.memory = memory
         self.cpu = cpu
         self.hard_disk = hard_disk
@@ -64,12 +59,15 @@ class VirtualMachine(object):
         self.path = None
         self.vnc_port = vnc_port
 
-
     def create(self, manager, resource_pool_name, host_name=None):
         if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the ESX manager")
+            msg = "Couldn't specify the ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         if not resource_pool_name:
-            raise AttributeError("Couldn't specify the resource pool name")
+            msg = "Couldn't specify the resource pool name"
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
         try:
             manager.create_vm_old(vmname=self.name,
@@ -82,7 +80,7 @@ class VirtualMachine(object):
                                   cpucount=self.cpu,
                                   disk_space=self.disk_space,
                                   create_hard_drive=not bool(self.hard_disk))
-            self.logger.info("Virtual machine '%s' was created successfully" % self.name)
+            self.logger.info("Virtual machine '%s' has been created successfully" % self.name)
         except Manager.ExistenceException as e:
             self.logger.error(e.message)
             raise
@@ -92,7 +90,6 @@ class VirtualMachine(object):
         except Exception as e:
             self.logger.error(e.message)
             raise
-
 
     def add_serial_port(self, manager, host_address, host_user, host_password, serial_ports_dir=None):
 
@@ -160,9 +157,11 @@ class VirtualMachine(object):
         if hard_disk:
             self.hard_disk = hard_disk
 
+        rctrl = None
         try:
             vm_path = manager.get_vm_path(self.name)
 
+            # prepare path for ESX
             path_tmp = vm_path.split(' ')
             datastore = path_tmp[0][1:-1]
             disk_name = self.hard_disk.split('/')[-1]
@@ -175,25 +174,28 @@ class VirtualMachine(object):
             vm_path = '/vmfs/volumes/%s/%s/' % (datastore, vm_path_esx)
 
             commands = []
+            # commands for copying ESX hard disk files
             commands.append('cp -f "%s" "%s"' % (self.hard_disk, vm_path))
             commands.append('cp -f "%s" "%s"' % (vmdk_flat_name, vm_path))
 
-            child = self._connect_to_vm_host(host_address, host_user, host_password)
+            # connect to ESX
+            rctrl = self._connect_to_vm_host(host_address, host_user, host_password)
 
             for cmd in commands:
-                child.sendline(cmd)
-                child.expect(".*\# ", timeout=HD_COPY_TIMEOUT)
-            child.close()
+                rctrl.sendline(cmd)
+                rctrl.expect(".*\# ", timeout=COPY_TIMEOUT)
 
             manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style, space=self.disk_space)
             self.logger.info(
-                "Hard disk '%s' for virtual machine '%s' was added successfully" % (self.hard_disk, self.name))
+                "Hard disk '%s' for virtual machine '%s' has been added successfully" % (self.hard_disk, self.name))
         except Manager.CreatorException as e:
             self.logger.error(e.message)
             raise
         except Exception as e:
             self.logger.error(e.message)
             raise
+        finally:
+            rctrl.close()
 
     def add_vnc_access(self, manager, host_address, host_user, host_password):
 
@@ -209,9 +211,8 @@ class VirtualMachine(object):
         try:
             # try to get vm path
             path = manager.get_vm_path(self.name)
-        except Manager.ExistenceException:
-            raise
-        except Manager.CreatorException:
+        except Manager.CreatorException as e:
+            self.logger.error(e.message)
             raise
 
         path_temp = path.split(' ')
@@ -221,23 +222,22 @@ class VirtualMachine(object):
         # commands for adding a vnc access to the vm configuration file
         commands = []
         commands.append('sed -i \'$ a RemoteDisplay.vnc.enabled = "TRUE"\' ' + vmx_config_path)
-        commands.append('sed -i \'$ a RemoteDisplay.vnc = "%s" \' '%self.vnc_port + vmx_config_path)
+        commands.append('sed -i \'$ a RemoteDisplay.vnc = "%s" \' ' % self.vnc_port + vmx_config_path)
 
         # connect to ESX host
-        child = None
+        rctrl = None
         try:
-            child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
-            child.expect(".*assword:")
-            child.sendline(host_password)
-            child.expect(".*\# ", timeout=2)
-            self.logger.info("Successfully connection to virtual machine '%s'" % self.name)
+            rctrl = self._connect_to_vm_host(host_address, host_user, host_password)
+            self.logger.info("VM '%s' is connected successfully" % self.name)
+
             # delete existence vnc options from the configuration file
-            child.sendline("sed -e '/^RemoteDisplay/d' %s > tmp1 && mv tmp1 %s"
+            rctrl.sendline("sed -e '/^RemoteDisplay/d' %s > tmp1 && mv tmp1 %s"
                            % (vmx_config_path, vmx_config_path))
+
             # send commands to ESX host
             for cmd in commands:
-                child.sendline(cmd)
-            self.logger.info("VNC access for virtual machine '%s' was added successfully and available on '%s'" % (
+                rctrl.sendline(cmd)
+            self.logger.info("VNC access for virtual machine '%s' has been added successfully and available on '%s'" % (
                 self.name, self.vnc_port))
 
         except Exception:
@@ -245,27 +245,33 @@ class VirtualMachine(object):
             self.logger.error(msg)
             raise Manager.CreatorException(msg)
         finally:
-            child.close()
+            rctrl.close()
 
     def get_path(self, manager):
         if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the ESX manager")
+            msg = "Couldn't specify the ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         try:
             if not self.path:
                 self.path = manager.get_vm_path(self.name)
             return self.path
-        except Manager.CreatorException:
+        except Manager.CreatorException as e:
+            self.logger.error(e.message)
             raise
-        except Exception:
+        except Exception as e:
+            self.logger.error(e.message)
             raise
 
     def destroy(self, manager):
         if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the ESX manager")
+            msg = "Couldn't specify the ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         try:
             self.power_off(manager)
             manager.destroy_vm(self.name)
-            self.logger.info("Virtual machine '%s' was destroyed successfully" % self.name)
+            self.logger.info("Virtual machine '%s' has been destroyed successfully" % self.name)
         except Manager.ExistenceException as e:
             self.logger.error(e.message)
             raise
@@ -277,33 +283,41 @@ class VirtualMachine(object):
             raise
 
     def destroy_with_files(self, manager, host_address, host_user, host_password):
-        path = self.get_path(manager)
-        datastore = path.split(" ")[0][1:-1]
-        vm_folder = path.split(" ")[1].split("/")[0]
-        vm_path = "/vmfs/volumes/%s/%s" % (datastore, vm_folder)
 
+        rctrl = None
         try:
-            self.destroy(manager)
-            child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
-            child.expect(".*assword:")
-            child.sendline(host_password)
-            child.expect(".*\# ", timeout=2)
-            child.sendline("rm -r %s" % vm_path)
-            child.close()
-        except Exception:
-            #TODO add checks
-            pass
+            path = self.get_path(manager)
 
+            # converting virtual machine path
+            datastore = path.split(" ")[0][1:-1]
+            vm_folder = path.split(" ")[1].split("/")[0]
+            vm_path = "/vmfs/volumes/%s/%s" % (datastore, vm_folder)
+            serial_port_path = "/vmfs/volumes/%s/%s/%s" % (datastore, self.SERIAL_PORTS_DIR, self.name)
+
+            # destroy vm
+            self.destroy(manager)
+            rctrl = self._connect_to_vm_host(host_address, host_user, host_password)
+            # remove all vm files
+            rctrl.sendline("rm -rf %s" % vm_path)
+            # remove vm serial port
+            rctrl.sendline("rm %s" % serial_port_path)
+        except Manager.CreatorException as e:
+            self.logger.error(e.message)
+            raise
+        except Exception as e:
+            self.logger.error(e.message)
+            raise
+        finally:
+            rctrl.close()
 
     def power_on(self, manager):
         if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the ESX manager")
+            msg = "Couldn't specify the ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         try:
             manager.vm_power_on(self.name)
-            self.logger.info("Virtual machine '%s' power is turned on" % self.name)
-        except Manager.ExistenceException as e:
-            self.logger.error(e.message)
-            raise
+            self.logger.info("Virtual machine's '%s' power is turned on" % self.name)
         except Manager.CreatorException as e:
             self.logger.error(e.message)
             raise
@@ -313,10 +327,12 @@ class VirtualMachine(object):
 
     def power_off(self, manager):
         if not isinstance(manager, Manager.Creator):
-            raise AttributeError("Couldn't specify the ESX manager")
+            msg = "Couldn't specify the ESX manager"
+            self.logger.error(msg)
+            raise AttributeError(msg)
         try:
             manager.vm_power_off(self.name)
-            self.logger.info("Virtual machine '%s' power is turned off" % self.name)
+            self.logger.info("Virtual machine's '%s' power is turned off" % self.name)
         except Manager.ExistenceException as e:
             self.logger.error(e.message)
             raise
@@ -329,64 +345,57 @@ class VirtualMachine(object):
 
     def configure(self, host_address, host_user, host_password, configuration=None):
         if not host_address:
-            raise AttributeError("Couldn't specify ESX host address")
+            msg = "VM '%s' is connected successfully" % self.name
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
         if not host_user:
-            raise AttributeError("Couldn't specify ESX host user")
+            msg = "Couldn't specify ESX host user"
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
         if not host_password:
-            raise AttributeError("Couldn't specify ESX host password")
+            msg = "Couldn't specify ESX host password"
+            self.logger.error(msg)
+            raise AttributeError(msg)
 
         if not configuration:
             configuration = self.configuration
 
-        # connect to vm host
-        try:
-            vmctrl = self._connect_to_vm_host(host_address=host_address,
-                                              host_user=host_user,
-                                              host_password=host_password)
-        except Manager.ExistenceException as e:
-            self.logger.error(e.message)
-            raise
-        except Manager.CreatorException as e:
-            self.logger.error(e.message)
-            raise
-        except Exception as e:
-            self.logger.error(e.message)
-            raise
+            # configure vm
+            # todo: add waiting time
+            # todo: check existence of vm
+            vmctrl = None
+            try:
+                vmctrl = self._connect_to_vm_host(host_address=host_address,
+                                                  host_user=host_user,
+                                                  host_password=host_password)
 
-
-        # configure vm
-        # todo: add waiting time
-        # todo: check existance of vm
-        try:
-            # connect to vm via netcat
-            # pipe files for netcat are in specific directory on ESX datastore
-
-            connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
-            vmctrl.sendline(connection_str)
-            time.sleep(1)
-            self.logger.info("Virtual machine '%s' was connected successfully" % self.name)
-
-            for option in configuration:
-                output_start = option.find('@exp')
-                send = option[:output_start]
-                expected = option[output_start + 5:]
-                vmctrl.sendline(send)
-                vmctrl.expect(expected)
-                self.logger.info("Option '%s' was sent successfully to virtual machine '%s'" % (option, self.name))
+                # connect to vm via netcat
+                # pipe files for netcat are in specific directory on ESX datastore
+                connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
+                vmctrl.sendline(connection_str)
                 time.sleep(1)
-                # for vmctrl.after need e.g. vmctrl.expect("#")
-                # self.logger.info("Response from the virtual machine '%s': %s" % (self.name, vmctrl.after))
-                # print vmctrl.after
-            self.logger.info("Virtual machine '%s' was configured successfully" % self.name)
-        except Exception:
-            msg = "Couldn't configure the virtual machine '%s'" % self.name
-            self.logger.error(msg)
-            raise Manager.CreatorException(msg)
-        finally:
-            vmctrl.close()
+                self.logger.info("VM '%s' has been connected successfully" % self.name)
 
+                for option in configuration:
+                    output_start = option.find('@exp')
+                    send = option[:output_start]
+                    expected = option[output_start + 5:]
+                    vmctrl.sendline(send)
+                    vmctrl.expect(expected)
+                    self.logger.info("Option '%s' to VM '%s' has been sent successfully" % (option, self.name))
+                    time.sleep(1)
+                self.logger.info("Virtual machine '%s' has been configured successfully" % self.name)
+            except Manager.CreatorException as e:
+                self.logger.error(e.message)
+                raise
+            except Exception:
+                msg = "Couldn't configure the virtual machine '%s'" % self.name
+                self.logger.error(msg)
+                raise Manager.CreatorException(msg)
+            finally:
+                vmctrl.close()
 
     def _connect_to_vm_host(self, host_address, host_user, host_password):
         """
@@ -405,7 +414,7 @@ class VirtualMachine(object):
             child.expect(".*assword:")
             child.sendline(host_password)
             child.expect(".*\# ", timeout=2)
-            self.logger.info("ESX host '%s' was successfully connected" % host_address)
+            self.logger.info("ESX host '%s' is connected successfully" % host_address)
             return child
         except Exception:
             child.close()
