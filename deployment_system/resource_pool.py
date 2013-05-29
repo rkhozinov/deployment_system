@@ -45,7 +45,7 @@ class ResourcePool(object):
             raise AttributeError("Couldn't specify ESX manager")
         try:
             manager.create_resource_pool(name=self.name, esx_hostname=host_name)
-            self.logger.info("Resource pool '{}' successfully created".format(self.name))
+            self.logger.info("Resource pool '{}' has been created successfully".format(self.name))
         except Manager.ExistenceException as e:
             self.logger.warning(e.message)
             raise
@@ -68,10 +68,10 @@ class ResourcePool(object):
         try:
             if with_vms:
                 manager.destroy_resource_pool_with_vms(self.name)
-                self.logger.info("Resource pool '{}' successfully destroyed (VMs not destroyed)".format(self.name))
+                self.logger.info("Resource pool '%s' was destroyed successfully (VMs also destroyed)" % self.name)
             else:
                 manager.destroy_resource_pool(self.name)
-                self.logger.info("Resource pool '{}' successfully destroyed (VMs also destroyed)".format(self.name))
+                self.logger.info("Resource pool '%s' was destroyed successfully (VMs not destroyed)" % self.name)
         except Manager.ExistenceException as e:
             msg = '%s. %s' % (e.message, 'Nothing could be destroyed')
             self.logger.warning(msg)
