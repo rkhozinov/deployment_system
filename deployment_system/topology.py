@@ -143,7 +143,6 @@ class Topology(object):
             try:
                 sw_name = '{prefix}_{rpname}'.format(prefix=self.config.SWITCH_PREFIX, rpname=self.resource_pool)
                 Switch(sw_name).destroy(self.manager, self.config.host_name)
-                # self.logger.info("Shared switch '{}' was successfully destroyed".format(sw_name))
             except Manager.ExistenceException:
                 pass
             except Manager.CreatorException:
