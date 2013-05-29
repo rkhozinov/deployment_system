@@ -112,7 +112,6 @@ class TopologyReader(object):
             self.logger.error(e.message)
             raise e
 
-
     def __str_to_list(self, string):
         """
         Converts string to list without whitespaces
@@ -122,7 +121,6 @@ class TopologyReader(object):
         """
         return string.replace(' ', '').split(',')
 
-
     def __str_to_list_strip(self, string):
         """
          Converts string to list. Each string without whitespaces
@@ -130,7 +128,6 @@ class TopologyReader(object):
         :return: list of strings
         """
         return [str.strip(x) for x in string.split(',')]
-
 
     def __get_vm(self, vm):
 
@@ -223,7 +220,6 @@ class TopologyReader(object):
                               hard_disk=hard_disk,
                               vnc_port=vnc_port)
 
-
     def __get_network(self, net):
         """
         Gets a network by name
@@ -278,7 +274,6 @@ class TopologyReader(object):
         except ConfigParser.ParsingError as e:
             self.logger.error(e.message)
             raise
-
 
     def get_networks(self):
         """
