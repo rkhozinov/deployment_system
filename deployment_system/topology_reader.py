@@ -61,11 +61,9 @@ class TopologyReader(object):
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
     VM_ISO = 'iso'
-    # VM_USER = 'user'
-    # VM_PASSWORD = 'password'
-    # VM_NEIGHBOURS = 'neighbours'
+    VM_CONFIG_TYPE = 'conf_type'
     VM_HARD_DISK = 'hard_disk'
-    VNC_PORT = 'vnc_port'
+    VM_VNC_PORT = 'vnc_port'
 
     def __init__(self, config_path):
         """
@@ -75,43 +73,108 @@ class TopologyReader(object):
         """
         self.logger = logging.getLogger(self.__module__)
 
+        # init config
         try:
-            # init config
             self.config = ConfigParser.RawConfigParser()
-            self.config.read(config_path)
-            self.logger.debug('Configuration {config} was read successfully'.format(config=config_path))
+            if not self.config.read(config_path):
+                raise ConfigParser.Error
+            self.logger.info('Configuration found on path: %s ' % config_path)
+        except ConfigParser.Error:
+            self.logger.error('Configuration not found on path: %s', config_path)
+            raise
 
-
-            # esx manager settings
+        # ESX manager (vCenter) settings
+        try:
             self.manager_address = self.config.get(self.MANAGER, self.MANAGER_ADDRESS)
+            self.logger.debug(
+                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.MANAGER_ADDRESS))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.MANAGER_ADDRESS))
+            raise
+        try:
             self.manager_user = self.config.get(self.MANAGER, self.MANAGER_USER)
+            self.logger.debug(
+                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.MANAGER_USER))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.MANAGER_USER))
+            raise
+        try:
             self.manager_password = self.config.get(self.MANAGER, self.MANAGER_PASSWORD)
-            self.logger.debug('ESX vCenter credentials was read successfully')
+            self.logger.debug(
+                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.MANAGER_PASSWORD))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.MANAGER_PASSWORD))
+            raise
 
-            # esx host settings
-            # need for creating esx entities
+        self.logger.info('ESX vCenter settings has been read successfully')
+
+        # ESX host settings
+        try:
             self.host_name = self.config.get(self.HOST, self.HOST_NAME)
-            self.logger.debug('ESX host name was read successfully')
-
-            # esx address and credentials need for virtual machine configuration
+            self.logger.debug(
+                "Option '%s' in section '%s' has been read successfully" % (self.HOST, self.HOST_NAME))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.HOST, self.HOST_NAME))
+            raise
+        try:
             self.host_address = self.config.get(self.HOST, self.HOST_ADDRESS)
+            self.logger.debug(
+                "Option '%s' in section '%s' has been read successfully" % (self.HOST, self.HOST_ADDRESS))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.HOST, self.HOST_ADDRESS))
+            raise
+        try:
             self.host_user = self.config.get(self.HOST, self.HOST_USER)
+            self.logger.debug(
+                "Option '%s' in section '%s' has been read successfully" % (self.HOST, self.HOST_USER))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.HOST, self.HOST_USER))
+            raise
+        try:
             self.host_password = self.config.get(self.HOST, self.HOST_PASSWORD)
-            self.logger.debug('ESX host credentials was read successfully')
+            self.logger.debug(
+                "Option '%s' in section '%s' has been read successfully" % (self.HOST, self.HOST_PASSWORD))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.HOST, self.HOST_PASSWORD))
+            raise
 
-            try:
-                self.iso = self.config.get(self.SETTINGS, self.ISO)
-                self.logger.debug("Common iso image is specified to '%s'" % self.iso)
-            except ConfigParser.NoOptionError:
-                self.logger.debug("Common iso image is not specified")
+        self.logger.info('ESX host settings has been read successfully')
 
+        # Default ISO image
+        try:
+            self.iso = self.config.get(self.SETTINGS, self.ISO)
+            self.logger.debug("Default iso image is specified to '%s'" % self.iso)
+        except ConfigParser.NoOptionError:
+            self.logger.debug("Default iso image is not specified")
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.SETTINGS, self.ISO))
+            raise
+
+        # Topology networks list
+        try:
             self.networks = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.NETWORKS))
-            self.logger.debug("Network list was read successfully: {nets}".format(nets=self.networks))
+            self.logger.debug("Network list has been read successfully: {nets}".format(nets=self.networks))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.SETTINGS, self.NETWORKS))
+            raise
+
+        # Topology Virtual Machines list
+        try:
             self.vms = self.__str_to_list_strip(self.config.get(self.SETTINGS, self.VMS))
-            self.logger.debug("VM list was read successfully: {vms}".format(vms=self.vms))
-        except ConfigParser.Error as e:
-            self.logger.error(e.message)
-            raise e
+            self.logger.debug("VM list has been read successfully: {vms}".format(vms=self.vms))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (self.SETTINGS, self.NETWORKS))
+            raise
 
     def __str_to_list(self, string):
         """
@@ -130,155 +193,194 @@ class TopologyReader(object):
         """
         return [str.strip(x) for x in string.split(',')]
 
-    def __get_vm(self, vm):
+    def __get_vm(self, vm_name):
 
         """
-        Get vm by name from config and parse it data
-        :param vm: virtual machine name
+        Get vm_name by name from config and parse it data
+        :param vm_name: virtual machine name
         :return: VirtualMachine instance
-        :raise:  ConfigParser.NoOptionError, ConfigParser.ParsingError
+        :raise:  ConfigParser.Error
         """
 
-        # try:
-        #     password = self.config.get(vm, self.VM_PASSWORD)
-        #     login = self.config.get(vm, self.VM_USER)
-        # except Exception as e:
-        #     self.logger.error(e.message)
-
         try:
-            description = self.config.get(vm, self.VM_DESCR)
-        except:
+            description = self.config.get(vm_name, self.VM_DESCR)
+        except ConfigParser.NoOptionError:
             description = None
-            self.logger.debug("Not specified description for '%s'" % vm)
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_DESCR, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_DESCR))
+            raise
         try:
-            memory = self.config.get(vm, self.VM_MEM)
-        except:
-            self.logger.debug("Not specified memory for '%s'" % vm)
+            memory = self.config.get(vm_name, self.VM_MEM)
+        except ConfigParser.NoOptionError:
             memory = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_MEM, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_MEM))
+            raise
         try:
-            cpu = self.config.get(vm, self.VM_CPU)
-        except:
-            self.logger.debug("Not specified cpu count for '%s'" % vm)
+            cpu = self.config.get(vm_name, self.VM_CPU)
+        except ConfigParser.NoOptionError:
             cpu = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CPU, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CPU))
+            raise
         try:
-            hard_disk = self.config.get(vm, self.VM_HARD_DISK)
+            hard_disk = self.config.get(vm_name, self.VM_HARD_DISK)
             if 'False' in hard_disk:
+                # todo : review False or None option
                 hard_disk = False
-        except:
-            self.logger.debug("Not specified hard disk for '%s'" % vm)
+        except ConfigParser.NoOptionError:
             hard_disk = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_HARD_DISK, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_HARD_DISK))
+            raise
         try:
-            disk_space = self.config.get(vm, self.VM_DISK_SPACE)
-        except:
-            self.logger.debug("Not specified disk space for '%s'" % vm)
+            disk_space = self.config.get(vm_name, self.VM_DISK_SPACE)
+        except ConfigParser.NoOptionError:
             disk_space = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_DISK_SPACE, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_DISK_SPACE))
+            raise
         try:
-            config = self.__str_to_list_strip(self.config.get(vm, self.VM_CONFIG))
+            config = self.__str_to_list_strip(self.config.get(vm_name, self.VM_CONFIG))
+            # TODO: review False or None option
             if False in config:
                 config = False
-        except:
-            self.logger.debug("Not specified configuration for '%s'" % vm)
+        except ConfigParser.NoOptionError:
             config = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CONFIG, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG))
+            raise
+
         try:
-            networks = self.__str_to_list_strip(self.config.get(vm, self.VM_NETWORKS))
-        except:
-            self.logger.debug("Not specified networks for '%s'" % vm)
+            networks = self.__str_to_list_strip(self.config.get(vm_name, self.VM_NETWORKS))
+        except ConfigParser.NoOptionError:
             networks = None
-        try:
-            conf_type = self.config.get(vm, "conf_type")
-        except:
-            self.logger.debug("Not specified configuration type port for '%s'" % vm)
-            conf_type = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_NETWORKS, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_NETWORKS))
+            raise
 
         try:
-            vnc_port = self.config.get(vm, self.VNC_PORT)
+            config_type = self.config.get(vm_name, self.VM_CONFIG_TYPE)
+        except ConfigParser.NoOptionError:
+            config_type = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CONFIG_TYPE, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG_TYPE))
+            raise
+
+        try:
+            vnc_port = self.config.get(vm_name, self.VM_VNC_PORT)
             if vnc_port == 0:
-                vnc_port = None
-                self.logger.debug("Not specified vnc port for '%s'" % vm)
-        except:
-            self.logger.debug("Not specified vnc port for '%s'" % vm)
+                raise ConfigParser.NoOptionError
+        except ConfigParser.NoOptionError:
             vnc_port = None
-            # try:
-            #     neighbours = self.__str_to_list(self.config.get(vm, self.VM_NEIGHBOURS))
-            # except:
-            #     neighbours = None
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_VNC_PORT, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_VNC_PORT))
+            raise
 
         try:
-            iso = self.config.get(vm, self.VM_ISO)
-        except:
-            iso = None
-            self.logger.debug("Not specified iso image for '%s'" % vm)
+            iso = self.config.get(vm_name, self.VM_ISO)
+            # TODO: review this
+            if iso == 'False':
+                raise ConfigParser.NoOptionError
+        except ConfigParser.NoOptionError:
+            # if not specific a iso-image for this vm_name then will be used the common iso-image
+            if self.iso:
+                iso = self.iso
+                self.logger.debug("Not specified option '%s' in section '%s'. Will be used default iso image (%s)" % (
+                    self.VM_ISO, vm_name, self.iso))
+            else:
+                iso = None
+                self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_ISO, vm_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_ISO))
+            raise
 
-        # if not specific a iso-image for this vm then will be used the common iso-image
-        if not iso == False and (self.iso and not iso):
-            iso = self.iso
-            self.logger.debug("Will be used default iso image %s for '%s'" % (self.iso, vm))
-
-        return VirtualMachine(name=vm,
+        return VirtualMachine(name=vm_name,
                               memory=memory,
                               cpu=cpu,
                               disk_space=disk_space,
                               connected_networks=networks,
                               iso=iso,
                               description=description,
-                              conf_type=conf_type,
+                              config_type=config_type,
                               configuration=config,
                               hard_disk=hard_disk,
                               vnc_port=vnc_port)
 
-    def __get_network(self, net):
+    def __get_network(self, net_name):
         """
         Gets a network by name
-        :param net: name of the network
-        :return: Network
-        :raise:  ConfigParser.ParsingError, ConfigParser.NoOptionError
+        :param net_name: name of the network
+        :return: Network instance
+        :raise: ConfigParser.Error
         :rtype: Network
         """
-        vlan = None
         try:
-            vlan = self.config.get(net, self.NET_VLAN)
-        except ConfigParser.Error as error:
-            self.logger.error("Couldn't specify VLAN for '%s'" % net)
-            raise error
-
-        promiscuous = None
-        isolated = None
-        ports = None
+            vlan = self.config.get(net_name, self.NET_VLAN)
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (net_name, self.NET_VLAN))
+            raise
         try:
-            try:
-                promiscuous = self.config.getboolean(net, self.NET_PROMISCUOUS)
-                self.logger.debug("'%s' will be used in promiscuous mode" % net)
-            except ConfigParser.NoOptionError:
-                self.logger.debug("'%s' will be used in not promiscuous mode" % net)
-            try:
-                isolated = self.config.getboolean(net, self.NET_ISOLATED)
-                self.logger.debug("'%s' will be used in isolated mode" % net)
-            except ConfigParser.NoOptionError:
-                pass
-            try:
-                ports = self.config.getint(net, self.NET_PORTS)
-            except ConfigParser.NoOptionError:
-                ports = self.DEFAULT_PORTS_COUNT
-                self.logger.debug("For '%s' will be used %s ports" % (net, self.DEFAULT_PORTS_COUNT))
-        except ConfigParser.ParsingError as e:
-            self.logger.error(e.message)
+            promiscuous = self.config.getboolean(net_name, self.NET_PROMISCUOUS)
+        except ConfigParser.NoOptionError:
+            promiscuous = False
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.NET_PROMISCUOUS, net_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (net_name, self.NET_PROMISCUOUS))
             raise
 
-        return Network(name=net, vlan=vlan, ports=ports, promiscuous=promiscuous, isolated=isolated)
+        try:
+            isolated = self.config.getboolean(net_name, self.NET_ISOLATED)
+        except ConfigParser.NoOptionError:
+            isolated = False
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.NET_ISOLATED, net_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (net_name, self.NET_ISOLATED))
+            raise
+
+        try:
+            ports = self.config.getint(net_name, self.NET_PORTS)
+        except ConfigParser.NoOptionError:
+            ports = self.DEFAULT_PORTS_COUNT
+            self.logger.debug("Not specified option '%s' in section '%s'" % (self.NET_PORTS, net_name))
+        except ConfigParser.Error:
+            self.logger.error(
+                "Configuration error in section '%s' with option '%s'" % (net_name, self.NET_PORTS))
+            raise
+
+        return Network(name=net_name, vlan=vlan, ports=ports, promiscuous=promiscuous, isolated=isolated)
 
     def get_virtual_machines(self):
         """
         Gets the virtual machines list from the configuration file
         :return:  list of virtual machines
-        :raise: ConfigParser.NoSectionError, ConfigParser.Error, ConfigParser.ParsingError
+        :raise: ConfigParser.Error
         """
         try:
-            vm_lst = []
-            for vm in self.vms:
-                vm_lst.append(self.__get_vm(vm))
-            return vm_lst
-        except ConfigParser.ParsingError as e:
-            self.logger.error(e.message)
+            return [self.__get_vm(vm) for vm in self.vms]
+        except ConfigParser.Error:
             raise
 
     def get_networks(self):
@@ -288,10 +390,7 @@ class TopologyReader(object):
         :raise: ConfigParser.Error
         """
         try:
-            networks = []
-            for net in self.networks:
-                networks.append(self.__get_network(net))
-            return networks
-        except Exception as error:
-            self.logger.error(error.message)
-            raise error
+            return [self.__get_network(net) for net in self.networks]
+        except ConfigParser.Error:
+            raise
+
