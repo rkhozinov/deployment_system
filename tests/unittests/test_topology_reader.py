@@ -31,7 +31,7 @@ __author__ = 'rkhozinov'
 
 class TestTopologyReader(unittest.TestCase):
     def setUp(self):
-        self.config_path = '../etc/topology.ini'
+        self.config_path = '../../etc/multicast_functional.ini'
         self.rpname = 'test_RP'
 
     def test_config_read(self):
