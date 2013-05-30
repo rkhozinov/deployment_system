@@ -42,7 +42,7 @@ log_dir, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), args.rpname, arg
 PROFILE_FILE_NAME = '%s.%s' % (LOG_FILENAME.split('.log')[0], 'out')
 
 log_file = logging.FileHandler(filename=LOG_FILENAME, mode='w')
-log_file.setLevel(logging.INFO)
+log_file.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(module)s: %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 log_file.setFormatter(formatter)
