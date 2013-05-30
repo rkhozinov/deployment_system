@@ -20,17 +20,18 @@ import pexpect
 
 import lib.hatchery as Manager
 
-COPY_TIMEOUT = 900
+
 
 
 class VirtualMachine(object):
     DISK_DEFAULT_SPACE = 2048
     MEMORY_DEFAULT_SIZE = 512
     SERIAL_PORTS_DIR = 'serial_ports'
+    COPY_TIMEOUT = 900
 
     def __init__(self, name, memory=512, cpu=2, disk_space=None, hard_disk=None,
                  connected_networks=None, iso=None,
-                 description=None, conf_type = None, configuration=None, vnc_port=None):
+                 description=None, config_type = None, configuration=None, vnc_port=None):
 
         self.logger = logging.getLogger(self.__module__)
         if not name:
@@ -53,7 +54,7 @@ class VirtualMachine(object):
         self.hard_disk = hard_disk
         self.description = description
         self.connected_networks = connected_networks
-        self.conf_type = conf_type
+        self.config_type = config_type
         self.configuration = configuration
         self.iso = iso
         self.serial_port_path = None
@@ -184,7 +185,7 @@ class VirtualMachine(object):
 
             for cmd in commands:
                 rctrl.sendline(cmd)
-                rctrl.expect(".*\# ", timeout=COPY_TIMEOUT)
+                rctrl.expect(".*\# ", timeout=self.COPY_TIMEOUT)
 
             manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style, space=self.disk_space)
             self.logger.info(
