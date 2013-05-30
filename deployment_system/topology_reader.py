@@ -57,11 +57,10 @@ class TopologyReader(object):
     VM_CPU = 'cpu'
     VM_DISK_SPACE = 'disk_space'
     VM_DESCR = 'description'
-    VM_CONF_TYPE = 'conf_type'
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
     VM_ISO = 'iso'
-    VM_CONFIG_TYPE = 'conf_type'
+    VM_CONFIG_TYPE = 'config_type'
     VM_HARD_DISK = 'hard_disk'
     VM_VNC_PORT = 'vnc_port'
 
