@@ -30,7 +30,7 @@ class VirtualMachine(object):
 
     def __init__(self, name, memory=512, cpu=2, disk_space=None, hard_disk=None,
                  connected_networks=None, iso=None,
-                 description=None, configuration=None, vnc_port=None):
+                 description=None, conf_type = None, configuration=None, vnc_port=None):
 
         self.logger = logging.getLogger(self.__module__)
         if not name:
@@ -53,6 +53,7 @@ class VirtualMachine(object):
         self.hard_disk = hard_disk
         self.description = description
         self.connected_networks = connected_networks
+        self.conf_type = conf_type
         self.configuration = configuration
         self.iso = iso
         self.serial_port_path = None

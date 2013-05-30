@@ -92,11 +92,12 @@ class Topology(object):
             for vm in self.vms:
                 vm.name = "{}_{}".format(self.resource_pool, vm.name)
 
-                for i in range(len(vm.connected_networks)):
-                    tmp = [k for k in self.networks if k.name == vm.connected_networks[i]]
-                    if tmp:
-                        vm.connected_networks[i] = "%s_%s"%(self.resource_pool, vm.connected_networks[i])
 
+                for i in range(len(vm.connected_networks)):
+                    for j in xrange(len(self.networks)):
+                        tmp1 = self.networks[j].name.find(vm.connected_networks[i])
+                        if tmp1 > 0:
+                            vm.connected_networks[i] = "%s_%s" % (self.resource_pool, vm.connected_networks[i])
 
                 vm.create(self.manager, self.resource_pool, self.host_name)
                 vm.add_serial_port(manager=self.manager, host_address=self.host_address,
@@ -115,7 +116,8 @@ class Topology(object):
                 time.sleep(30)
 
             for vm in self.vms:
-                if not (vm.configuration == False):
+                if vm.conf_type:
+                    #TODO add configuration via VNC
                     vm.configure(host_address=self.host_address, host_user=self.host_user,
                                  host_password=self.host_password)
 

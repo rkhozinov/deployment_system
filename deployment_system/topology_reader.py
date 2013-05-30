@@ -42,7 +42,7 @@ class TopologyReader(object):
     HOST_PASSWORD = 'password'
 
     # common settings
-    ISO = 'iso'
+    ISO = 'default_iso'
     NETWORKS = 'networks'
     VMS = 'vms'
 
@@ -57,6 +57,7 @@ class TopologyReader(object):
     VM_CPU = 'cpu'
     VM_DISK_SPACE = 'disk_space'
     VM_DESCR = 'description'
+    VM_CONF_TYPE = 'conf_type'
     VM_CONFIG = 'configuration'
     VM_NETWORKS = 'networks'
     VM_ISO = 'iso'
@@ -183,9 +184,17 @@ class TopologyReader(object):
         except:
             self.logger.debug("Not specified networks for '%s'" % vm)
             networks = None
+        try:
+            conf_type = self.config.get(vm, "conf_type")
+        except:
+            self.logger.debug("Not specified configuration type port for '%s'" % vm)
+            conf_type = None
 
         try:
             vnc_port = self.config.get(vm, self.VNC_PORT)
+            if vnc_port == 0:
+                vnc_port = None
+                self.logger.debug("Not specified vnc port for '%s'" % vm)
         except:
             self.logger.debug("Not specified vnc port for '%s'" % vm)
             vnc_port = None
@@ -196,8 +205,6 @@ class TopologyReader(object):
 
         try:
             iso = self.config.get(vm, self.VM_ISO)
-            if 'False' in iso:
-                iso = False
         except:
             iso = None
             self.logger.debug("Not specified iso image for '%s'" % vm)
@@ -208,14 +215,13 @@ class TopologyReader(object):
             self.logger.debug("Will be used default iso image %s for '%s'" % (self.iso, vm))
 
         return VirtualMachine(name=vm,
-                              # user=login,
-                              # password=password,
                               memory=memory,
                               cpu=cpu,
                               disk_space=disk_space,
                               connected_networks=networks,
                               iso=iso,
                               description=description,
+                              conf_type=conf_type,
                               configuration=config,
                               hard_disk=hard_disk,
                               vnc_port=vnc_port)

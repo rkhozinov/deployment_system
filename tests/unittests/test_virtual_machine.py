@@ -131,23 +131,24 @@ class TestVirtualMachine(unittest.TestCase):
             # create vm
             vm = None
             try:
-                vm = VirtualMachine(name=self.vmname, user=self.vmuser, password=self.vmpassword)
+                vm = VirtualMachine(name='net witn space', connected_networks=[''] )
                 vm.create(manager=self.manager,
                           host_name=self.host_name,
                           resource_pool_name=self.rpname)
             except Manager.ExistenceException:
                 pass
 
-            # destroy vm
-            try:
-                vm.destroy(self.manager)
-            except Manager.ExistenceException as error:
-                pass
+            # # destroy vm
+            # try:
+            #     vm.destroy(self.manager)
+            # except Manager.ExistenceException as error:
+            #     pass
 
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         finally:
-            self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
+            pass
+            #self.manager.destroy_resource_pool_with_vms(self.rpname, self.host_name)
 
     def test_create_power_on_power_off_and_destroy(self):
         try:
