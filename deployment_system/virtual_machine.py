@@ -27,7 +27,7 @@ class VirtualMachine(object):
     SERIAL_PORTS_DIR = 'serial_ports'
     COPY_TIMEOUT = 900
 
-    def __init__(self, name, memory=512, cpu=2, disk_space=None, hard_disk=None,
+    def __init__(self, name, memory=512, cpu=2, disk_space=0, hard_disk=None,
                  connected_networks=None, iso=None,
                  description=None, config_type=None, configuration=None, vnc_port=None):
 
@@ -78,8 +78,7 @@ class VirtualMachine(object):
                                   description=self.description,
                                   memorysize=self.memory,
                                   cpucount=self.cpu,
-                                  disk_space=self.disk_space,
-                                  create_hard_drive=not bool(self.hard_disk))
+                                  disk_space=self.disk_space)
             self.logger.info("Virtual machine '%s' has been created successfully" % self.name)
         except Manager.ExistenceException as e:
             self.logger.error(e.message)
@@ -190,7 +189,7 @@ class VirtualMachine(object):
                 rctrl.sendline(cmd)
                 rctrl.expect(".*\# ", timeout=self.COPY_TIMEOUT)
 
-            manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style, space=self.disk_space)
+            manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style)
             self.logger.info(
                 "Hard disk '%s' for virtual machine '%s' has been added successfully" % (self.hard_disk, self.name))
         except Manager.CreatorException as e:

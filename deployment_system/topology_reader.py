@@ -230,9 +230,6 @@ class TopologyReader(object):
             raise
         try:
             hard_disk = self.config.get(vm_name, self.VM_HARD_DISK)
-            if 'False' in hard_disk:
-                # todo : review False or None option
-                hard_disk = False
         except ConfigParser.NoOptionError:
             hard_disk = None
             self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_HARD_DISK, vm_name))

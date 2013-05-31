@@ -315,7 +315,7 @@ class Creator:
             raise CreatorException("Couldn't destroy the virtual machine %s" % vmname)
 
     def create_vm_old(self, vmname, esx_hostname=None, iso=None, datacenter=None, resource_pool='/', networks=None,
-                      datastore=None, description=None, create_hard_drive=True, guestosid="debian4Guest",
+                      datastore=None, description=None, guestosid="debian4Guest",
                       memorysize=512, cpucount=1, disk_space=1048576):
         """
         Creates virtual machine
@@ -365,7 +365,6 @@ class Creator:
             params['description'] = description
 
         params['esx_hostname'] = esx_hostname
-        params['hard_drive'] = create_hard_drive
         params['guestosid'] = guestosid
         params['memory_size'] = memorysize
         params['cpu_count'] = cpucount
@@ -526,7 +525,7 @@ class Creator:
 
         try:
             disk_size = int(vm_options['disk_size'])
-            if disk_size <= 0:
+            if disk_size < 0:
                 raise CreatorException('Disk size must be greater than 0')
         except Exception:
             disk_size = DEFAULT_DISK_SIZE  # KB
@@ -557,7 +556,6 @@ class Creator:
         defaul_devs = config_option.DefaultDevice
 
         #get network name
-        # todo: fix creating if not valid vm. Turn logging. Write message of unavailable network, but create vm
         avaliable_networks = 0
         for net in networks:
             for n in config_target.Network:
@@ -628,7 +626,7 @@ class Creator:
                 devices.append(cd_spec)
 
         # create a new disk - file based - for the vm
-        if hard_drive:
+        if disk_size != 0:
             disk_spec = config.new_deviceChange()
             disk_spec.set_element_fileOperation("create")
             disk_spec.set_element_operation("add")
@@ -724,7 +722,7 @@ class Creator:
         except Exception:
             raise CreatorException("Couldn't create Switch")
 
-        # self._disconnect_from_esx()
+            # self._disconnect_from_esx()
 
     def destroy_virtual_switch(self, name, esx_hostname=None):
         """
@@ -764,7 +762,7 @@ class Creator:
                 raise CreatorException("Couldn't remove virtual switch '%s'" % name)
         else:
             raise ExistenceException("Couldn't find virtual switch '%s'" % name)
-        # self._disconnect_from_esx()
+            # self._disconnect_from_esx()
 
     def add_port_group(self, switch_name, vlan_name, esx_hostname=None,
                        vlan_id=4095, promiscuous=False):
@@ -782,7 +780,7 @@ class Creator:
 
         vlan_id = int(vlan_id)
 
-        hosts=self.esx_server.get_hosts()
+        hosts = self.esx_server.get_hosts()
         try:
             if esx_hostname:
                 host_system = [k for k, v in hosts.items()
@@ -825,7 +823,7 @@ class Creator:
                 raise CreatorException("Couldn't create network '%s:%s' on switch '%s'" % vlan_name,
                                        vlan_id, switch_name)
 
-        # self._disconnect_from_esx()
+                # self._disconnect_from_esx()
 
     def is_connected(self):
         """
@@ -925,10 +923,10 @@ class Creator:
             self._disconnect_from_esx()
             raise CreatorException(error)
 
-
             pass
-        #todo: REVIEW ME
-    def add_existence_vmdk(self, vm_name, path, space):
+            #todo: REVIEW ME
+
+    def add_existence_vmdk(self, vm_name, path):
         """
         Add existence hard drive (.vmdk) to the virtual machine
         :param vm_name: virtual machine name
@@ -960,7 +958,7 @@ class Creator:
         hd = VI.ns0.VirtualDisk_Def("hd").pyclass()
         hd.Key = -100
         hd.UnitNumber = unit_number
-        hd.CapacityInKB = space
+        hd.CapacityInKB = 0
         hd.ControllerKey = 1000
 
         backing = VI.ns0.VirtualDiskFlatVer2BackingInfo_Def("backing").pyclass()
@@ -1037,7 +1035,7 @@ class Creator:
             exist = True
         except:
             pass
-        # self._disconnect_from_esx()
+            # self._disconnect_from_esx()
         return exist
 
     # todo: add comment

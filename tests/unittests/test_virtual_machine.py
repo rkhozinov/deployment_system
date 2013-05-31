@@ -317,14 +317,14 @@ class TestVirtualMachine(unittest.TestCase):
         finally:
             rctrl.close()
 
-    def test_configure_vm(self):
-        virtual_machine = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
-        configuration = ['configure',
-                         'set int eth eth0 address 10.10.10.1/25',
-                         'set int eth eth1 address 100.10.10.1/25',
-                         'commit', 'save', 'exit', 'exit']
+    def test_add_hard_drive_temp(self):
+        virtual_machine = VirtualMachine('t123')
+
         try:
-            virtual_machine.configure_via_com(self.host_address, self.host_user, self.host_password, configuration)
+            virtual_machine.disk_space = 0
+            virtual_machine.create(self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')
+            virtual_machine.add_hard_disk(self.manager, self.host_address, self.host_user,
+                                          self.host_password, hard_disk='vmfs/volumes/datastore1/tmp01/tmp01.vmdk')
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 
