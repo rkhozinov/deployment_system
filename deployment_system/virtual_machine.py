@@ -233,7 +233,7 @@ class VirtualMachine(object):
         rctrl = None
         try:
             rctrl = self._connect_to_vm_host(host_address, host_user, host_password)
-            self.logger.info("VM '%s' is connected successfully" % self.name)
+            self.logger.info("VM '%s' has been connected successfully" % self.name)
 
             # delete existence vnc options from the configuration file
             rctrl.sendline("sed -e '/^RemoteDisplay/d' %s > tmp1 && mv tmp1 %s"
@@ -404,9 +404,8 @@ class VirtualMachine(object):
             except Manager.CreatorException as e:
                 self.logger.error(e.message)
                 raise
-            except Exception as e:
+            except Exception:
                 msg = "Couldn't configure the virtual machine '%s'" % self.name
-                print e
                 self.logger.error(msg)
                 raise Manager.CreatorException(msg)
             finally:
@@ -434,7 +433,7 @@ class VirtualMachine(object):
             child.expect(".*assword:")
             child.sendline(host_password)
             child.expect(".*\# ", timeout=2)
-            self.logger.info("ESX host '%s' is connected successfully" % host_address)
+            self.logger.info("ESX host '%s' has been connected successfully" % host_address)
             return child
         except Exception:
             child.close()
