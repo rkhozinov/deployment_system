@@ -171,47 +171,51 @@ class TestTopologyReader(unittest.TestCase):
             vms = config.get_virtual_machines()
             for vm in vms:
                 try:
-                    vm.destroy_with_files(manager,host_address=config.host_address,
-                                       host_user=config.host_user, host_password=config.host_password)
+                    vm.destroy_with_files(manager, host_address=config.host_address,
+                                          host_user=config.host_user, host_password=config.host_password)
                 except:
                     pass
 
 
-            # DESTROY NETWORKS
-            shared_switch = Switch(self.rpname)
-            networks = config.get_networks()
-
-            # destroy shared switch with connected networks
-            try:
-                shared_switch.destroy(manager, config.host_name)
-            except:
-                pass
-
-            # destroy isolated networks
-            for net in networks:
-                if net.isolated:
-                    try:
-                        Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
-                    except:
-                        pass
-
-            # CREATE NETWORKS
-            shared_switch.create(manager, config.host_name)
-
-            for net in networks:
-                # create isolated networks
-                if net.isolated:
-                    sw_name = self.rpname + '_' + net.name
-                    Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
-                else:
-                    # create simple networks on shared switch
-                    shared_switch.add_network(net, manager, config.host_name)
-
-            # CREATE VIRTUAL MACHINES
-            try:
-                ResourcePool(name=self.rpname).create(manager=manager)
-            except:
-                pass
+            # # DESTROY NETWORKS
+            # shared_switch = Switch(self.rpname)
+            # networks = config.get_networks()
+            #
+            # # destroy shared switch with connected networks
+            # try:
+            #     shared_switch.destroy(manager, config.host_name)
+            # except:
+            #     pass
+            #
+            # # destroy isolated networks
+            # for net in networks:
+            #     if net.isolated:
+            #         try:
+            #             Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
+            #         except:
+            #             pass
+            #
+            # # CREATE NETWORKS
+            # try:
+            #     shared_switch.create(manager, config.host_name)
+            # except:
+            #     pass
+            #
+            #
+            # for net in networks:
+            #     # create isolated networks
+            #     if net.isolated:
+            #         sw_name = self.rpname + '_' + net.name
+            #         Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
+            #     else:
+            #         # create simple networks on shared switch
+            #         shared_switch.add_network(net, manager, config.host_name)
+            #
+            # # CREATE VIRTUAL MACHINES
+            # try:
+            #     ResourcePool(name=self.rpname).create(manager=manager)
+            # except:
+            #     pass
 
             # dublicate?
             vms = config.get_virtual_machines()
@@ -225,15 +229,15 @@ class TestTopologyReader(unittest.TestCase):
                     vm.add_serial_port(manager=manager, host_address=config.host_address,
                                        host_user=config.host_user, host_password=config.host_password)
                 except Manager.ExistenceException:
-                     pass
+                    pass
 
                 if vm.hard_disk:
                     vm.add_hard_disk(manager=manager, host_address=config.host_address,
-                                   host_user=config.host_user, host_password=config.host_password,
-                                   hard_disk=vm.hard_disk)
+                                     host_user=config.host_user, host_password=config.host_password,
+                                     hard_disk=vm.hard_disk)
                 if vm.vnc_port:
                     vm.add_vnc_access(manager=manager, host_address=config.host_address,
-                                   host_user=config.host_user, host_password=config.host_password)
+                                      host_user=config.host_user, host_password=config.host_password)
                 try:
                     vm.power_on(manager)
                 except Manager.ExistenceException:
