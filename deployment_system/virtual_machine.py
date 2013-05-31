@@ -133,7 +133,7 @@ class VirtualMachine(object):
         try:
             child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
             try:
-                child.expect('continue',timeout=5)
+                child.expect('continue', timeout=5)
                 child.send('yes\n')
             except:
                 pass
@@ -288,7 +288,7 @@ class VirtualMachine(object):
             raise
 
     def destroy_with_files(self, manager, host_address, host_user, host_password):
-
+        # TODO: add 'force' mode: if forced - execute 'rm -r' even if vm does not exist
         rctrl = None
         try:
             path = self.get_path(manager)
@@ -387,6 +387,10 @@ class VirtualMachine(object):
                     if not output_start == -1:
                         send = option[:output_start - 1]
                         expected = option[output_start + 5:]
+                        if expected == '#':
+                            expected = ".*\# "
+                        elif expected == '$':
+                            expected = ".*\$ "
                     else:
                         send = option
                         expected = None
@@ -394,14 +398,15 @@ class VirtualMachine(object):
                     if expected:
                         vmctrl.expect(expected)
 
-                    self.logger.info("Option '%s' to VM '%s' has been sent successfully" % (option, self.name))
+                    self.logger.info("Option '%s' to VM '%s' has been sent successfully" % (send, self.name))
                     time.sleep(1)
                 self.logger.info("Virtual machine '%s' has been configured successfully" % self.name)
             except Manager.CreatorException as e:
                 self.logger.error(e.message)
                 raise
-            except Exception:
+            except Exception as e:
                 msg = "Couldn't configure the virtual machine '%s'" % self.name
+                print e
                 self.logger.error(msg)
                 raise Manager.CreatorException(msg)
             finally:
@@ -422,7 +427,7 @@ class VirtualMachine(object):
         try:
             child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
             try:
-                child.expect('continue',timeout=5)
+                child.expect('continue', timeout=5)
                 child.send('yes\n')
             except:
                 pass

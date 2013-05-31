@@ -31,7 +31,7 @@ __author__ = 'rkhozinov'
 
 class TestTopologyReader(unittest.TestCase):
     def setUp(self):
-        self.config_path = '../../etc/multicast_functional.ini'
+        self.config_path = '../etc/topology2.ini'
         self.rpname = 'test_RP'
 
     def test_config_read(self):
@@ -173,45 +173,45 @@ class TestTopologyReader(unittest.TestCase):
                 try:
                     vm.destroy_with_files(manager,host_address=config.host_address,
                                        host_user=config.host_user, host_password=config.host_password)
-                except Manager.ExistenceException:
+                except:
                     pass
 
 
-            # # DESTROY NETWORKS
-            # shared_switch = Switch(self.rpname)
-            # networks = config.get_networks()
-            #
-            # # destroy shared switch with connected networks
-            # try:
-            #     shared_switch.destroy(manager, config.host_name)
-            # except:
-            #     pass
-            #
-            # # destroy isolated networks
-            # for net in networks:
-            #     if net.isolated:
-            #         try:
-            #             Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
-            #         except:
-            #             pass
-            #
-            # # CREATE NETWORKS
-            # shared_switch.create(manager, config.host_name)
-            #
-            # for net in networks:
-            #     # create isolated networks
-            #     if net.isolated:
-            #         sw_name = self.rpname + '_' + net.name
-            #         Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
-            #     else:
-            #         # create simple networks on shared switch
-            #         shared_switch.add_network(net, manager, config.host_name)
-            #
-            # # CREATE VIRTUAL MACHINES
-            # try:
-            #     ResourcePool(name=self.rpname).create(manager=manager)
-            # except Manager.ExistenceException:
-            #     pass
+            # DESTROY NETWORKS
+            shared_switch = Switch(self.rpname)
+            networks = config.get_networks()
+
+            # destroy shared switch with connected networks
+            try:
+                shared_switch.destroy(manager, config.host_name)
+            except:
+                pass
+
+            # destroy isolated networks
+            for net in networks:
+                if net.isolated:
+                    try:
+                        Switch(self.rpname + '_' + net.name).destroy(manager, config.host_name)
+                    except:
+                        pass
+
+            # CREATE NETWORKS
+            shared_switch.create(manager, config.host_name)
+
+            for net in networks:
+                # create isolated networks
+                if net.isolated:
+                    sw_name = self.rpname + '_' + net.name
+                    Switch(sw_name).create(manager, config.host_name).add_network(net, manager, config.host_name)
+                else:
+                    # create simple networks on shared switch
+                    shared_switch.add_network(net, manager, config.host_name)
+
+            # CREATE VIRTUAL MACHINES
+            try:
+                ResourcePool(name=self.rpname).create(manager=manager)
+            except:
+                pass
 
             # dublicate?
             vms = config.get_virtual_machines()
@@ -221,11 +221,11 @@ class TestTopologyReader(unittest.TestCase):
                     vm.create(manager=manager, resource_pool_name=self.rpname, host_name=config.host_name)
                 except Manager.ExistenceException:
                     pass
-                # try:
-                #     vm.add_serial_port(manager=manager, host_address=config.host_address,
-                #                        host_user=config.host_user, host_password=config.host_password)
-                # except Manager.ExistenceException:
-                #     pass
+                try:
+                    vm.add_serial_port(manager=manager, host_address=config.host_address,
+                                       host_user=config.host_user, host_password=config.host_password)
+                except Manager.ExistenceException:
+                     pass
 
                 if vm.hard_disk:
                     vm.add_hard_disk(manager=manager, host_address=config.host_address,
@@ -245,6 +245,7 @@ class TestTopologyReader(unittest.TestCase):
 
             for vm in vms:
                 vm.configure_via_com(config.host_address, config.host_user, config.host_password)
+
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:

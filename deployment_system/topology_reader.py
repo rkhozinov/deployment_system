@@ -285,7 +285,7 @@ class TopologyReader(object):
         try:
             vnc_port = self.config.get(vm_name, self.VM_VNC_PORT)
             if vnc_port == 0:
-                raise ConfigParser.NoOptionError
+                vnc_port = None
         except ConfigParser.NoOptionError:
             vnc_port = None
             self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_VNC_PORT, vm_name))
