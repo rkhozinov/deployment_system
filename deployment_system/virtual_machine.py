@@ -129,25 +129,18 @@ class VirtualMachine(object):
         commands.append('sed -i \'$ a serial0.pipe.endPoint = "server" \' ' + vmx_config_path)
 
         # connect to ESX host
-        child = None
+        rctrl = None
         try:
-            child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
-            try:
-                child.expect('continue',timeout=5)
-                child.send('yes\n')
-            except:
-                pass
-            child.expect(".*assword:")
-            child.sendline(host_password)
-            child.expect(".*\# ", timeout=2)
+            rctrl = self._connect_to_vm_host(host_address, host_user, host_password)
             self.logger.info("Successfully connection to virtual machine '%s'" % self.name)
             # delete existence serial port options from the configuration file
-            child.sendline("sed -e '/^serial0/d' %s > tmp1 && mv tmp1 %s"
+            rctrl.sendline("sed -e '/^serial0/d' %s > tmp1 && mv tmp1 %s"
                            % (vmx_config_path, vmx_config_path))
             # send commands to ESX host
             for cmd in commands:
-                child.sendline(cmd)
-            self.logger.info("Serial port for virtual machine '%s' was added successfully and available on '%s'" % (
+                rctrl.sendline(cmd)
+
+            self.logger.info("Serial port for virtual machine '%s' has been added successfully and available on '%s'" % (
                 self.name, self.serial_port_path))
 
         except Exception:
@@ -155,7 +148,7 @@ class VirtualMachine(object):
             self.logger.error(msg)
             raise Manager.CreatorException(msg)
         finally:
-            child.close()
+            rctrl.close()
 
     def add_hard_disk(self, manager, host_address, host_user, host_password, hard_disk=None):
 
@@ -233,7 +226,7 @@ class VirtualMachine(object):
         rctrl = None
         try:
             rctrl = self._connect_to_vm_host(host_address, host_user, host_password)
-            self.logger.info("VM '%s' is connected successfully" % self.name)
+            self.logger.info("VM '%s' has been connected successfully" % self.name)
 
             # delete existence vnc options from the configuration file
             rctrl.sendline("sed -e '/^RemoteDisplay/d' %s > tmp1 && mv tmp1 %s"
@@ -422,14 +415,14 @@ class VirtualMachine(object):
         try:
             child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
             try:
-                child.expect('continue',timeout=5)
+                child.expect('continue', timeout=5)
                 child.send('yes\n')
             except:
                 pass
             child.expect(".*assword:")
             child.sendline(host_password)
             child.expect(".*\# ", timeout=2)
-            self.logger.info("ESX host '%s' is connected successfully" % host_address)
+            self.logger.info("ESX host '%s' has been connected successfully" % host_address)
             return child
         except Exception:
             child.close()
