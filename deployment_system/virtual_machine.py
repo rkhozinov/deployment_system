@@ -132,6 +132,11 @@ class VirtualMachine(object):
         child = None
         try:
             child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+            try:
+                child.expect('continue',timeout=5)
+                child.send('yes\n')
+            except:
+                pass
             child.expect(".*assword:")
             child.sendline(host_password)
             child.expect(".*\# ", timeout=2)
@@ -416,6 +421,11 @@ class VirtualMachine(object):
         child = None
         try:
             child = pexpect.spawn("ssh %s@%s" % (host_user, host_address))
+            try:
+                child.expect('continue',timeout=5)
+                child.send('yes\n')
+            except:
+                pass
             child.expect(".*assword:")
             child.sendline(host_password)
             child.expect(".*\# ", timeout=2)
