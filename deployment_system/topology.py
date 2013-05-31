@@ -116,9 +116,9 @@ class Topology(object):
                 time.sleep(30)
 
             for vm in self.vms:
-                if vm.conf_type:
+                if 'com' in vm.conf_type:
                     #TODO add configuration via VNC
-                    vm.configure(host_address=self.host_address, host_user=self.host_user,
+                    vm.configure_via_com(host_address=self.host_address, host_user=self.host_user,
                                  host_password=self.host_password)
 
         except Exception as e:

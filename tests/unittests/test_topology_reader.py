@@ -244,7 +244,7 @@ class TestTopologyReader(unittest.TestCase):
                 time.sleep(30)
 
             for vm in vms:
-                vm.configure(config.host_address, config.host_user, config.host_password)
+                vm.configure_via_com(config.host_address, config.host_user, config.host_password)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
         except Exception as error:

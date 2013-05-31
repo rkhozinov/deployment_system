@@ -48,7 +48,7 @@ class TestVirtualMachine(unittest.TestCase):
 
     def test_create_instance(self):
         try:
-            vm = VirtualMachine(name=self.vmname, user='user', password='password')
+            vm = VirtualMachine(name=self.vmname)
             self.assertIsInstance(vm, VirtualMachine)
             self.assertEqual(vm.name, self.vmname)
         except AttributeError as error:
@@ -57,7 +57,7 @@ class TestVirtualMachine(unittest.TestCase):
     def test_create_instance_with_invalid_name(self):
         try:
             invalid_vm_name = None
-            vm = VirtualMachine(name=invalid_vm_name, user='user', password='password')
+            vm = VirtualMachine(name=invalid_vm_name)
             self.assertNotIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(True, error.message)
@@ -65,14 +65,14 @@ class TestVirtualMachine(unittest.TestCase):
     def test_create_instance_with_invalid_credentials(self):
         try:
             invalid_vm_password = None
-            vm = VirtualMachine(name=self.vmname, user='user', password=invalid_vm_password)
+            vm = VirtualMachine(name=self.vmname)
             self.assertNotIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(True, error.message)
 
         try:
             invalid_vm_user = None
-            vm = VirtualMachine(name=self.vmname, user='user', password=invalid_vm_user)
+            vm = VirtualMachine(name=self.vmname)
             self.assertNotIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(True, error.message)
@@ -81,7 +81,7 @@ class TestVirtualMachine(unittest.TestCase):
         try:
             hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
             disk_space = 1024
-            vm = VirtualMachine(name=self.vmname, user='user', password='password', hard_disk=hard_disk,
+            vm = VirtualMachine(name=self.vmname, hard_disk=hard_disk,
                                 disk_space=disk_space)
             self.assertIsInstance(vm, VirtualMachine)
         except AttributeError as error:
@@ -92,7 +92,7 @@ class TestVirtualMachine(unittest.TestCase):
     def test_try_create_instance_with_hard_disk_without_space(self):
         try:
             hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
-            vm = VirtualMachine(name=self.vmname, user='user', password='password', hard_disk=hard_disk)
+            vm = VirtualMachine(name=self.vmname, hard_disk=hard_disk)
             self.assertIsInstance(vm, VirtualMachine)
         except AttributeError as error:
             self.assertTrue(True, error.message)
@@ -103,8 +103,6 @@ class TestVirtualMachine(unittest.TestCase):
         try:
             hard_disk = '/vfms/volumes/datastore1/disk.vmdk'
             vm = VirtualMachine(name=self.vmname,
-                                user='user',
-                                password='password',
                                 hard_disk=hard_disk,
                                 memory=512,
                                 cpu=2,
@@ -112,7 +110,6 @@ class TestVirtualMachine(unittest.TestCase):
                                 connected_networks=[],
                                 iso='/vfms/volumes/datastore1/image.iso',
                                 description='VM descr',
-                                neighbours=[],
                                 configuration=[])
             self.assertIsInstance(vm, VirtualMachine)
         except AttributeError as error:
@@ -131,18 +128,18 @@ class TestVirtualMachine(unittest.TestCase):
             # create vm
             vm = None
             try:
-                vm = VirtualMachine(name='net witn space', connected_networks=[''] )
+                vm = VirtualMachine(name='net witn space', connected_networks=[''])
                 vm.create(manager=self.manager,
                           host_name=self.host_name,
                           resource_pool_name=self.rpname)
             except Manager.ExistenceException:
                 pass
 
-            # # destroy vm
-            # try:
-            #     vm.destroy(self.manager)
-            # except Manager.ExistenceException as error:
-            #     pass
+                # # destroy vm
+                # try:
+                #     vm.destroy(self.manager)
+                # except Manager.ExistenceException as error:
+                #     pass
 
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
@@ -162,7 +159,7 @@ class TestVirtualMachine(unittest.TestCase):
             # create vm
             vm = None
             try:
-                vm = VirtualMachine(name=self.vmname, user=self.vmuser, password=self.vmpassword)
+                vm = VirtualMachine(name=self.vmname)
                 vm.create(manager=self.manager, host_name=self.host_name, resource_pool_name=self.rpname)
             except Manager.ExistenceException:
                 pass
@@ -195,7 +192,7 @@ class TestVirtualMachine(unittest.TestCase):
             # create vm
             vm = None
             try:
-                vm = VirtualMachine(name=self.vmname, user=self.vmuser, password=self.vmpassword)
+                vm = VirtualMachine(name=self.vmname)
                 vm.create(manager=self.manager, host_name=self.host_name, resource_pool_name=self.rpname)
             except Manager.ExistenceException:
                 pass
@@ -322,12 +319,12 @@ class TestVirtualMachine(unittest.TestCase):
 
     def test_configure_vm(self):
         virtual_machine = VirtualMachine(self.vmname, self.vmuser, self.vmpassword)
-        configuration = ('configure',
+        configuration = ['configure',
                          'set int eth eth0 address 10.10.10.1/25',
                          'set int eth eth1 address 100.10.10.1/25',
-                         'commit', 'save', 'exit', 'exit')
+                         'commit', 'save', 'exit', 'exit']
         try:
-            virtual_machine.configure(self.host_address, self.host_user, self.host_password, configuration)
+            virtual_machine.configure_via_com(self.host_address, self.host_user, self.host_password, configuration)
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
 

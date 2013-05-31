@@ -21,8 +21,6 @@ import pexpect
 import lib.hatchery as Manager
 
 
-
-
 class VirtualMachine(object):
     DISK_DEFAULT_SPACE = 2048
     MEMORY_DEFAULT_SIZE = 512
@@ -31,7 +29,7 @@ class VirtualMachine(object):
 
     def __init__(self, name, memory=512, cpu=2, disk_space=None, hard_disk=None,
                  connected_networks=None, iso=None,
-                 description=None, config_type = None, configuration=None, vnc_port=None):
+                 description=None, config_type=None, configuration=None, vnc_port=None):
 
         self.logger = logging.getLogger(self.__module__)
         if not name:
@@ -345,7 +343,7 @@ class VirtualMachine(object):
             self.logger.error(e.message)
             raise
 
-    def configure(self, host_address, host_user, host_password, configuration=None):
+    def configure_via_com(self, host_address, host_user, host_password, configuration=None):
         if not host_address:
             msg = "VM '%s' is connected successfully" % self.name
             self.logger.error(msg)
@@ -365,7 +363,6 @@ class VirtualMachine(object):
             configuration = self.configuration
 
             # configure vm
-            # todo: add waiting time
             # todo: check existence of vm
             vmctrl = None
             try:
@@ -376,16 +373,22 @@ class VirtualMachine(object):
                 # connect to vm via netcat
                 # pipe files for netcat are in specific directory on ESX datastore
                 connection_str = 'nc -U /vmfs/volumes/datastore1/%s/%s' % ( self.SERIAL_PORTS_DIR, self.name)
-                vmctrl.sendline(connection_str)
+                vmctrl.send(connection_str + '\n')
                 time.sleep(1)
                 self.logger.info("VM '%s' has been connected successfully" % self.name)
 
                 for option in configuration:
                     output_start = option.find('@exp')
-                    send = option[:output_start]
-                    expected = option[output_start + 5:]
-                    vmctrl.sendline(send)
-                    vmctrl.expect(expected)
+                    if not output_start == -1:
+                        send = option[:output_start - 1]
+                        expected = option[output_start + 5:]
+                    else:
+                        send = option
+                        expected = None
+                    vmctrl.send(send + '\n')
+                    if expected:
+                        vmctrl.expect(expected)
+
                     self.logger.info("Option '%s' to VM '%s' has been sent successfully" % (option, self.name))
                     time.sleep(1)
                 self.logger.info("Virtual machine '%s' has been configured successfully" % self.name)
