@@ -92,7 +92,6 @@ class Topology(object):
             for vm in self.vms:
                 vm.name = "{}_{}".format(self.resource_pool, vm.name)
 
-
                 for i in range(len(vm.connected_networks)):
                     for j in xrange(len(self.networks)):
                         tmp1 = self.networks[j].name.find(vm.connected_networks[i])
@@ -103,9 +102,12 @@ class Topology(object):
                 vm.add_serial_port(manager=self.manager, host_address=self.host_address,
                                    host_user=self.host_user, host_password=self.host_password)
                 if vm.hard_disk:
-                    vm.add_hard_disk(manager=self.manager, host_address=self.host_address,
-                                     host_user=self.host_user, host_password=self.host_password,
-                                     hard_disk=vm.hard_disk)
+                    try:
+                        vm.add_hard_disk(manager=self.manager, host_address=self.host_address,
+                                         host_user=self.host_user, host_password=self.host_password,
+                                         hard_disk=vm.hard_disk)
+                    except NameError as e:
+                        raise NameError()
                 if vm.vnc_port != '0':
                     vm.add_vnc_access(manager=self.manager, host_address=self.host_address,
                                       host_user=self.host_user, host_password=self.host_password)
@@ -119,7 +121,7 @@ class Topology(object):
                 if 'com' in vm.conf_type:
                     #TODO add configuration via VNC
                     vm.configure_via_com(host_address=self.host_address, host_user=self.host_user,
-                                 host_password=self.host_password)
+                                         host_password=self.host_password)
 
         except Exception as e:
             self.logger.error(e.message)

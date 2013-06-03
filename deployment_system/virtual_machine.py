@@ -191,6 +191,8 @@ class VirtualMachine(object):
             for cmd in commands:
                 rctrl.sendline(cmd)
                 rctrl.expect(".*\# ", timeout=self.COPY_TIMEOUT)
+                if 'No such' in rctrl.after:
+                    raise NameError("Couldn't find %s for %s" % (self.hard_disk, self.name))
 
             manager.add_existence_vmdk(vm_name=self.name, path=vm_path_esx_style)
             self.logger.info(

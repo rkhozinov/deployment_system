@@ -321,12 +321,14 @@ class TestVirtualMachine(unittest.TestCase):
         virtual_machine = VirtualMachine('t123')
 
         try:
-            virtual_machine.disk_space = 0
-            virtual_machine.create(self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')
+            # virtual_machine.disk_space = 0
+            # virtual_machine.create(self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')
             virtual_machine.add_hard_disk(self.manager, self.host_address, self.host_user,
-                                          self.host_password, hard_disk='vmfs/volumes/datastore1/tmp01/tmp01.vmdk')
+                                          self.host_password, hard_disk='vmfs/volumes/datastore1/tmp01/tmp01.vldk')
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)
+        except NameError as e:
+            print e
 
     if __name__ == "__main__":
         unittest.main()
