@@ -146,12 +146,20 @@ class VirtualMachine(object):
             # send commands to ESX host
             for cmd in commands:
                 child.sendline(cmd)
-            self.logger.info("Serial port for virtual machine '%s' was added successfully and available on '%s'" % (
-                self.name, self.serial_port_path))
+
             #get config from .vmx
             self.power_on(manager=manager)
             self.power_off(manager=manager)
 
+            current_vm = manager.get_vm_obj(self.name)
+            devices = current_vm._devices
+            if self.serial_port_path in str(devices):
+                self.logger.info("Serial port for virtual machine '%s' was added successfully and available on '%s'" % (
+                    self.name, self.serial_port_path))
+            else:
+                raise Manager.CreatorException("Couldn't add serial port to vm %s" % self.name)
+        except Manager.CreatorException:
+            raise
         except Exception:
             msg = "Can't connect to host via ssh"
             self.logger.error(msg)

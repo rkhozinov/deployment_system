@@ -926,6 +926,24 @@ class Creator:
             pass
             #todo: REVIEW ME
 
+    def get_vm_obj(self, vmname):
+
+        """
+        Gets a virtual machine object on ESX server
+        :param vmname: virtual machine name
+        :return: VIVirtualMachine instance
+        :raise: CreatorException
+        """
+        self._connect_to_esx()
+
+        try:
+            return self.esx_server.get_vm_by_name(vmname)
+        except Exception:
+            raise ExistenceException("Couldn't find the virtual machine '%s'" % vmname)
+        finally:
+            self._disconnect_from_esx()
+
+
     def add_existence_vmdk(self, vm_name, path):
         """
         Add existence hard drive (.vmdk) to the virtual machine
