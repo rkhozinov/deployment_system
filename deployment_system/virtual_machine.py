@@ -148,6 +148,9 @@ class VirtualMachine(object):
                 child.sendline(cmd)
             self.logger.info("Serial port for virtual machine '%s' was added successfully and available on '%s'" % (
                 self.name, self.serial_port_path))
+            #get config from .vmx
+            self.power_on(manager=manager)
+            self.power_off(manager=manager)
 
         except Exception:
             msg = "Can't connect to host via ssh"
@@ -241,6 +244,10 @@ class VirtualMachine(object):
             # send commands to ESX host
             for cmd in commands:
                 rctrl.sendline(cmd)
+
+            self.power_on(manager=manager)
+            self.power_off(manager=manager)
+
             self.logger.info("VNC access for virtual machine '%s' has been added successfully and available on '%s'" % (
                 self.name, self.vnc_port))
 
