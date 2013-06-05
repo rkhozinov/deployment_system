@@ -65,10 +65,11 @@ class Topology(object):
             raise e
 
     def create(self):
-
+        #rollback = []
         try:
             # creates a resource pool for store virtual machines
-            ResourcePool(self.resource_pool).create(self.manager)
+            resource_pool = ResourcePool(self.resource_pool).create(self.manager)
+            #rollback.append(resource_pool)
             # self.logger.info('Resource pool {} successfully created'.format(self.resource_pool))
 
             # creates networks and switches
