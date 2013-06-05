@@ -293,9 +293,9 @@ class TopologyReader(object):
 
         try:
             iso = self.config.get(vm_name, self.VM_ISO)
-            # TODO: review this
+            # TODO: rewrite this - option 'not use default iso'
             if iso == 'False':
-                raise ConfigParser.NoOptionError
+                iso = None
         except ConfigParser.NoOptionError:
             # if not specific a iso-image for this vm_name then will be used the common iso-image
             if self.iso:

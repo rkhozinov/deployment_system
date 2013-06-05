@@ -118,10 +118,12 @@ class Topology(object):
                 time.sleep(30)
 
             for vm in self.vms:
-                if 'com' in vm.conf_type:
-                    #TODO add configuration via VNC
+                if 'com' in vm.config_type:
                     vm.configure_via_com(host_address=self.host_address, host_user=self.host_user,
                                          host_password=self.host_password)
+                elif 'vnc' in vm.config_type:
+                    #TODO add configuration via VNC
+                    pass
 
         except Exception as e:
             self.logger.error(e.message)
