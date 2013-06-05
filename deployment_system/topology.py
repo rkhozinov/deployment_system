@@ -134,14 +134,14 @@ class Topology(object):
             self.logger.error(e.message)
             while rollback:
                 unit = rollback.pop()
-                if 'VirtualMachine' in unit.__class__:
+                if 'VirtualMachine' in str(unit.__class__):
                     #manager, host_address, host_user, host_password
                     unit.destroy_with_files(manager=self.manager, host_address=self.host_address,
                                             host_user=self.host_user,
                                             host_password=self.host_password)
-                elif 'Switch' in unit.__class__:
+                elif 'Switch' in str(unit.__class__):
                     unit.destroy(self.manager, self.config.host_name)
-                elif 'ResourcePool' in unit.__class__:
+                elif 'ResourcePool' in str(unit.__class__):
                     unit.destroy(manager=self.manager)
             raise e
 
