@@ -65,11 +65,11 @@ class Topology(object):
             raise e
 
     def create(self):
-        #rollback = []
+        rollback = []
         try:
             # creates a resource pool for store virtual machines
             resource_pool = ResourcePool(self.resource_pool).create(self.manager)
-            #rollback.append(resource_pool)
+            rollback.append(resource_pool)
             # self.logger.info('Resource pool {} successfully created'.format(self.resource_pool))
 
             # creates networks and switches
@@ -78,12 +78,15 @@ class Topology(object):
             shared_sw_name = '%s_%s' % (self.config.SWITCH_PREFIX, self.resource_pool)
             shared_switch = Switch(shared_sw_name)
             shared_switch.create(self.manager, self.host_name)
+            rollback.append(shared_switch)
 
             for net in self.networks:
                 # create isolated networks
                 if net.isolated:
                     sw_name = "%s_%s_%s" % (self.config.SWITCH_PREFIX, self.resource_pool, net.name)
-                    Switch(sw_name).create(self.manager, self.host_name).add_network(net, self.manager, self.host_name)
+                    switch = Switch(sw_name).create(self.manager, self.host_name)
+                    rollback.append(switch)
+                    switch.add_network(net, self.manager, self.host_name)
                 else:
                     # create simple networks on shared switch
                     net.name = "%s_%s" % (self.resource_pool, net.name)
@@ -100,6 +103,7 @@ class Topology(object):
                             vm.connected_networks[i] = "%s_%s" % (self.resource_pool, vm.connected_networks[i])
 
                 vm.create(self.manager, self.resource_pool, self.host_name)
+                rollback.append(vm)
                 vm.add_serial_port(manager=self.manager, host_address=self.host_address,
                                    host_user=self.host_user, host_password=self.host_password)
                 if vm.hard_disk:
@@ -128,6 +132,17 @@ class Topology(object):
 
         except Exception as e:
             self.logger.error(e.message)
+            while rollback:
+                unit = rollback.pop()
+                if 'VirtualMachine' in unit.__class__:
+                    #manager, host_address, host_user, host_password
+                    unit.destroy_with_files(manager=self.manager, host_address=self.host_address,
+                                            host_user=self.host_user,
+                                            host_password=self.host_password)
+                elif 'Switch' in unit.__class__:
+                    unit.destroy(self.manager, self.config.host_name)
+                elif 'ResourcePool' in unit.__class__:
+                    unit.destroy(manager=self.manager)
             raise e
 
     def destroy(self, destroy_virtual_machines=False, destroy_networks=False):
