@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import os
+import subprocess
 import time
 
 import pexpect
@@ -426,6 +428,63 @@ class VirtualMachine(object):
                 raise Manager.CreatorException(msg)
             finally:
                 vmctrl.close()
+
+    def configure_via_vnc(self, host_address, vnc_port=None, configuration=None):
+        if not configuration:
+            configuration = self.configuration
+        if not vnc_port:
+            vnc_port = self.vnc_port
+
+        def run_vnc_command(vm_host, port, command, timeout):
+            # This function allow to use VNC util
+            # to send keys to the VNC console
+            # of the virtual machine
+            vncdotool = False
+            path = os.environ['PATH']
+            for dir_ in path.split(os.pathsep):
+                bin_path = os.path.join(dir_, 'vncdotool')
+                if os.path.exists(bin_path):
+                    vncdotool = True
+            if not vncdotool:
+                raise Exception("You want working with VNC, but vncdotool not found !")
+            cmd = ['vncdotool', '-s', vm_host + '::' + str(port)]
+            for i in str(command):
+                if i == '@':
+                    new_cmd = ['key', 'shift-2']
+                    subprocess.check_output(cmd + new_cmd)
+                elif i == ' ':
+                    new_cmd = ['type', ' ']
+                    subprocess.check_output(cmd + new_cmd)
+                elif i == ':':
+                    new_cmd = ['key', 'shift-']
+                    subprocess.check_output(cmd + new_cmd)
+                else:
+                    new_cmd = ['type', i]
+                    subprocess.check_output(cmd + new_cmd)
+                    if i == i.upper() and i != i.lower():
+                        time.sleep(0.5)
+                        new_cmd = ['key', 'caplk']
+                        subprocess.check_output(cmd + new_cmd)
+                time.sleep(0.1)
+            new_cmd2 = ['key', 'enter']
+            subprocess.check_output(cmd + new_cmd2)
+            time.sleep(timeout)
+
+
+        for option in configuration:
+            output_start = option.find('@exp')
+            if not output_start == -1:
+                send = option[:output_start - 1]
+                try:
+                    timeout = int(option[output_start + 5:])
+                except:
+                    #TODO: add checking timeout
+                    timeout = 10
+            else:
+                send = option
+                timeout = 1
+            run_vnc_command(host_address, vnc_port, configuration)
+
 
     def _connect_to_vm_host(self, host_address, host_user, host_password):
         """
