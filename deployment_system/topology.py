@@ -68,7 +68,8 @@ class Topology(object):
         rollback = []
         try:
             # creates a resource pool for store virtual machines
-            resource_pool = ResourcePool(self.resource_pool).create(self.manager)
+            resource_pool = ResourcePool(self.resource_pool)
+            resource_pool.create(self.manager)
             rollback.append(resource_pool)
             # self.logger.info('Resource pool {} successfully created'.format(self.resource_pool))
 
