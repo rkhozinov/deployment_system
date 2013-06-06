@@ -248,7 +248,12 @@ class TestTopologyReader(unittest.TestCase):
                 time.sleep(30)
 
             for vm in vms:
-                vm.configure_via_com(config.host_address, config.host_user, config.host_password)
+                if 'com' in vm.config_type:
+                    vm.configure_via_com(host_address=config.host_address, host_user=config.host_user,
+                                         host_password=config.host_password)
+                elif 'vnc' in vm.config_type:
+                    vm.configure_via_vnc(host_address=config.host_address)
+                    pass
 
         except Manager.CreatorException as error:
             self.assertTrue(False, error.message)

@@ -475,6 +475,8 @@ class VirtualMachine(object):
             output_start = option.find('@exp')
             if not output_start == -1:
                 send = option[:output_start - 1]
+                if len(send) == 0:
+                    send = '\n'
                 try:
                     timeout = int(option[output_start + 5:])
                 except:

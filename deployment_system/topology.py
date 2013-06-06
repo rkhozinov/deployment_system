@@ -133,17 +133,27 @@ class Topology(object):
 
         except Exception as e:
             self.logger.error(e.message)
-            while rollback:
-                unit = rollback.pop()
-                if 'VirtualMachine' in str(unit.__class__):
-                    #manager, host_address, host_user, host_password
-                    unit.destroy_with_files(manager=self.manager, host_address=self.host_address,
-                                            host_user=self.host_user,
-                                            host_password=self.host_password)
-                elif 'Switch' in str(unit.__class__):
-                    unit.destroy(self.manager, self.config.host_name)
-                elif 'ResourcePool' in str(unit.__class__):
-                    unit.destroy(manager=self.manager)
+            try:
+                while rollback:
+                    unit = rollback.pop()
+                    if 'VirtualMachine' in str(unit.__class__):
+                        unit.destroy_with_files(manager=self.manager, host_address=self.host_address,
+                                                host_user=self.host_user,
+                                                host_password=self.host_password)
+                    elif 'Switch' in str(unit.__class__):
+                        unit.destroy(self.manager, self.config.host_name)
+                    elif 'ResourcePool' in str(unit.__class__):
+                        unit.destroy(manager=self.manager)
+            except:
+                self.logger.error("Couldn't revert changes; need to destroy manually:")
+                for unit in rollback:
+                    if 'VirtualMachine' in str(unit.__class__):
+                        self.logger.error('VM %s' % unit.name)
+
+                    elif 'Switch' in str(unit.__class__):
+                        self.logger.error('Switch %s' % unit.name)
+                    elif 'ResourcePool' in str(unit.__class__):
+                        self.logger.error('Resource pool %s' % unit.name)
             raise e
 
     def destroy(self, destroy_virtual_machines=False, destroy_networks=False):
