@@ -447,7 +447,7 @@ class VirtualMachine(object):
                     vncdotool = True
             if not vncdotool:
                 raise Exception("You want working with VNC, but vncdotool not found !")
-            cmd = ['vncdotool', '-s', vm_host + '::' + str(port)]
+            cmd = ['vncdotool', '-s', vm_host + ':' + str(port)]
             for i in str(command):
                 if i == '@':
                     new_cmd = ['key', 'shift-2']
@@ -458,6 +458,8 @@ class VirtualMachine(object):
                 elif i == ':':
                     new_cmd = ['key', 'shift-']
                     subprocess.check_output(cmd + new_cmd)
+                elif i == '\n':
+                    new_cmd = ['key', 'enter']
                 else:
                     new_cmd = ['type', i]
                     subprocess.check_output(cmd + new_cmd)
