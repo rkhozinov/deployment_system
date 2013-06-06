@@ -129,7 +129,6 @@ class Topology(object):
                                          host_password=self.host_password)
                 elif 'vnc' in vm.config_type:
                     vm.configure_via_vnc(host_address=self.host_address)
-                    pass
 
         except Exception as e:
             self.logger.error(e.message)
