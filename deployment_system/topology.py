@@ -154,6 +154,7 @@ class Topology(object):
                         self.logger.error('Switch %s' % unit.name)
                     elif 'ResourcePool' in str(unit.__class__):
                         self.logger.error('Resource pool %s' % unit.name)
+                raise
             raise e
 
     def destroy(self, destroy_virtual_machines=False, destroy_networks=False):
