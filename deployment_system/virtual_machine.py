@@ -447,7 +447,7 @@ class VirtualMachine(object):
                     vncdotool = True
             if not vncdotool:
                 raise Exception("You want working with VNC, but vncdotool not found !")
-            cmd = ['vncdotool', '-s', vm_host + ':' + str(port)]
+            cmd = ['vncdotool', '-s', vm_host + '::' + str(port)]
             for i in str(command):
                 if i == '@':
                     new_cmd = ['key', 'shift-2']
@@ -476,9 +476,10 @@ class VirtualMachine(object):
             for option in configuration:
                 output_start = option.find('@exp')
                 if not output_start == -1:
-                    send = option[:output_start - 1]
-                    if len(send) == 0:
+                    if output_start == 0:
                         send = '\n'
+                    else:
+                        send = option[:output_start - 1]
                     try:
                         timeout = int(option[output_start + 5:])
                     except:
