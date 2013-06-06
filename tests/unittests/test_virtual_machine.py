@@ -13,6 +13,7 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import time
 from lib.hatchery import ExistenceException
 
 __author__ = 'rkhozinov'
@@ -332,16 +333,28 @@ class TestVirtualMachine(unittest.TestCase):
 
     def test_add_vnc_and_configure(self):
         virtual_machine = VirtualMachine('t123')
-        try:
-            virtual_machine.destroy(self.manager)
-        except:
-            pass
 
         virtual_machine.vnc_port = 5935
-        virtual_machine.create(manager=self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')
-        virtual_machine.add_vnc_access(self.manager, self.host_address, self.host_user,
-                                       self.host_password)
-        virtual_machine.power_on(self.manager)
+        virtual_machine.disk_space = 0
+        virtual_machine.hard_disk = '/vmfs/volumes/datastore1/SourceA-2/SourceA-2.vmdk'
+        virtual_machine.connected_networks.append('VLAN1002')
+        virtual_machine.connected_networks.append('net11.1_2')
+        # try:
+        #     virtual_machine.destroy(self.manager)
+        # except:
+        #     pass
+        # virtual_machine.create(manager=self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')
+        # virtual_machine.add_vnc_access(self.manager, self.host_address, self.host_user,
+        #                                self.host_password)
+        # virtual_machine.add_hard_disk(self.manager, self.host_address, self.host_user,
+        #                                self.host_password)
+        #virtual_machine.power_on(self.manager)
+        virtual_machine.configuration.append('automator @exp 2')
+        virtual_machine.configuration.append('swordfish @exp 2')
+        virtual_machine.configuration.append('ls -al @exp 2')
+        virtual_machine.configure_via_vnc(self.host_address)
+
+
         # vm2 = VirtualMachine('qwerty123')
         # vm2.vnc_port = 5961
         # vm2.create(manager=self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')

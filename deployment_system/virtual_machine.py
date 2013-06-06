@@ -30,8 +30,8 @@ class VirtualMachine(object):
     COPY_TIMEOUT = 900
 
     def __init__(self, name, memory=512, cpu=2, disk_space=0, hard_disk=None,
-                 connected_networks=None, iso=None,
-                 description=None, config_type=None, configuration=None, vnc_port=None):
+                 connected_networks=[], iso=None,
+                 description=None, config_type=None, configuration=[], vnc_port=None):
 
         self.logger = logging.getLogger(self.__module__)
         if not name:
@@ -483,7 +483,7 @@ class VirtualMachine(object):
             else:
                 send = option
                 timeout = 1
-            run_vnc_command(host_address, vnc_port, configuration)
+            run_vnc_command(host_address, vnc_port, send, timeout)
 
 
     def _connect_to_vm_host(self, host_address, host_user, host_password):
