@@ -241,7 +241,7 @@ class VirtualMachine(object):
         # commands for adding a vnc access to the vm configuration file
         commands = []
         commands.append('sed -i \'$ a RemoteDisplay.vnc.enabled = "TRUE"\' ' + vmx_config_path)
-        commands.append('sed -i \'$ a RemoteDisplay.vnc = "%s" \' ' % self.vnc_port + vmx_config_path)
+        commands.append('sed -i \'$ a RemoteDisplay.vnc.port = "%s" \' ' % self.vnc_port + vmx_config_path)
 
         # connect to ESX host
         rctrl = None

@@ -330,5 +330,24 @@ class TestVirtualMachine(unittest.TestCase):
         except NameError as e:
             print e
 
+    def test_add_vnc_and_configure(self):
+        virtual_machine = VirtualMachine('t123')
+        try:
+            virtual_machine.destroy(self.manager)
+        except:
+            pass
+
+        virtual_machine.vnc_port = 5935
+        virtual_machine.create(manager=self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')
+        virtual_machine.add_vnc_access(self.manager, self.host_address, self.host_user,
+                                       self.host_password)
+        virtual_machine.power_on(self.manager)
+        # vm2 = VirtualMachine('qwerty123')
+        # vm2.vnc_port = 5961
+        # vm2.create(manager=self.manager, resource_pool_name='test_RP', host_name='172.18.93.30')
+        # vm2.add_vnc_access(self.manager, self.host_address, self.host_user,
+        #                                self.host_password)
+        # vm2.power_on(self.manager)
+
     if __name__ == "__main__":
         unittest.main()
