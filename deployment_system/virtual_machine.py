@@ -470,25 +470,23 @@ class VirtualMachine(object):
             subprocess.check_output(cmd + new_cmd2)
             time.sleep(timeout)
 
-
-        for option in configuration:
-            output_start = option.find('@exp')
-            if not output_start == -1:
-                send = option[:output_start - 1]
-                if len(send) == 0:
-                    send = '\n'
-                try:
-                    timeout = int(option[output_start + 5:])
-                except:
-                    #TODO: add checking timeout
-                    timeout = 10
-            else:
-                send = option
-                timeout = 1
-            try:
+        try:
+            for option in configuration:
+                output_start = option.find('@exp')
+                if not output_start == -1:
+                    send = option[:output_start - 1]
+                    if len(send) == 0:
+                        send = '\n'
+                    try:
+                        timeout = int(option[output_start + 5:])
+                    except:
+                        raise
+                else:
+                    send = option
+                    timeout = 1
                 run_vnc_command(host_address, vnc_port, send, timeout)
-            except Exception as e:
-                self.logger.error("Couldn't connect to VM using VNC: %s" % e.message)
+        except Exception as e:
+            self.logger.error("Couldn't configure VM using VNC: %s" % e.message)
 
 
     def _connect_to_vm_host(self, host_address, host_user, host_password):
