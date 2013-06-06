@@ -119,15 +119,15 @@ class Topology(object):
                 vm.power_on(self.manager)
 
             #todo: add boot-time
-            if len(self.vms) < 2:
-                time.sleep(30)
+            if len(self.vms) < 3:
+                time.sleep(120)
 
             for vm in self.vms:
                 if 'com' in vm.config_type:
                     vm.configure_via_com(host_address=self.host_address, host_user=self.host_user,
                                          host_password=self.host_password)
                 elif 'vnc' in vm.config_type:
-                    #TODO add configuration via VNC
+                    vm.configure_via_vnc(host_address=self.host_address)
                     pass
 
         except Exception as e:
