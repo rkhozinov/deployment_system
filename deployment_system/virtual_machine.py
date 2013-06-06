@@ -485,7 +485,10 @@ class VirtualMachine(object):
             else:
                 send = option
                 timeout = 1
-            run_vnc_command(host_address, vnc_port, send, timeout)
+            try:
+                run_vnc_command(host_address, vnc_port, send, timeout)
+            except Exception as e:
+                self.logger.error("Couldn't connect to VM using VNC: %s" % e.message)
 
 
     def _connect_to_vm_host(self, host_address, host_user, host_password):
