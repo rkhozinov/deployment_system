@@ -418,7 +418,9 @@ class Creator:
         hosts = self.esx_server.get_hosts()
         try:
             esx_hostname = vm_options['esx_hostname']
-            if esx_hostname and esx_hostname in hosts.values():
+            if not esx_hostname:
+                raise KeyError
+            elif not (esx_hostname in hosts.values()):
                 raise CreatorException("Couldn't find host '%s'" % esx_hostname)
         except KeyError:
             if len(hosts.values()) > 1:
