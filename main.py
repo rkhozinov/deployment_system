@@ -94,7 +94,7 @@ elif args.action == 'start':
     finally:
         print('End of starting process (%s).' % datetime.datetime.now())
 
-elif args.action == 'shutdown':
+elif args.action == 'stop':
     print ('Begin shutting down process (%s):' % datetime.datetime.now())
     try:
         profiler.enable()
