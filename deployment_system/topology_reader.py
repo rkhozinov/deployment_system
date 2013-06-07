@@ -13,11 +13,24 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
 
 import logging
 import ConfigParser
 from .network import Network
 from .virtual_machine import VirtualMachine
+
+VM_DEFAULT_GW = 'gw'
+
+VM_MASK = 'mask'
+
+VM_IP = 'ip'
+
+VM_EXTERNAL_INTERFACE = 'external_interface'
+
+VM_PASSWORD = 'password'
+
+VM_USER = 'user'
 
 
 class TopologyReader(object):
@@ -63,6 +76,7 @@ class TopologyReader(object):
     VM_CONFIG_TYPE = 'config_type'
     VM_HARD_DISK = 'hard_disk'
     VM_VNC_PORT = 'vnc_port'
+    VM_DEV_TYPE = 'device_type'
 
     def __init__(self, config_path):
         """
@@ -246,11 +260,14 @@ class TopologyReader(object):
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_DISK_SPACE))
             raise
+
+        try:
+            device_type = self.config.get(vm_name, self.VM_DEV_TYPE)
+        except:
+            device_type = 'other'
+
         try:
             config = self.__str_to_list_strip(self.config.get(vm_name, self.VM_CONFIG))
-            # TODO: review False or None option
-            if False in config:
-                config = False
         except ConfigParser.NoOptionError:
             config = None
             self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CONFIG, vm_name))
@@ -258,6 +275,72 @@ class TopologyReader(object):
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG))
             raise
+
+        if device_type == 'vyatta':
+            new_config = []
+            #TODO add logging (not this hack)
+            try:
+                user = self.config.get(vm_name, VM_USER)
+                password = self.config.get(vm_name, VM_PASSWORD)
+                external_interface = self.config.get(vm_name, VM_EXTERNAL_INTERFACE)
+                ip = self.config.get(vm_name, VM_IP)
+                mask = self.config.get(vm_name, VM_MASK)
+                gw = self.config.get(vm_name, VM_DEFAULT_GW)
+            except ConfigParser.NoOptionError as e:
+                option = str(e)[10:str(e).find(' in')]
+                self.logger.error("Must specify option '%s' in section '%s'" % (option, vm_name))
+                raise
+            except ConfigParser.Error as e:
+                self.logger.error("Error in configuration block in section '%s'" % (vm_name))
+                raise
+
+            new_config.append('%s @exp Password:' % user)
+            new_config.append('%s @exp $' % password)
+            new_config.append('configure @exp #')
+            new_config.append('set interface ethernet %s address %s%s  @exp #' % (external_interface, ip, mask))
+            new_config.append('set protocols static route 0.0.0.0/0 next-hop %s @exp #' % gw)
+            new_config.append('set service telnet listen-address %s @exp #' % ip)
+            new_config.append('set service ssh listen-address %s @exp #' % ip)
+            new_config.append('commit @exp #')
+            new_config.append('save @exp #')
+            new_config.append('exit @exp $')
+            new_config.append('exit')
+
+            if config:
+                for cmd in config:
+                    new_config.append(cmd)
+            config = copy.deepcopy(new_config)
+
+        elif device_type == 'ubuntu_without_password':
+            new_config = []
+            #TODO add logging (not this hack)
+            try:
+                user = self.config.get(vm_name, VM_USER)
+                password = self.config.get(vm_name, VM_PASSWORD)
+                external_interface = self.config.get(vm_name, VM_EXTERNAL_INTERFACE)
+                ip = self.config.get(vm_name, VM_IP)
+                mask = self.config.get(vm_name, VM_MASK)
+                gw = self.config.get(vm_name, VM_DEFAULT_GW)
+            except ConfigParser.NoOptionError as e:
+                option = str(e)[10:str(e).find(' in')]
+                self.logger.error("Must specify option '%s' in section '%s'" % (option, vm_name))
+                raise
+            except ConfigParser.Error as e:
+                self.logger.error("Error in configuration block in section '%s'" % (vm_name))
+                raise
+
+            new_config.append('@exp 20')
+            new_config.append('%s @exp 1' % user)
+            new_config.append('%s @exp 1' % password)
+            new_config.append('sudo ifconfig %s %s%s @exp 1' % (external_interface, ip, mask))
+            new_config.append('sudo route add %s dev %s @exp 1' % (gw, external_interface))
+            new_config.append('sudo route add default gw %s @exp 1' % (gw))
+            new_config.append('exit')
+
+            if config:
+                for cmd in config:
+                    new_config.append(cmd)
+            config = copy.deepcopy(new_config)
 
         try:
             networks = self.__str_to_list_strip(self.config.get(vm_name, self.VM_NETWORKS))
@@ -320,7 +403,8 @@ class TopologyReader(object):
                               config_type=config_type,
                               configuration=config,
                               hard_disk=hard_disk,
-                              vnc_port=vnc_port)
+                              vnc_port=vnc_port,
+                              device_type=device_type)
 
     def __get_network(self, net_name):
         """

@@ -30,7 +30,7 @@ class VirtualMachine(object):
     COPY_TIMEOUT = 900
 
     def __init__(self, name, memory=512, cpu=2, disk_space=0, hard_disk=None,
-                 connected_networks=[], iso=None,
+                 connected_networks=[], iso=None, device_type=None,
                  description=None, config_type=None, configuration=[], vnc_port=None):
 
         self.logger = logging.getLogger(self.__module__)
@@ -460,6 +460,7 @@ class VirtualMachine(object):
                     subprocess.check_output(cmd + new_cmd)
                 elif i == '\n':
                     new_cmd = ['key', 'enter']
+                    subprocess.check_output(cmd + new_cmd)
                 else:
                     new_cmd = ['type', i]
                     subprocess.check_output(cmd + new_cmd)
