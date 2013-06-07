@@ -38,7 +38,7 @@ try:
 except:
     pass
 LOG_FILENAME = '%s/%s_%s_%s.log' % (
-log_dir, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), args.rpname, args.action)
+    log_dir, datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), args.rpname, args.action)
 PROFILE_FILE_NAME = '%s.%s' % (LOG_FILENAME.split('.log')[0], 'out')
 
 log_file = logging.FileHandler(filename=LOG_FILENAME, mode='w')
@@ -72,8 +72,7 @@ elif args.action == 'destroy':
     print ('Begin destroying process (%s):' % datetime.datetime.now())
     try:
         profiler.enable()
-        Topology(config_path=args.config, resource_pool=args.rpname).destroy(destroy_virtual_machines=True,
-                                                                             destroy_networks=True)
+        Topology(config_path=args.config, resource_pool=args.rpname).destroy()
         profiler.disable()
         profiler.dump_stats(PROFILE_FILE_NAME)
         # profiler.print_stats(sort='time')
@@ -81,6 +80,33 @@ elif args.action == 'destroy':
         logger.error(e.message)
     finally:
         print('End of destroying process (%s).' % datetime.datetime.now())
+
+elif args.action == 'start':
+    print ('Begin starting process (%s):' % datetime.datetime.now())
+    try:
+        profiler.enable()
+        Topology(config_path=args.config, resource_pool=args.rpname).power_on()
+        profiler.disable()
+        profiler.dump_stats(PROFILE_FILE_NAME)
+        # profiler.print_stats(sort='time')
+    except Exception as e:
+        logger.error(e.message)
+    finally:
+        print('End of starting process (%s).' % datetime.datetime.now())
+
+elif args.action == 'shutdown':
+    print ('Begin shutting down process (%s):' % datetime.datetime.now())
+    try:
+        profiler.enable()
+        Topology(config_path=args.config, resource_pool=args.rpname).power_off()
+        profiler.disable()
+        profiler.dump_stats(PROFILE_FILE_NAME)
+        # profiler.print_stats(sort='time')
+    except Exception as e:
+        logger.error(e.message)
+    finally:
+        print('End of shutting down process (%s).' % datetime.datetime.now())
+
 else:
     parser.print_help()
 

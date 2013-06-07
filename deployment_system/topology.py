@@ -156,7 +156,7 @@ class Topology(object):
                 raise
             raise e
 
-    def destroy(self, destroy_virtual_machines=False, destroy_networks=False):
+    def destroy(self):
 
         for vm in self.vms:
             try:
@@ -169,6 +169,7 @@ class Topology(object):
             except:
                 self.logger.error("Error with destroying VM '%s'" % vm.name)
 
+        sw_name = None
         for net in self.networks:
             try:
                 if net.isolated:
@@ -194,3 +195,21 @@ class Topology(object):
         except Exception as e:
             self.logger.error(e.message)
             raise e
+
+    def power_on(self):
+        for vm in self.vms:
+            try:
+                vm.name = "%s_%s" % (self.resource_pool, vm.name)
+                vm.power_on(manager=self.manager)
+            except:
+                self.logger.error("Error with VM '%s'" % vm.name)
+                raise
+
+    def power_off(self):
+        for vm in self.vms:
+            try:
+                vm.name = "%s_%s" % (self.resource_pool, vm.name)
+                vm.power_off(manager=self.manager)
+            except:
+                self.logger.error("Error with VM '%s'" % vm.name)
+                raise
