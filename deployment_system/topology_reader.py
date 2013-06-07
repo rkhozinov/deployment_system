@@ -341,18 +341,7 @@ class TopologyReader(object):
                 for cmd in config:
                     new_config.append(cmd)
 
-            print '===============old============================='
-            print config
-            print '==============================================='
-
-            print '===============new============================='
-            print new_config
-            print '==============================================='
             config = copy.deepcopy(new_config)
-            print '===============merge==========================='
-            print config
-            print '==============================================='
-
         try:
             networks = self.__str_to_list_strip(self.config.get(vm_name, self.VM_NETWORKS))
         except ConfigParser.NoOptionError:
