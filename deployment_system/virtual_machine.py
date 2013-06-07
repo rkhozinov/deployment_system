@@ -434,9 +434,6 @@ class VirtualMachine(object):
             configuration = self.configuration
         if not vnc_port:
             vnc_port = self.vnc_port
-        print '==============================================='
-        print configuration
-        print '==============================================='
 
         def run_vnc_command(vm_host, port, command, timeout):
             # This function allow to use VNC util
