@@ -158,38 +158,39 @@ class Topology(object):
 
     def destroy(self, destroy_virtual_machines=False, destroy_networks=False):
 
+        for vm in self.vms:
+            try:
+                vm.name = "%s_%s" % (self.resource_pool, vm.name)
+                vm.destroy_with_files(manager=self.manager, host_address=self.host_address,
+                                      host_user=self.host_user,
+                                      host_password=self.host_password)
+            except Manager.ExistenceException:
+                self.logger.info("Couldn't find '%s' - probably it already removed" % vm.name)
+            except:
+                self.logger.error("Error with destroying VM '%s'" % vm.name)
+
+        for net in self.networks:
+            try:
+                if net.isolated:
+                    sw_name = "%s_%s_%s" % (self.config.SWITCH_PREFIX, self.resource_pool, net.name)
+                    switch = Switch(sw_name)
+                    switch.destroy(self.manager, self.host_name)
+            except Manager.ExistenceException:
+                pass
+            except:
+                self.logger.error("Error with destroying switch '%s'" % sw_name)
+
         try:
-            # destroys resource pool with vms
-            ResourcePool(self.resource_pool).destroy(self.manager, with_vms=destroy_virtual_machines)
-            # self.logger.debug("Resource pool '{} successfully created".format(self.resource_pool))
+            shared_sw_name = '%s_%s' % (self.config.SWITCH_PREFIX, self.resource_pool)
+            switch = Switch(shared_sw_name)
+            switch.destroy(self.manager, self.host_name)
         except Manager.ExistenceException:
             pass
-        except Manager.CreatorException:
-            raise
+
+        try:
+            ResourcePool(self.resource_pool).destroy(self.manager)
+        except Manager.ExistenceException:
+            pass
         except Exception as e:
             self.logger.error(e.message)
             raise e
-
-
-        # destroys shared switch with connected networks
-        if destroy_networks:
-            try:
-                sw_name = '{prefix}_{rpname}'.format(prefix=self.config.SWITCH_PREFIX, rpname=self.resource_pool)
-                Switch(sw_name).destroy(self.manager, self.config.host_name)
-            except Manager.ExistenceException:
-                pass
-            except Manager.CreatorException:
-                pass
-                # self.logger.error(e.message)
-
-            # destroys switch with isolated networks
-            for net in self.networks:
-                if net.isolated:
-                    try:
-                        sw_name = '{}_{}_{}'.format(self.config.SWITCH_PREFIX, self.resource_pool, net.name)
-                        Switch(sw_name).destroy(self.manager, self.config.host_name)
-                        # self.logger.info("Isolated switch '{}' was successfully destroyed".format(sw_name))
-                    except Manager.CreatorException:
-                        pass
-                        # self.logger.error(e.message)
-

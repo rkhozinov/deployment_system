@@ -276,9 +276,8 @@ class VirtualMachine(object):
             self.logger.error(msg)
             raise AttributeError(msg)
         try:
-            if not self.path:
-                self.path = manager.get_vm_path(self.name)
-            return self.path
+            path = manager.get_vm_path(self.name)
+            return path
         except Manager.CreatorException as e:
             self.logger.error(e.message)
             raise
@@ -307,6 +306,7 @@ class VirtualMachine(object):
 
     def destroy_with_files(self, manager, host_address, host_user, host_password):
         # TODO: add 'force' mode: if forced - execute 'rm -r' even if vm does not exist
+        # TODO: add ExistenseException
         rctrl = None
         try:
             path = self.get_path(manager)
