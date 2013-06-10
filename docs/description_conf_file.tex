@@ -1,0 +1,79 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[pdftex]{graphicx}
+\usepackage{color}
+\usepackage[top=2cm, bottom=2cm, margin=2cm]{geometry}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{mirantis}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{color}
+
+\begin{document}
+
+\thispagestyle{empty}
+\titleGWP{Deployment System}{Configuration file}{0.1}
+
+\clearpage
+
+\pagestyle{fancy}
+\thispagestyle{fancy}
+\tableofcontents
+
+\newpage
+
+\section{Revision History}
+\begin{tabular}{|l|p{4cm}|p{10cm}|}
+\hline
+{\bf Date} & {\bf Author} & {\bf Comments} \\ 
+\hline
+10/06/2013 & Mirantis team & Initial Draft \\ 
+\hline
+\end{tabular}
+
+\section{Introduction}
+The main goal of this document is detailed description of each variable that is contained (or may be contained) in configuration file.
+
+\section{Sections and variables}
+\textcolor{red}{Red} marked variables are required. This variables should be in configuration file. \textcolor{blue}{Blue} marked variables are optional. 
+
+\begin{Large}
+\begin{itemize}
+
+\item \textbf{[esxvcenter]} - VMWace Vcenter access parameters
+\begin{itemize}
+\item \large \textcolor{red}{ip} - Ip address of VCenter
+\item \textcolor{red}{user} - User name
+\item \textcolor{red}{passsword} - Password bla
+\end{itemize}
+
+\item \textbf{[esx]} - ESX Hardware Server access parameters
+\begin{itemize}
+\item \large \textcolor{red}{ip} - Ip address of ESX Server
+\item \textcolor{red}{user} - User name
+\item \textcolor{red}{password} - Password
+\end{itemize}
+
+\item \textbf{[settings]} - Lists of VM's and network's names and common settings
+\begin{itemize}
+\item \large \textcolor{red}{vms} - List of VM's names separated by commas. This names must be using as a section names
+\item \textcolor{red}{networks} - List of network's names separated by commas. This names must be using as a section names
+\item \textcolor{blue}{default\_iso} - Path to .iso image, which will be used if 'iso' parameter in 'vm\_name' section is not defined
+\end{itemize}
+
+\item \textbf{['network\_name']} - Description about network. For each name in 'settings-networks' must defined section with equal name.
+\begin{itemize}
+\item \large \textcolor{blue}{vlan} - (int) VLAN number; 0 - no VLAN, 1-4094 - VLAN ID, 4095 - All VLANs. Default vaule - 4095
+\item \textcolor{blue}{isolated} - (bool) If this parameter is 'True' - system will create private virtual switch for current network; else network will added as portgroup to shared switch, created specifically for this topology. Default value - 'False'
+\item \textcolor{blue}{promiscuous} - (bool) If True, enable Promiscuous mode for current network. Default value - False
+\item \textcolor{blue}{ports} - (int) If network is 'isolated', this parameter allow to specify the number of emulated ports. Default value - 120
+
+\end{itemize}
+
+
+
+\end{itemize}
+\end{Large}
+
+\end{document}
