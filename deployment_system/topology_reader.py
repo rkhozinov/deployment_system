@@ -412,6 +412,9 @@ class TopologyReader(object):
         """
         try:
             vlan = self.config.get(net_name, self.NET_VLAN)
+        except ConfigParser.NoOptionError:
+            vlan = 4095
+            self.logger.debug("Not specified option '%s' in section '%s'; VLAN set 4095(all)" % (self.NET_VLAN, net_name))
         except ConfigParser.Error:
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (net_name, self.NET_VLAN))
