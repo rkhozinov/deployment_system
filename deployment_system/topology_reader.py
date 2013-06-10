@@ -32,7 +32,7 @@ class TopologyReader(object):
     SETTINGS = 'settings'
 
     # esx manager settings
-    VCENTER_IP = 'IP'
+    VCENTER_IP = 'ip'
     VCENTER_USER = 'user'
     VCENTER_PASSWORD = 'password'
 
@@ -40,7 +40,7 @@ class TopologyReader(object):
 
     # esx host settings
     HOST_NAME = 'name'
-    HOST_IP = 'IP'
+    HOST_IP = 'ip'
     HOST_USER = 'user'
     HOST_PASSWORD = 'password'
 
