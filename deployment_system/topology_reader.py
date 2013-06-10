@@ -20,17 +20,7 @@ import ConfigParser
 from .network import Network
 from .virtual_machine import VirtualMachine
 
-VM_DEFAULT_GW = 'gw'
 
-VM_MASK = 'mask'
-
-VM_IP = 'ip'
-
-VM_EXTERNAL_INTERFACE = 'external_interface'
-
-VM_PASSWORD = 'password'
-
-VM_USER = 'user'
 
 
 class TopologyReader(object):
@@ -77,6 +67,12 @@ class TopologyReader(object):
     VM_HARD_DISK = 'hard_disk'
     VM_VNC_PORT = 'vnc_port'
     VM_DEV_TYPE = 'device_type'
+    VM_DEFAULT_GW = 'gw'
+    VM_MASK = 'mask'
+    VM_IP = 'ip'
+    VM_EXTERNAL_INTERFACE = 'external_interface'
+    VM_PASSWORD = 'password'
+    VM_USER = 'user'
 
     def __init__(self, config_path):
         """
