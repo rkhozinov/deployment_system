@@ -32,15 +32,15 @@ class TopologyReader(object):
     SETTINGS = 'settings'
 
     # esx manager settings
-    MANAGER_ADDRESS = 'address'
-    MANAGER_USER = 'user'
-    MANAGER_PASSWORD = 'password'
+    VCENTER_IP = 'IP'
+    VCENTER_USER = 'user'
+    VCENTER_PASSWORD = 'password'
 
     SWITCH_PREFIX = 'sw'
 
     # esx host settings
     HOST_NAME = 'name'
-    HOST_ADDRESS = 'address'
+    HOST_IP = 'IP'
     HOST_USER = 'user'
     HOST_PASSWORD = 'password'
 
@@ -94,28 +94,28 @@ class TopologyReader(object):
 
         # ESX manager (vCenter) settings
         try:
-            self.manager_address = self.config.get(self.MANAGER, self.MANAGER_ADDRESS)
+            self.manager_address = self.config.get(self.MANAGER, self.VCENTER_IP)
             self.logger.debug(
-                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.MANAGER_ADDRESS))
+                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.VCENTER_IP))
         except ConfigParser.Error:
             self.logger.error(
-                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.MANAGER_ADDRESS))
+                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.VCENTER_IP))
             raise
         try:
-            self.manager_user = self.config.get(self.MANAGER, self.MANAGER_USER)
+            self.manager_user = self.config.get(self.MANAGER, self.VCENTER_USER)
             self.logger.debug(
-                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.MANAGER_USER))
+                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.VCENTER_USER))
         except ConfigParser.Error:
             self.logger.error(
-                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.MANAGER_USER))
+                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.VCENTER_USER))
             raise
         try:
-            self.manager_password = self.config.get(self.MANAGER, self.MANAGER_PASSWORD)
+            self.manager_password = self.config.get(self.MANAGER, self.VCENTER_PASSWORD)
             self.logger.debug(
-                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.MANAGER_PASSWORD))
+                "Option '%s' in section '%s' has been read successfully" % (self.MANAGER, self.VCENTER_PASSWORD))
         except ConfigParser.Error:
             self.logger.error(
-                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.MANAGER_PASSWORD))
+                "Configuration error in section '%s' with option '%s'" % (self.MANAGER, self.VCENTER_PASSWORD))
             raise
 
         self.logger.info('ESX vCenter settings has been read successfully')
@@ -130,12 +130,12 @@ class TopologyReader(object):
                 "Configuration error in section '%s' with option '%s'" % (self.HOST, self.HOST_NAME))
             raise
         try:
-            self.host_address = self.config.get(self.HOST, self.HOST_ADDRESS)
+            self.host_address = self.config.get(self.HOST, self.HOST_IP)
             self.logger.debug(
-                "Option '%s' in section '%s' has been read successfully" % (self.HOST, self.HOST_ADDRESS))
+                "Option '%s' in section '%s' has been read successfully" % (self.HOST, self.HOST_IP))
         except ConfigParser.Error:
             self.logger.error(
-                "Configuration error in section '%s' with option '%s'" % (self.HOST, self.HOST_ADDRESS))
+                "Configuration error in section '%s' with option '%s'" % (self.HOST, self.HOST_IP))
             raise
         try:
             self.host_user = self.config.get(self.HOST, self.HOST_USER)
