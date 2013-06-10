@@ -276,12 +276,12 @@ class TopologyReader(object):
             new_config = []
             #TODO add logging (not this hack)
             try:
-                user = self.config.get(vm_name, VM_USER)
-                password = self.config.get(vm_name, VM_PASSWORD)
-                external_interface = self.config.get(vm_name, VM_EXTERNAL_INTERFACE)
-                ip = self.config.get(vm_name, VM_IP)
-                mask = self.config.get(vm_name, VM_MASK)
-                gw = self.config.get(vm_name, VM_DEFAULT_GW)
+                user = self.config.get(vm_name, self.VM_USER)
+                password = self.config.get(vm_name, self.VM_PASSWORD)
+                external_interface = self.config.get(vm_name, self.VM_EXTERNAL_INTERFACE)
+                ip = self.config.get(vm_name, self.VM_IP)
+                mask = self.config.get(vm_name, self.VM_MASK)
+                gw = self.config.get(vm_name, self.VM_DEFAULT_GW)
             except ConfigParser.NoOptionError as e:
                 option = str(e)[10:str(e).find(' in')]
                 self.logger.error("Must specify option '%s' in section '%s'" % (option, vm_name))
@@ -311,12 +311,12 @@ class TopologyReader(object):
             new_config = []
             #TODO add logging (not this hack)
             try:
-                user = self.config.get(vm_name, VM_USER)
-                password = self.config.get(vm_name, VM_PASSWORD)
-                external_interface = self.config.get(vm_name, VM_EXTERNAL_INTERFACE)
-                ip = self.config.get(vm_name, VM_IP)
-                mask = self.config.get(vm_name, VM_MASK)
-                gw = self.config.get(vm_name, VM_DEFAULT_GW)
+                user = self.config.get(vm_name, self.VM_USER)
+                password = self.config.get(vm_name, self.VM_PASSWORD)
+                external_interface = self.config.get(vm_name, self.VM_EXTERNAL_INTERFACE)
+                ip = self.config.get(vm_name, self.VM_IP)
+                mask = self.config.get(vm_name, self.VM_MASK)
+                gw = self.config.get(vm_name, self.VM_DEFAULT_GW)
             except ConfigParser.NoOptionError as e:
                 option = str(e)[10:str(e).find(' in')]
                 self.logger.error("Must specify option '%s' in section '%s'" % (option, vm_name))
