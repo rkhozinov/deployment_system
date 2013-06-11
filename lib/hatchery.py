@@ -497,10 +497,7 @@ class Creator:
                 iso = iso[iso.find(ds_name) + len(ds_name) + 1:]
         except KeyError:
             iso = None
-        try:
-            hard_drive = vm_options['hard_drive']
-        except KeyError:
-            hard_drive = True
+
 
         # Description
         try:

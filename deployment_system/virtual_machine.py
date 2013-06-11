@@ -38,10 +38,6 @@ class VirtualMachine(object):
             msg = "Couldn't specify a virtual machine name"
             self.logger.error(msg)
             raise AttributeError(msg)
-        if hard_disk and not disk_space:
-            msg = "Couldn't specify a disk space for the hard disk '%s'" % hard_disk
-            self.logger.error(msg)
-            raise AttributeError(msg)
 
         try:
             self.disk_space = int(disk_space) * 1024

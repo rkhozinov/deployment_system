@@ -251,8 +251,8 @@ class TopologyReader(object):
         try:
             disk_space = self.config.get(vm_name, self.VM_DISK_SPACE)
         except ConfigParser.NoOptionError:
-            disk_space = None
-            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_DISK_SPACE, vm_name))
+            self.logger.error("Must specify option '%s' in section '%s'" % (self.VM_DISK_SPACE, vm_name))
+            raise
         except ConfigParser.Error:
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_DISK_SPACE))
