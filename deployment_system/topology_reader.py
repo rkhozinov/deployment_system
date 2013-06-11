@@ -21,8 +21,6 @@ from .network import Network
 from .virtual_machine import VirtualMachine
 
 
-
-
 class TopologyReader(object):
     DEFAULT_PORTS_COUNT = 120
 
@@ -348,15 +346,21 @@ class TopologyReader(object):
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_NETWORKS))
             raise
 
-        try:
-            config_type = self.config.get(vm_name, self.VM_CONFIG_TYPE)
-        except ConfigParser.NoOptionError:
-            config_type = None
-            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CONFIG_TYPE, vm_name))
-        except ConfigParser.Error:
-            self.logger.error(
-                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG_TYPE))
-            raise
+
+        if device_type == 'vyatta':
+            config_type = 'com'
+        elif device_type == 'ubuntu_without_password':
+            config_type = 'vnc'
+        else:
+            try:
+                config_type = self.config.get(vm_name, self.VM_CONFIG_TYPE)
+            except ConfigParser.NoOptionError:
+                config_type = None
+                self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CONFIG_TYPE, vm_name))
+            except ConfigParser.Error:
+                self.logger.error(
+                    "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG_TYPE))
+                raise
 
         try:
             vnc_port = self.config.get(vm_name, self.VM_VNC_PORT)
@@ -414,7 +418,8 @@ class TopologyReader(object):
             vlan = self.config.get(net_name, self.NET_VLAN)
         except ConfigParser.NoOptionError:
             vlan = 4095
-            self.logger.debug("Not specified option '%s' in section '%s'; VLAN set 4095(all)" % (self.NET_VLAN, net_name))
+            self.logger.debug(
+                "Not specified option '%s' in section '%s'; VLAN set 4095(all)" % (self.NET_VLAN, net_name))
         except ConfigParser.Error:
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (net_name, self.NET_VLAN))
