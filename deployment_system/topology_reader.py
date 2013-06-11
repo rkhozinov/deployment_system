@@ -224,7 +224,7 @@ class TopologyReader(object):
         except ConfigParser.NoOptionError:
             memory = self.MEMORY_DEFAULT_SIZE
             self.logger.debug("Not specified option '%s' in section '%s'. RAM size set up to %s MB" % (
-            self.VM_MEM, vm_name, self.MEMORY_DEFAULT_SIZE))
+                self.VM_MEM, vm_name, self.MEMORY_DEFAULT_SIZE))
         except ConfigParser.Error:
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_MEM))
@@ -232,8 +232,9 @@ class TopologyReader(object):
         try:
             cpu = self.config.get(vm_name, self.VM_CPU)
         except ConfigParser.NoOptionError:
-            cpu = None
-            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CPU, vm_name))
+            cpu = 1
+            self.logger.debug(
+                "Not specified option '%s' in section '%s'. The number of CPUs set to 1" % (self.VM_CPU, vm_name))
         except ConfigParser.Error:
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CPU))
