@@ -7,8 +7,8 @@
     </list>
     <ignored path="deployment_system.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370973288062" ignored="false" />
-    <file path="/topology_reader.py" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370973272070" ignored="false" />
+    <file path="/Dummy.txt" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370973535190" ignored="false" />
+    <file path="/topology_reader.py" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370976410435" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +31,7 @@
       <file leaf-file-name="topology_reader.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="344" column="25" selection-start="14200" selection-end="14200" vertical-scroll-proportion="0.46454415">
+            <state line="363" column="0" selection-start="14997" selection-end="14997" vertical-scroll-proportion="0.028571429">
               <folding />
             </state>
           </provider>
@@ -40,7 +40,7 @@
       <file leaf-file-name="virtual_machine.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/deployment_system/virtual_machine.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="28" selection-start="2315" selection-end="2315" vertical-scroll-proportion="0.0">
+            <state line="33" column="46" selection-start="1035" selection-end="1046" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -284,7 +284,11 @@
       <created>1370973289693</created>
       <updated>1370973289693</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="added default value for networks">
+      <created>1370973536923</created>
+      <updated>1370973536923</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -294,10 +298,10 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914925" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914925" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32914925" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26040173" sideWeight="0.67224544" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26040173" sideWeight="0.67085075" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -353,7 +357,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="added something" />
+    <option name="LAST_COMMIT_MESSAGE" value="added default value for networks" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -375,6 +379,7 @@
     <MESSAGE value="added default value for memory_size" />
     <MESSAGE value="added default value for cpu" />
     <MESSAGE value="added something" />
+    <MESSAGE value="added default value for networks" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -429,14 +434,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/deployment_system/virtual_machine.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="28" selection-start="2315" selection-end="2315" vertical-scroll-proportion="0.0">
+        <state line="33" column="46" selection-start="1035" selection-end="1046" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="344" column="25" selection-start="14200" selection-end="14200" vertical-scroll-proportion="0.46454415">
+        <state line="363" column="0" selection-start="14997" selection-end="14997" vertical-scroll-proportion="0.028571429">
           <folding />
         </state>
       </provider>

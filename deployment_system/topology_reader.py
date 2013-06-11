@@ -210,6 +210,7 @@ class TopologyReader(object):
         :raise:  ConfigParser.Error
         """
 
+
         try:
             description = self.config.get(vm_name, self.VM_DESCR)
         except ConfigParser.NoOptionError:
@@ -349,21 +350,6 @@ class TopologyReader(object):
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_NETWORKS))
             raise
 
-        if device_type == 'vyatta':
-            config_type = 'com'
-        elif device_type == 'ubuntu_without_password':
-            config_type = 'vnc'
-        else:
-            try:
-                config_type = self.config.get(vm_name, self.VM_CONFIG_TYPE)
-            except ConfigParser.NoOptionError:
-                config_type = None
-                self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_CONFIG_TYPE, vm_name))
-            except ConfigParser.Error:
-                self.logger.error(
-                    "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG_TYPE))
-                raise
-
         try:
             vnc_port = self.config.get(vm_name, self.VM_VNC_PORT)
             if vnc_port == 0:
@@ -375,6 +361,27 @@ class TopologyReader(object):
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_VNC_PORT))
             raise
+
+        config_type = None
+        if device_type == 'vyatta':
+            config_type = 'com'
+        elif device_type == 'ubuntu_without_password':
+            config_type = 'vnc'
+        else:
+            try:
+                config_type = self.config.get(vm_name, self.VM_CONFIG_TYPE)
+            except ConfigParser.NoOptionError:
+                if vnc_port:
+                    config_type = 'vnc'
+                else:
+                    config_type == 'com'
+                self.logger.debug(
+                    "Not specified option '%s' in section '%s'; config_type set up as %s based on vnc_port" % (
+                    self.VM_CONFIG_TYPE, vm_name,config_type))
+            except ConfigParser.Error:
+                self.logger.error(
+                    "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG_TYPE))
+                raise
 
         try:
             iso = self.config.get(vm_name, self.VM_ISO)
