@@ -342,7 +342,7 @@ class TopologyReader(object):
         try:
             networks = self.__str_to_list_strip(self.config.get(vm_name, self.VM_NETWORKS))
         except ConfigParser.NoOptionError:
-            networks = None
+            networks = []
             self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_NETWORKS, vm_name))
         except ConfigParser.Error:
             self.logger.error(
