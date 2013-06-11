@@ -23,6 +23,7 @@ from .virtual_machine import VirtualMachine
 
 class TopologyReader(object):
     DEFAULT_PORTS_COUNT = 120
+    MEMORY_DEFAULT_SIZE = 512
 
     # describe of sections
     MANAGER = 'esx_vcenter'
@@ -221,8 +222,9 @@ class TopologyReader(object):
         try:
             memory = self.config.get(vm_name, self.VM_MEM)
         except ConfigParser.NoOptionError:
-            memory = None
-            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_MEM, vm_name))
+            memory = self.MEMORY_DEFAULT_SIZE
+            self.logger.debug("Not specified option '%s' in section '%s'. RAM size set up to %s MB" % (
+            self.VM_MEM, vm_name, self.MEMORY_DEFAULT_SIZE))
         except ConfigParser.Error:
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_MEM))
@@ -345,7 +347,6 @@ class TopologyReader(object):
             self.logger.error(
                 "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_NETWORKS))
             raise
-
 
         if device_type == 'vyatta':
             config_type = 'com'
