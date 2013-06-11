@@ -9,6 +9,8 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{color}
+%\usepackage{multirow}
+
 
 \begin{document}
 
@@ -36,44 +38,87 @@
 The main goal of this document is detailed description of each variable that is contained (or may be contained) in configuration file.
 
 \section{Sections and variables}
-\textcolor{red}{Red} marked variables are required. This variables should be in configuration file. \textcolor{blue}{Blue} marked variables are optional. 
-
-\begin{Large}
-\begin{itemize}
-
-\item \textbf{[esxvcenter]} - VMWace Vcenter access parameters
-\begin{itemize}
-\item \large \textcolor{red}{ip} - Ip address of VCenter
-\item \textcolor{red}{user} - User name
-\item \textcolor{red}{passsword} - Password bla
-\end{itemize}
-
-\item \textbf{[esx]} - ESX Hardware Server access parameters
-\begin{itemize}
-\item \large \textcolor{red}{ip} - Ip address of ESX Server
-\item \textcolor{red}{user} - User name
-\item \textcolor{red}{password} - Password
-\end{itemize}
-
-\item \textbf{[settings]} - Lists of VM's and network's names and common settings
-\begin{itemize}
-\item \large \textcolor{red}{vms} - List of VM's names separated by commas. This names must be using as a section names
-\item \textcolor{red}{networks} - List of network's names separated by commas. This names must be using as a section names
-\item \textcolor{blue}{default\_iso} - Path to .iso image, which will be used if 'iso' parameter in 'vm\_name' section is not defined
-\end{itemize}
-
-\item \textbf{['network\_name']} - Description about network. For each name in 'settings-networks' must defined section with equal name.
-\begin{itemize}
-\item \large \textcolor{blue}{vlan} - (int) VLAN number; 0 - no VLAN, 1-4094 - VLAN ID, 4095 - All VLANs. Default vaule - 4095
-\item \textcolor{blue}{isolated} - (bool) If this parameter is 'True' - system will create private virtual switch for current network; else network will added as portgroup to shared switch, created specifically for this topology. Default value - 'False'
-\item \textcolor{blue}{promiscuous} - (bool) If True, enable Promiscuous mode for current network. Default value - False
-\item \textcolor{blue}{ports} - (int) If network is 'isolated', this parameter allow to specify the number of emulated ports. Default value - 120
-
-\end{itemize}
+\textcolor{red}{Red} marked variables are required. This variables should be in configuration file. \textcolor{blue}{Blue} marked variables are optional. \\
 
 
 
-\end{itemize}
-\end{Large}
+%\begin{Large}
+
+\textbf{[esxvcenter]} - VMWace Vcenter access parameters\\
+
+\begin{tabular}{{p{3cm}p{1.2cm}p{7cm}p{3cm}}}
+Variable                         & Type   & Description           & Default value \\
+\textcolor{red}{ip}        & string & Ip address of VCenter & -                       \\
+\textcolor{red}{user}      & string & User name             & -                       \\
+\textcolor{red}{passsword} & string & Password              & -                       \\
+\\
+\\
+\end{tabular}
+
+
+\textbf{[esx]} - ESX Hardware Server access parameters\\
+
+\begin{tabular}{p{3cm}p{1.2cm}p{7cm}p{3cm}}
+Variable                         & Type   & Description           & Default value \\
+\textcolor{red}{ip}        & string & Ip address of ESX Server & -                       \\
+\textcolor{red}{user}      & string & User name             & -                       \\
+\textcolor{red}{passsword} & string & Password              & -                       \\
+\\
+\\
+\end{tabular}
+
+\textbf{[settings]} - Lists of VM's and network's names and common settings\\
+
+\begin{tabular}{{p{3cm}p{1.2cm}p{7cm}p{3cm}}}
+Variable                       & Type   & Description                                                                                    & Default value \\
+\textcolor{red}{vms}           & string & List of VM's names separated by commas. This names must be using as a section names            & -                       \\
+\textcolor{red}{networks}      & string & List of network's names separated by commas. This names must be using as a section names       & -                       \\
+\textcolor{blue}{default\_iso} & string & Path to .iso image, which will be used if 'iso' parameter in 'vm\_name' section is not defined & Non-defined string      \\
+\\
+\\
+\end{tabular}
+
+\textbf{['network\_name']} - Description about network. For each name in 'settings-networks' must defined section with equal name.\\
+
+\begin{tabular}{{p{3cm}p{1.2cm}p{7cm}p{3cm}}}
+Variable                      & Type & Description                                                                                                                                                                                & Default value\\
+\textcolor{blue}{vlan}        & int  & VLAN number; 0 - no VLAN, 1-4094 - VLAN ID, 4095 - All VLANs                                                                                                                               & 4095                    \\
+\textcolor{blue}{isolated}    & bool & If this parameter is 'True' - system will create private virtual switch for current network; else network will added as portgroup to shared switch, created specifically for this topology & False                   \\
+\textcolor{blue}{promiscuous} & bool & If True, enable Promiscuous mode for current network                                                                                                                                       & False                   \\
+\textcolor{blue}{ports}       & int  & If network is 'isolated', this parameter allow to specify the number of emulated ports                                                                                                     & 120                     \\
+\\
+\\
+\end{tabular}
+
+\textbf{['vm\_name']} - Description about Virtual Machine. For each name in 'settings-networks' must defined section with equal name.\\
+
+\begin{tabular}{{p{3cm}p{1.2cm}p{7cm}p{3cm}}}
+Variable                      & Type & Description                                                                                                                                                                                & Default value\\
+\textcolor{blue}{description} & string & Annotation for VM, showen in vSphere Client & None\\
+\textcolor{blue}{cpu} & int & The number of CPUs available to a virtual machine, must be greater than 0 & 1 \\
+\textcolor{blue}{memory} & int & Size of RAM in MB available to a virtual machine, must be greater than 0 & 512 \\
+\textcolor{red}{disk\_space} & int & Size of \textbf{new} hard drive, which will be created with VM. If 0 - new hard drive will \textbf{not} be created & - \\
+\textcolor{blue}{networks} & string & List of port groups separated by commas, which must be added to VM. Already existing port groups will be checked for existence & Empty list \\
+\textcolor{blue}{iso} & string & Path to .iso image for emulating CD-drive (e.g. '/vmfs/volumes/example datastore/example\_iso.iso'). If not defined, will be used 'settings-default\_iso'. If 'False' string - CD-drive will \textbf{not} be added & Not defined \\
+\textcolor{blue}{hard\_drive} & string & Path to existing .vmdk disk files. If defined and files are exists - hard drive will be added after VM creation. & Not defined \\
+\textcolor{blue}{device\_type} & const & A device type based on current VM. Needed for automated pre-configuration (e.g. set up ip or default gw). Values and actions:\par 'vyatta': Via COM: set up IP, default gw, enable SSH and telnet, log off\par 'ubuntu\_without\_password': work only if root password not setted. Via VNC: setting up IP, default gw, log off. \par 'other': no actions & 'other' \\ 
+\textcolor{blue}{vnc\_port} & int & Number of VNC port used for pre-configuration via vnc. Must be unique to 1 VM. Started from 5900. If 0 - VNC access will \textbf{not} be added. & 0 \\
+\textcolor{blue}{config\_type} & const & Technology, used in configuration. If device\_type is not 'other', variable is not used. Values:\par 'com': configuration via serial console\par 'vnc': configuration via vnc access & based on 'device\_type' and 'vnc\_port': if 'other' and 'vnc\_port' is defined - 'vnc', else 'com' \\
+\textcolor{blue}{configuration} & string & List of addition commands, which will be sent to VM after automated pre-configuration. Separated by commas. Note: after pre-configuration VM is logged off. \\
+\end{tabular}
+
+\begin{tabular}{{p{3cm}p{1.2cm}p{7cm}p{3cm}}}
+\multicolumn{4}{l}{Pre-configuration parameters. These parameters are required if 'device\_type' is not 'other'} \\
+\textcolor{red}{user} & string & User name in guest os & - \\
+\textcolor{red}{password} & string & Password for user name & - \\
+\textcolor{red}{external\_interface} & string & Interface for configuration (e.g. eth0) & -\\
+\textcolor{red}{ip} & string & Ip(v4) for configuration & - \\
+\textcolor{red}{mask} & string & Net mask for ip; format '/\%d' (e.g. '/24') & - \\
+\textcolor{red}{gw} & string & Default gateway (ipv4) & - \\
+\end{tabular}
+
+
+
+%\end{Large}
 
 \end{document}
