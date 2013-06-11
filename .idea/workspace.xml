@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1cab0c44-ff14-4c3f-af01-982579599ef5" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/deployment_system/topology_reader.py" afterPath="$PROJECT_DIR$/deployment_system/topology_reader.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="deployment_system.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370973535190" ignored="false" />
+    <file path="/Dummy.txt" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370976424109" ignored="false" />
     <file path="/topology_reader.py" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370976410435" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,10 +27,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="topology_reader.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="topology_reader.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="363" column="0" selection-start="14997" selection-end="14997" vertical-scroll-proportion="0.028571429">
+            <state line="337" column="21" selection-start="13894" selection-end="13900" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="multicast_functional.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="35" column="8" selection-start="809" selection-end="817" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology1.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/etc/topology1.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology.ini" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/etc/topology.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="15" column="0" selection-start="392" selection-end="392" vertical-scroll-proportion="0.44835165">
               <folding />
             </state>
           </provider>
@@ -288,11 +314,15 @@
       <created>1370973536923</created>
       <updated>1370973536923</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="added default value for config_type">
+      <created>1370976425821</created>
+      <updated>1370976425821</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1456" height="876" extended-state="6" />
+    <frame x="-8" y="-8" width="1456" height="876" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -357,7 +387,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="added default value for networks" />
+    <option name="LAST_COMMIT_MESSAGE" value="added default value for config_type" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -380,6 +410,7 @@
     <MESSAGE value="added default value for cpu" />
     <MESSAGE value="added something" />
     <MESSAGE value="added default value for networks" />
+    <MESSAGE value="added default value for config_type" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -413,11 +444,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="8" selection-start="809" selection-end="817" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="102" column="46" selection-start="2973" selection-end="3609" vertical-scroll-proportion="0.0">
@@ -441,7 +467,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="363" column="0" selection-start="14997" selection-end="14997" vertical-scroll-proportion="0.028571429">
+        <state line="337" column="21" selection-start="13894" selection-end="13900" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="8" selection-start="809" selection-end="817" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/topology1.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/topology.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="0" selection-start="392" selection-end="392" vertical-scroll-proportion="0.44835165">
           <folding />
         </state>
       </provider>
