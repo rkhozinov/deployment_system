@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/deployment_system/resource_pool.py" line="40" mnemonic="9" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="1cab0c44-ff14-4c3f-af01-982579599ef5" name="Default" comment="" />
+    <list default="true" id="d636fe6b-e91b-460e-b686-53cf62356650" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.iml" afterPath="$PROJECT_DIR$/.idea/deployment.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/deployment_system/topology.py" afterPath="$PROJECT_DIR$/deployment_system/topology.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="deployment_system.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370976424109" ignored="false" />
-    <file path="/topology_reader.py" changelist="1cab0c44-ff14-4c3f-af01-982579599ef5" time="1370976410435" ignored="false" />
+    <file path="/Dummy.txt" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1371114991580" ignored="false" />
+    <file path="/Hatchery.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369057824684" ignored="false" />
+    <file path="/TestResourcePool.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369042821376" ignored="false" />
+    <file path="/ResourcePool.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1368434865424" ignored="false" />
+    <file path="/TestVMController.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1368433790120" ignored="false" />
+    <file path="/TestVirtualMachine.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369050685586" ignored="false" />
+    <file path="/VirtualMachine.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369053527394" ignored="false" />
+    <file path="/Topology.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1368697742870" ignored="false" />
+    <file path="/TestHatchery.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369058591484" ignored="false" />
+    <file path="/a.dummy" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369050312564" ignored="false" />
+    <file path="/TopologyReader.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369051471231" ignored="false" />
+    <file path="/test_topology_reader.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369400514051" ignored="false" />
+    <file path="/topology_reader.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369744119715" ignored="false" />
+    <file path="/a.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369385260324" ignored="false" />
+    <file path="/test_virtual_machine.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369404922661" ignored="false" />
+    <file path="/hatchery.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369387462355" ignored="false" />
+    <file path="/virtual_machine.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369743936981" ignored="false" />
+    <file path="/test_pexpect.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369392985967" ignored="false" />
+    <file path="/topology.ini" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1369397355024" ignored="false" />
+    <file path="/topology.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1371115956058" ignored="false" />
+    <file path="/resource_pool.py" changelist="d636fe6b-e91b-460e-b686-53cf62356650" time="1371111900688" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,12 +46,66 @@
   <component name="DaemonCodeAnalyzer">
     <disable_hints />
   </component>
+  <component name="DatabaseView">
+    <flatten value="false" />
+    <groupTables value="false" />
+    <sortChildren value="false" />
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="deployment_system" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="virtual_machine.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/deployment_system/virtual_machine.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="489" column="65" selection-start="19759" selection-end="19759" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="network.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/deployment_system/network.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="switch.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/deployment_system/switch.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="resource_pool.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/deployment_system/resource_pool.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="38" column="36" selection-start="1244" selection-end="1244" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/deployment_system/topology.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="197" column="74" selection-start="8495" selection-end="8495" vertical-scroll-proportion="1.8490566">
+              <folding>
+                <element signature="e#598#617#0" expanded="true" />
+                <element signature="e#10172#10284#1" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -32,6 +113,12 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="rkhozinov" />
+      </list>
+    </option>
+    <option name="UPDATE_TYPE" value="REBASE" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitLogSettings">
@@ -42,18 +129,30 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/main.py" />
-        <option value="$PROJECT_DIR$/deployment_system/virtual_machine.py" />
+        <option value="$PROJECT_DIR$/deployment_system/TopologyReader.py" />
+        <option value="$PROJECT_DIR$/deployment_system/VirtualMachine.py" />
+        <option value="$PROJECT_DIR$/lib/Hatchery.py" />
+        <option value="$PROJECT_DIR$/tests/unittests/TestHatchery.py" />
+        <option value="$PROJECT_DIR$/deployment_system/Switch.py" />
+        <option value="$PROJECT_DIR$/tests/unittests/TestVirtualMachine.py" />
         <option value="$PROJECT_DIR$/lib/hatchery.py" />
+        <option value="$PROJECT_DIR$/tests/test_pexpect.py" />
+        <option value="$PROJECT_DIR$/tests/etc/topology.ini" />
+        <option value="$PROJECT_DIR$/etc/topology.ini" />
+        <option value="$PROJECT_DIR$/tests/unittests/test_virtual_machine.py" />
+        <option value="$PROJECT_DIR$/tests/unittests/test_topology_reader.py" />
+        <option value="$PROJECT_DIR$/deployment_system/virtual_machine.py" />
         <option value="$PROJECT_DIR$/deployment_system/topology_reader.py" />
+        <option value="$PROJECT_DIR$/deployment_system/resource_pool.py" />
+        <option value="$PROJECT_DIR$/deployment_system/topology.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1456" />
-    <option name="height" value="876" />
+    <option name="x" value="-2" />
+    <option name="y" value="-3" />
+    <option name="width" value="1284" />
+    <option name="height" value="1031" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -61,6 +160,24 @@
         <expanded-state>
           <State>
             <id />
+          </State>
+          <State>
+            <id>Bitwise operation issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Control flow issuesJavaScript</id>
+          </State>
+          <State>
+            <id>GeneralJavaScript</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>Potentially confusing code constructsJavaScript</id>
+          </State>
+          <State>
+            <id>SQL</id>
           </State>
         </expanded-state>
         <selected-state>
@@ -85,7 +202,7 @@
     <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+    <navigator proportions="" version="1" splitterProportion="0.5">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -96,65 +213,32 @@
       <autoscrollFromSource />
       <sortByType />
     </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="etc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="104" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="106" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="104" />
+    <property name="recentsLimit" value="5" />
+    <property name="options.lastSelected" value="editor.preferences.completion" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="110" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="902" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="902" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="110" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="106" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-    <property name="FullScreen" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
+    <property name="restartRequiresConfirmation" value="true" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -164,7 +248,148 @@
       <PyConsoleSettings />
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main">
+    <configuration default="false" name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="deployment" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="create topology1 /home/rkhozinov/PycharmProjects/deployment_system/tests/etc/topology.ini" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetests in test_virtual_machine" type="tests" factoryName="Nosetests" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/unittests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="deployment" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/unittests/test_virtual_machine.py" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetest test_add_hard_disk" type="tests" factoryName="Nosetests" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/unittests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="deployment" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/unittests/test_virtual_machine.py" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="test_add_hard_disk" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_FUNCTION" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetest TestVirtualMachine.test_add_hard_disk" type="tests" factoryName="Nosetests" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/unittests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="deployment" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/unittests/test_virtual_machine.py" />
+      <option name="CLASS_NAME" value="TestVirtualMachine" />
+      <option name="METHOD_NAME" value="test_add_hard_disk" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_METHOD" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Nosetest TestTopologyReader.test_create_and_configure_some_vm_and_networks" type="tests" factoryName="Nosetests" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/unittests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="deployment" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/unittests/test_topology_reader.py" />
+      <option name="CLASS_NAME" value="TestTopologyReader" />
+      <option name="METHOD_NAME" value="test_create_and_configure_some_vm_and_networks" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_METHOD" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="deployment" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -182,7 +407,42 @@
       <option name="PARAMETERS" value="" />
       <method />
     </configuration>
-    <list size="0" />
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="deployment" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Python.main" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetests in test_virtual_machine" />
+      <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetest test_add_hard_disk" />
+      <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetest TestVirtualMachine.test_add_hard_disk" />
+      <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetest TestTopologyReader.test_create_and_configure_some_vm_and_networks" />
+    </list>
+    <recent_temporary>
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Python.main" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Nosetest TestTopologyReader.test_create_and_configure_some_vm_and_networks" />
+        <item index="2" class="java.lang.String" itemvalue="Python tests.Nosetest TestVirtualMachine.test_add_hard_disk" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Nosetest test_add_hard_disk" />
+        <item index="4" class="java.lang.String" itemvalue="Python tests.Nosetests in test_virtual_machine" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="all">
@@ -204,76 +464,213 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="1cab0c44-ff14-4c3f-af01-982579599ef5" name="Default" comment="" />
-      <created>1369829675955</created>
-      <updated>1369829675955</updated>
+      <changelist id="d636fe6b-e91b-460e-b686-53cf62356650" name="Default" comment="" />
+      <created>1368428077001</created>
+      <updated>1368428077001</updated>
     </task>
-    <task id="LOCAL-00001" summary="moved constants">
-      <created>1370887849052</created>
-      <updated>1370887849052</updated>
+    <task id="LOCAL-00001" summary="fixed some tests">
+      <created>1368431826848</created>
+      <updated>1368431826848</updated>
     </task>
-    <task id="LOCAL-00002" summary="small refactor">
-      <created>1370888056321</created>
-      <updated>1370888056321</updated>
+    <task id="LOCAL-00002" summary="fixed some tests">
+      <created>1368432779118</created>
+      <updated>1368432779118</updated>
     </task>
-    <task id="LOCAL-00003" summary="small fix">
-      <created>1370891057992</created>
-      <updated>1370891057992</updated>
+    <task id="LOCAL-00003" summary="fixed pep">
+      <created>1368433214144</created>
+      <updated>1368433214144</updated>
     </task>
-    <task id="LOCAL-00004" summary="small fix">
-      <created>1370892372692</created>
-      <updated>1370892372692</updated>
+    <task id="LOCAL-00004" summary="change arhictecture">
+      <created>1368435144554</created>
+      <updated>1368435144554</updated>
     </task>
-    <task id="LOCAL-00005" summary="vlan default value">
-      <created>1370892679619</created>
-      <updated>1370892679619</updated>
+    <task id="LOCAL-00005" summary="added some tests">
+      <created>1368437331315</created>
+      <updated>1368437331315</updated>
     </task>
-    <task id="LOCAL-00006" summary="added automatic setting 'config_type' based on 'device_type'">
-      <created>1370971586076</created>
-      <updated>1370971586076</updated>
+    <task id="LOCAL-00006" summary="added some tests">
+      <created>1368437342420</created>
+      <updated>1368437342420</updated>
     </task>
-    <task id="LOCAL-00007" summary="added default value for memory_size">
-      <created>1370972812113</created>
-      <updated>1370972812113</updated>
+    <task id="LOCAL-00007" summary="added some tests">
+      <created>1368437353735</created>
+      <updated>1368437353735</updated>
     </task>
-    <task id="LOCAL-00008" summary="added default value for cpu">
-      <created>1370972891205</created>
-      <updated>1370972891205</updated>
+    <task id="LOCAL-00008" summary="changed arhictecture">
+      <created>1368437367575</created>
+      <updated>1368437367575</updated>
     </task>
-    <task id="LOCAL-00009" summary="added something">
-      <created>1370973289693</created>
-      <updated>1370973289693</updated>
+    <task id="LOCAL-00009" summary="fixed bug with vmname">
+      <created>1368437584199</created>
+      <updated>1368437584199</updated>
     </task>
-    <task id="LOCAL-00010" summary="added default value for networks">
-      <created>1370973536923</created>
-      <updated>1370973536923</updated>
+    <task id="LOCAL-00010" summary="refactoring&#10;">
+      <created>1368701079992</created>
+      <updated>1368701079992</updated>
     </task>
-    <task id="LOCAL-00011" summary="added default value for config_type">
-      <created>1370976425821</created>
-      <updated>1370976425821</updated>
+    <task id="LOCAL-00011" summary="added new method 'add_serial_port'">
+      <created>1368705944267</created>
+      <updated>1368705944267</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="added test for new method 'add_serial_port'">
+      <created>1368706292860</created>
+      <updated>1368706292860</updated>
+    </task>
+    <task id="LOCAL-00013" summary="added new method &quot;get_vm_path&quot;">
+      <created>1368706358336</created>
+      <updated>1368706358336</updated>
+    </task>
+    <task id="LOCAL-00014" summary="added some comments">
+      <created>1368706465406</created>
+      <updated>1368706465406</updated>
+    </task>
+    <task id="LOCAL-00015" summary="added test for new method &quot;get_vm_path&quot;">
+      <created>1368706490589</created>
+      <updated>1368706490589</updated>
+    </task>
+    <task id="LOCAL-00016" summary="fixed bug with check values">
+      <created>1369042652237</created>
+      <updated>1369042652237</updated>
+    </task>
+    <task id="LOCAL-00017" summary="some changes">
+      <created>1369051683939</created>
+      <updated>1369051683939</updated>
+    </task>
+    <task id="LOCAL-00018" summary="fixed left source">
+      <created>1369054207282</created>
+      <updated>1369054207282</updated>
+    </task>
+    <task id="LOCAL-00019" summary="some fixes&#10;added some tests">
+      <created>1369054460493</created>
+      <updated>1369054460493</updated>
+    </task>
+    <task id="LOCAL-00020" summary="added hard disk support&#10;some changes">
+      <created>1369054495240</created>
+      <updated>1369054495240</updated>
+    </task>
+    <task id="LOCAL-00021" summary="added hard disk support">
+      <created>1369054517469</created>
+      <updated>1369054517469</updated>
+    </task>
+    <task id="LOCAL-00022" summary="some changes">
+      <created>1369054529940</created>
+      <updated>1369054529940</updated>
+    </task>
+    <task id="LOCAL-00023" summary="added hard_disk option">
+      <created>1369054555621</created>
+      <updated>1369054555621</updated>
+    </task>
+    <task id="LOCAL-00024" summary="added test for hard_drive">
+      <created>1369054572066</created>
+      <updated>1369054572066</updated>
+    </task>
+    <task id="LOCAL-00025" summary="fixed test">
+      <created>1369059294526</created>
+      <updated>1369059294526</updated>
+    </task>
+    <task id="LOCAL-00026" summary="fixed some bugs">
+      <created>1369059550605</created>
+      <updated>1369059550605</updated>
+    </task>
+    <task id="LOCAL-00027" summary="- renamed library files">
+      <created>1369385076902</created>
+      <updated>1369385076902</updated>
+    </task>
+    <task id="LOCAL-00028" summary="- added default value for ports">
+      <created>1369385530086</created>
+      <updated>1369385530086</updated>
+    </task>
+    <task id="LOCAL-00029" summary="- fix serial port adding">
+      <created>1369395111841</created>
+      <updated>1369395111841</updated>
+    </task>
+    <task id="LOCAL-00030" summary="- fix serial port adding">
+      <created>1369395134810</created>
+      <updated>1369395134810</updated>
+    </task>
+    <task id="LOCAL-00031" summary="- fix networks tests">
+      <created>1369400711665</created>
+      <updated>1369400711665</updated>
+    </task>
+    <task id="LOCAL-00032" summary="- refactor">
+      <created>1369401033244</created>
+      <updated>1369401033244</updated>
+    </task>
+    <task id="LOCAL-00033" summary="- some deletions">
+      <created>1369401061693</created>
+      <updated>1369401061693</updated>
+    </task>
+    <task id="LOCAL-00034" summary="some added">
+      <created>1369405983558</created>
+      <updated>1369405983558</updated>
+    </task>
+    <task id="LOCAL-00035" summary="some changes in hard drive support">
+      <created>1369406008932</created>
+      <updated>1369406008932</updated>
+    </task>
+    <task id="LOCAL-00036" summary="fix timeout for hard disk copy">
+      <created>1369742730232</created>
+      <updated>1369742730232</updated>
+    </task>
+    <task id="LOCAL-00037" summary="fix timeout for hard disk copy">
+      <created>1369742750405</created>
+      <updated>1369742750405</updated>
+    </task>
+    <task id="LOCAL-00038" summary="added vnc port">
+      <created>1369744150632</created>
+      <updated>1369744150632</updated>
+    </task>
+    <task id="LOCAL-00039" summary="fix networks naming">
+      <created>1369747491615</created>
+      <updated>1369747491615</updated>
+    </task>
+    <task id="LOCAL-00040" summary="added some comments">
+      <created>1371112564401</created>
+      <updated>1371112564401</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
+  <component name="TodoView" selected-index="3">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1456" height="876" extended-state="6" />
-    <editor active="false" />
+    <frame x="-2" y="-3" width="1284" height="1031" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914925" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32914925" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26040173" sideWeight="0.67085075" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32775453" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32906976" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32942554" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3293556" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24980047" sideWeight="0.6869871" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.24900557" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31046513" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="0" y="0" width="1280" height="999" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293556" sideWeight="0.6709302" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.32906976" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.32906976" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32906976" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" x="625" y="268" width="480" height="346" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32942554" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -283,7 +680,7 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="false" />
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="true" />
     <option name="myTodoPanelSettings">
@@ -310,7 +707,7 @@
     <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
     <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
     <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
-    <option name="SHOW_FILE_HISTORY_DETAILS" value="true" />
+    <option name="SHOW_FILE_HISTORY_DETAILS" value="false" />
     <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="SHOW_DIRTY_RECURSIVELY" value="false" />
     <option name="LIMIT_HISTORY" value="true" />
@@ -321,7 +718,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="added default value for config_type" />
+    <option name="LAST_COMMIT_MESSAGE" value="added some comments" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -335,95 +732,149 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="moved constants" />
-    <MESSAGE value="small refactor" />
-    <MESSAGE value="small fix" />
-    <MESSAGE value="vlan default value" />
-    <MESSAGE value="added automatic setting 'config_type' based on 'device_type'" />
-    <MESSAGE value="added default value for memory_size" />
-    <MESSAGE value="added default value for cpu" />
-    <MESSAGE value="added something" />
-    <MESSAGE value="added default value for networks" />
-    <MESSAGE value="added default value for config_type" />
+    <MESSAGE value="added test for new method 'add_serial_port'" />
+    <MESSAGE value="added new method &quot;get_vm_path&quot;" />
+    <MESSAGE value="added test for new method &quot;get_vm_path&quot;" />
+    <MESSAGE value="fixed bug with check values" />
+    <MESSAGE value="fixed left source" />
+    <MESSAGE value="some fixes&#10;added some tests" />
+    <MESSAGE value="added hard disk support&#10;some changes" />
+    <MESSAGE value="added hard disk support" />
+    <MESSAGE value="some changes" />
+    <MESSAGE value="added hard_disk option" />
+    <MESSAGE value="added test for hard_drive" />
+    <MESSAGE value="fixed test" />
+    <MESSAGE value="fixed some bugs" />
+    <MESSAGE value="- renamed library files" />
+    <MESSAGE value="- added default value for ports" />
+    <MESSAGE value="- fix serial port adding" />
+    <MESSAGE value="- fix networks tests" />
+    <MESSAGE value="- refactor" />
+    <MESSAGE value="- some deletions" />
+    <MESSAGE value="some added" />
+    <MESSAGE value="some changes in hard drive support" />
+    <MESSAGE value="fix timeout for hard disk copy" />
+    <MESSAGE value="added vnc port" />
+    <MESSAGE value="fix networks naming" />
+    <MESSAGE value="added some comments" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/tests/unittests/test_topology_reader.py</url>
+          <line>221</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/tests/unittests/test_topology_reader.py</url>
+          <line>211</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="59" />
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="102" column="46" selection-start="2973" selection-end="3609" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
+    <entry file="file://$PROJECT_DIR$/deployment_system/switch.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
+    <entry file="file://$PROJECT_DIR$/deployment_system/resource_pool.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="38" column="36" selection-start="1244" selection-end="1244" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
+    <entry file="file://$PROJECT_DIR$/deployment_system/topology.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
+        <state line="130" column="36" selection-start="5385" selection-end="5385" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#598#617#0" expanded="true" />
+            <element signature="e#10172#10284#1" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/hatchery.py">
+    <entry file="file:///usr/lib64/python2.7/logging/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="627" column="11" selection-start="23683" selection-end="23683" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python2.7/site-packages/pysphere/ZSI/TCcompound.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="198" column="0" selection-start="7742" selection-end="7742" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python2.7/site-packages/pysphere/ZSI/parse.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="324" column="0" selection-start="12836" selection-end="12836" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python2.7/site-packages/pysphere/ZSI/client.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="544" column="0" selection-start="21061" selection-end="21061" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python2.7/site-packages/pysphere/resources/VimService_services.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="884" column="0" selection-start="39303" selection-end="39303" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib64/python2.7/unittest/case.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="326" column="0" selection-start="10783" selection-end="10783" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm20/system/python_stubs/-1247972723/time.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="127" column="4" selection-start="3982" selection-end="3982" vertical-scroll-proportion="0.33333334" />
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib64/python2.7/logging/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="953" column="41" selection-start="33903" selection-end="33903" vertical-scroll-proportion="0.017462166" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/deployment_system/virtual_machine.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="46" selection-start="1035" selection-end="1046" vertical-scroll-proportion="0.0">
+        <state line="489" column="65" selection-start="19759" selection-end="19759" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="8" selection-start="809" selection-end="817" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/etc/topology1.ini">
+    <entry file="file://$PROJECT_DIR$/deployment_system/network.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/etc/topology.ini">
+    <entry file="file://$PROJECT_DIR$/deployment_system/switch.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="0" selection-start="392" selection-end="392" vertical-scroll-proportion="0.44835165">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
+    <entry file="file://$PROJECT_DIR$/deployment_system/resource_pool.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="337" column="21" selection-start="13894" selection-end="13900" vertical-scroll-proportion="2.9802198">
+        <state line="38" column="36" selection-start="1244" selection-end="1244" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
+    <entry file="file://$PROJECT_DIR$/deployment_system/topology.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="102" column="46" selection-start="2973" selection-end="3609" vertical-scroll-proportion="0.4021978">
-          <folding />
+        <state line="197" column="74" selection-start="8495" selection-end="8495" vertical-scroll-proportion="1.8490566">
+          <folding>
+            <element signature="e#598#617#0" expanded="true" />
+            <element signature="e#10172#10284#1" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
