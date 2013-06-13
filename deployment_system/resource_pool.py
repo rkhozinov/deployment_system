@@ -38,6 +38,8 @@ class ResourcePool(object):
         """
         Creates a ESXi resource pool
         :raise: AttributeException, CreatorException
+        @param manager: ESX manager (vCenter SDK)
+        @param host_name: ESX host name
         """
         if not manager:
             msg = "Couldn't specify the ESX manager"
@@ -59,12 +61,12 @@ class ResourcePool(object):
         :param with_vms: if True  - deletes all vms in this resource pool
                          if False - save vms and move its to the up resource pool
         :raise: CreatorException
+        @param manager: ESX manager (vCenter SDK)
         """
         if not manager:
             msg = "Couldn't specify the ESX manager"
             self.logger.error(msg)
             raise AttributeError("Couldn't specify ESX manager")
-
         try:
             if with_vms:
                 manager.destroy_resource_pool_with_vms(self.name)
