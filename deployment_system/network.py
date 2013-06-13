@@ -17,7 +17,7 @@
 class Network(object):
     def __init__(self, name, vlan, ports=8, isolated=False, promiscuous=False):
         """
-        Create network with specific VLAN and mode
+        Creates network with specific VLAN and mode
 
         :param isolated: if True, then it network will be created on separate switch
         :param name: network name
