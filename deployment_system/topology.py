@@ -149,33 +149,26 @@ class Topology(object):
         except Exception as e:
             self.logger.error(e.message)
             try:
-                # todo: review rollback mechanism
                 while rollback:
                     unit = rollback.pop()
-                    #if isinstance(unit,VirtualMachine):
-                    if 'VirtualMachine' in str(unit.__class__):
+                    if isinstance(unit, VirtualMachine):
                         unit.destroy_with_files(manager=self.manager, host_address=self.host_address,
                                                 host_user=self.host_user,
                                                 host_password=self.host_password)
-                    #elif isinstance(unit, Switch):
-                    elif 'Switch' in str(unit.__class__):
+                    elif isinstance(unit, Switch):
                         unit.destroy(self.manager, self.config.host_name)
                         #(Switch)(unit).destroy(self.manager, self.config.host_name)
-                    elif 'ResourcePool' in str(unit.__class__):
-                    #elif isinstance(unit, ResourcePool):
+                    elif isinstance(unit, ResourcePool):
                         unit.destroy(manager=self.manager)
                         #(ResourcePool)(unit).destroy(self.manager, self.config.host_name)
             except:
                 self.logger.error("Couldn't revert changes; need to destroy manually:")
                 for unit in rollback:
-                    #if isinstance(unit,VirtualMachine):
-                    if 'VirtualMachine' in str(unit.__class__):
+                    if isinstance(unit, VirtualMachine):
                         self.logger.error('VM %s' % unit.name)
-                    #elif isinstance(unit, Switch):
-                    elif 'Switch' in str(unit.__class__):
+                    elif isinstance(unit, Switch):
                         self.logger.error('Switch %s' % unit.name)
-                    #elif isinstance(unit, ResourcePool):
-                    elif 'ResourcePool' in str(unit.__class__):
+                    elif isinstance(unit, ResourcePool):
                         self.logger.error('Resource pool %s' % unit.name)
                 raise
             raise e
@@ -223,7 +216,7 @@ class Topology(object):
 
         # destroys resource pool
         try:
-            ResourcePool(self.resource_pool).destroy(self.manager)
+            ResourcePool(self.resource_pool).destroy(self.manager, with_vms=True)
         except Manager.ExistenceException:
             pass
         except Exception as e:
