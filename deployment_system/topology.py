@@ -127,7 +127,7 @@ class Topology(object):
                         raise
 
                 # adds VNC configuration to VM for control via VNC
-                if vm.vnc_port != '0':
+                if vm.vnc_port:
                     vm.add_vnc_access(manager=self.manager, host_address=self.host_address,
                                       host_user=self.host_user, host_password=self.host_password)
 
