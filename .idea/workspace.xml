@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2e3490b-4429-421f-b71a-e98215303ddc" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/etc/topology.ini" afterPath="$PROJECT_DIR$/tests/etc/topology.ini" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="deployment_system.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371204734344" ignored="false" />
+    <file path="/Dummy.txt" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371206215045" ignored="false" />
     <file path="/test_topology_reader.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370592996445" ignored="false" />
     <file path="/hatchery.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371201564264" ignored="false" />
     <file path="/topology.ini" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371206200328" ignored="false" />
@@ -150,8 +149,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="64" />
-    <option name="y" value="-4" />
+    <option name="x" value="-1216" />
+    <option name="y" value="-1028" />
     <option name="width" value="1217" />
     <option name="height" value="1029" />
   </component>
@@ -758,11 +757,15 @@
       <created>1371204735634</created>
       <updated>1371204735634</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="config for demo">
+      <created>1371206216603</created>
+      <updated>1371206216604</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="-4" width="1217" height="1029" extended-state="6" />
+    <frame x="-1216" y="-1028" width="1217" height="1029" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
