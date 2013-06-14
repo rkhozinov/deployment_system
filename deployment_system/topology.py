@@ -144,7 +144,11 @@ class Topology(object):
                     vm.configure_via_com(host_address=self.host_address, host_user=self.host_user,
                                          host_password=self.host_password)
                 elif 'vnc' in vm.config_type:
-                    vm.configure_via_vnc(host_address=self.host_address)
+                    if vm.vnc_port:
+                        vm.configure_via_vnc(host_address=self.host_address)
+                    else:
+                        raise Exception("Couldn't configure VM %s - VNC port is not defined" % vm.name)
+
 
         except Exception as e:
             self.logger.error(e.message)
