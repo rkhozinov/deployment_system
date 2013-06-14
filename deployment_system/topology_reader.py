@@ -333,7 +333,7 @@ class TopologyReader(object):
             new_config.append('sudo ifconfig %s %s%s @exp 1' % (external_interface, ip, mask))
             new_config.append('sudo route add %s dev %s @exp 1' % (gw, external_interface))
             new_config.append('sudo route add default gw %s @exp 1' % (gw))
-            new_config.append('exit')
+            new_config.append('exit @exp 1')
 
             if config:
                 for cmd in config:
