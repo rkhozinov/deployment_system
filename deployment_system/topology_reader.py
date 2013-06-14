@@ -302,7 +302,7 @@ class TopologyReader(object):
             new_config.append('commit @exp #')
             new_config.append('save @exp #')
             new_config.append('exit @exp $')
-            new_config.append('exit')
+            new_config.append('exit @exp login')
 
             if config:
                 for cmd in config:
