@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c2e3490b-4429-421f-b71a-e98215303ddc" name="Default" comment="added .idea/ to .gitignore">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.iml" afterPath="$PROJECT_DIR$/.idea/deployment.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/etc/topology.ini" afterPath="$PROJECT_DIR$/tests/etc/topology.ini" />
+    <list default="true" id="c2e3490b-4429-421f-b71a-e98215303ddc" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/hatchery.py" afterPath="$PROJECT_DIR$/lib/hatchery.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="deployment_system.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371195102935" ignored="false" />
+    <file path="/Dummy.txt" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371201443337" ignored="false" />
     <file path="/test_topology_reader.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370592996445" ignored="false" />
-    <file path="/hatchery.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370499815024" ignored="false" />
-    <file path="/topology.ini" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371195020169" ignored="false" />
+    <file path="/hatchery.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371201564264" ignored="false" />
+    <file path="/topology.ini" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371201170971" ignored="false" />
     <file path="/virtual_machine.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370601436789" ignored="false" />
     <file path="/topology_reader.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370603382820" ignored="false" />
     <file path="/topology.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371194708634" ignored="false" />
@@ -61,19 +59,46 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="topology.ini" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/etc/topology.ini">
+      <file leaf-file-name="virtual_machine.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/deployment_system/virtual_machine.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="1" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0">
+            <state line="239" column="72" selection-start="9684" selection-end="9684" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="topology_reader.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="hatchery.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/lib/hatchery.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="566" column="56" selection-start="21022" selection-end="21022" vertical-scroll-proportion="0.48946717">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/etc/topology.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="69" column="8" selection-start="1733" selection-end="1733" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="multicast_functional.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="106" column="0" selection-start="1885" selection-end="2207" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology_reader.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="309" column="46" selection-start="12488" selection-end="12488" vertical-scroll-proportion="5.260355">
+            <state line="309" column="46" selection-start="12488" selection-end="12488" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -110,7 +135,6 @@
         <option value="$PROJECT_DIR$/etc/topology_old.ini" />
         <option value="$PROJECT_DIR$/tests/unittests/test_topology.py" />
         <option value="$PROJECT_DIR$/tests/test_configuration.py" />
-        <option value="$PROJECT_DIR$/lib/hatchery.py" />
         <option value="$PROJECT_DIR$/tests/unittests/test_virtual_machine.py" />
         <option value="$PROJECT_DIR$/tests/unittests/test_topology_reader.py" />
         <option value="$PROJECT_DIR$/tests/etc/topology2.ini" />
@@ -121,6 +145,7 @@
         <option value="$PROJECT_DIR$/deployment_system/topology.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/tests/etc/topology.ini" />
+        <option value="$PROJECT_DIR$/lib/hatchery.py" />
       </list>
     </option>
   </component>
@@ -693,13 +718,26 @@
       <created>1371194891316</created>
       <updated>1371194891316</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="config for demo">
+      <created>1371201019027</created>
+      <updated>1371201019027</updated>
+    </task>
+    <task id="LOCAL-00051" summary="config for demo">
+      <created>1371201177812</created>
+      <updated>1371201177812</updated>
+    </task>
+    <task id="LOCAL-00052" summary="debug">
+      <created>1371201447487</created>
+      <updated>1371201447487</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-4" width="1217" height="1029" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -714,7 +752,6 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -762,7 +799,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="added .idea/ to .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="debug" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -776,7 +813,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="added check existence of vmdk files" />
     <MESSAGE value="added checking of successfully adding serial port" />
     <MESSAGE value="small fixes" />
     <MESSAGE value="stable version" />
@@ -798,9 +834,10 @@
     <MESSAGE value="fixed destroy lab" />
     <MESSAGE value="fixed config file" />
     <MESSAGE value="added power on/off lab" />
-    <MESSAGE value="debug" />
     <MESSAGE value="revieved rollback" />
     <MESSAGE value="added .idea/ to .gitignore" />
+    <MESSAGE value="config for demo" />
+    <MESSAGE value="debug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -833,16 +870,6 @@
         <state line="106" column="8" selection-start="3835" selection-end="3835" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/hatchery.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="838" column="8" selection-start="32321" selection-end="32321" vertical-scroll-proportion="0.24662814" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="252" column="35" selection-start="4835" selection-end="4835" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/deployment_system/resource_pool.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="55" column="8" selection-start="1974" selection-end="1974" vertical-scroll-proportion="0.0">
@@ -857,7 +884,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
@@ -891,23 +920,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deployment_system/virtual_machine.py">
+    <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="435" column="36" selection-start="17379" selection-end="17379" vertical-scroll-proportion="0.018292682">
+        <state line="309" column="46" selection-start="12488" selection-end="12488" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="106" column="0" selection-start="1885" selection-end="2207" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/etc/topology.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="1" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0">
+        <state line="69" column="8" selection-start="1733" selection-end="1733" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
+    <entry file="file://$PROJECT_DIR$/deployment_system/virtual_machine.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="309" column="46" selection-start="12488" selection-end="12488" vertical-scroll-proportion="5.260355">
+        <state line="239" column="72" selection-start="9684" selection-end="9684" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/hatchery.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="566" column="56" selection-start="21022" selection-end="21022" vertical-scroll-proportion="0.48946717">
           <folding />
         </state>
       </provider>
