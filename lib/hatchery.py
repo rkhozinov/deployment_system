@@ -562,7 +562,10 @@ class Creator:
                     avaliable_networks += 1
                     break
         if len(networks) != avaliable_networks:
-            raise CreatorException("Couldn't find all networks")
+            msg = ''
+            for n in config_target.Network:
+                msg = '%s %s' % (msg, str(n))
+            raise CreatorException("Couldn't find all networks; founded: %s" % msg)
             #raise ExistenceException("Couldn't find network")
 
 
