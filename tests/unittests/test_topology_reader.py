@@ -31,7 +31,7 @@ __author__ = 'rkhozinov'
 
 class TestTopologyReader(unittest.TestCase):
     def setUp(self):
-        self.config_path = '../etc/topology2.ini'
+        self.config_path = '../etc/topology.ini'
         self.rpname = 'test_RP'
 
     def test_config_read(self):
@@ -75,10 +75,12 @@ class TestTopologyReader(unittest.TestCase):
             self.assertEqual(len(vms), len(config.vms))
             for vm in vms:
                 self.assertIsInstance(vm, VirtualMachine)
-        except ConfigParser.Error as error:
-            self.assertTrue(False, error.message)
-        except Exception as error:
-            self.assertFalse(False, error.message)
+        # except ConfigParser.Error as error:
+        #     self.assertTrue(False, error.message)
+        # except Exception as error:
+        #     self.assertFalse(False, error.message)
+        except:
+            raise
 
     def test_create_vms_from_config(self):
         manager = None

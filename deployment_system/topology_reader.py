@@ -210,7 +210,6 @@ class TopologyReader(object):
         :raise:  ConfigParser.Error
         """
 
-
         try:
             description = self.config.get(vm_name, self.VM_DESCR)
         except ConfigParser.NoOptionError:
@@ -340,15 +339,34 @@ class TopologyReader(object):
                     new_config.append(cmd)
 
             config = copy.deepcopy(new_config)
-        try:
-            networks = self.__str_to_list_strip(self.config.get(vm_name, self.VM_NETWORKS))
-        except ConfigParser.NoOptionError:
-            networks = []
-            self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_NETWORKS, vm_name))
-        except ConfigParser.Error:
-            self.logger.error(
-                "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_NETWORKS))
-            raise
+
+        networks = []
+        opts = self.config.options(vm_name)
+        if self.VM_NETWORKS in opts:
+            try:
+                networks = self.__str_to_list_strip(self.config.get(vm_name, self.VM_NETWORKS))
+            except ConfigParser.NoOptionError:
+                networks = []
+                self.logger.debug("Not specified option '%s' in section '%s'" % (self.VM_NETWORKS, vm_name))
+            except ConfigParser.Error:
+                self.logger.error(
+                    "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_NETWORKS))
+                raise
+        else:
+            numbers_temp = [k for k in opts if k[:3] == 'eth']
+            if numbers_temp:
+                # todo:add check
+                numbers = sorted([int(k[3:]) for k in numbers_temp])
+                for i in xrange(max(numbers) + 1):
+                    if i in numbers:
+                        numbers.remove(i)
+                        eth_name = 'eth%d' % i
+                        eth_value = self.config.get(vm_name, eth_name)
+                        networks.append(eth_value)
+                    elif not numbers:
+                        break
+                    else:
+                        networks.append(None)
 
         try:
             vnc_port = self.config.get(vm_name, self.VM_VNC_PORT)
@@ -377,7 +395,7 @@ class TopologyReader(object):
                     config_type == 'com'
                 self.logger.debug(
                     "Not specified option '%s' in section '%s'; config_type set up as %s based on vnc_port" % (
-                    self.VM_CONFIG_TYPE, vm_name,config_type))
+                        self.VM_CONFIG_TYPE, vm_name, config_type))
             except ConfigParser.Error:
                 self.logger.error(
                     "Configuration error in section '%s' with option '%s'" % (vm_name, self.VM_CONFIG_TYPE))
