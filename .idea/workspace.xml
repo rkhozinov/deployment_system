@@ -2,19 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2e3490b-4429-421f-b71a-e98215303ddc" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/etc/multicast_functional.ini" afterPath="$PROJECT_DIR$/etc/multicast_functional.ini" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/etc/topology.ini" afterPath="$PROJECT_DIR$/etc/topology.ini" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/etc/topology.ini" afterPath="$PROJECT_DIR$/tests/etc/topology.ini" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/etc/topology1.ini" afterPath="$PROJECT_DIR$/etc/topology1.ini" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/etc/topology2.ini" afterPath="$PROJECT_DIR$/tests/etc/topology2.ini" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/etc/topology_old.ini" afterPath="$PROJECT_DIR$/etc/topology_old.ini" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="deployment_system.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371207493930" ignored="false" />
+    <file path="/Dummy.txt" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1379509098350" ignored="false" />
     <file path="/test_topology_reader.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370592996445" ignored="false" />
     <file path="/hatchery.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371201564264" ignored="false" />
     <file path="/topology.ini" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371208486146" ignored="false" />
     <file path="/virtual_machine.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370601436789" ignored="false" />
     <file path="/topology_reader.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370603382820" ignored="false" />
     <file path="/topology.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371202451077" ignored="false" />
-    <file path="/multicast_functional.ini" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370598546716" ignored="false" />
+    <file path="/multicast_functional.ini" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1379509127351" ignored="false" />
     <file path="/test_virtual_machine.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370505777190" ignored="false" />
     <file path="/test_topology.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1369910184700" ignored="false" />
     <file path="/test_configuration.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1369914615587" ignored="false" />
@@ -22,6 +27,7 @@
     <file path="/fragment.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370511621897" ignored="false" />
     <file path="/main.py" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1370601355038" ignored="false" />
     <file path="/.gitignore" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1371194854917" ignored="false" />
+    <file path="$PROJECT_DIR$/../esx_deployment_system/.idea/workspace.xml" changelist="c2e3490b-4429-421f-b71a-e98215303ddc" time="1379509286326" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,15 +47,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="47" selection-start="719" selection-end="719" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="topology.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/deployment_system/topology.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -79,8 +76,23 @@
       </file>
       <file leaf-file-name="topology.ini" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/etc/topology.ini">
+          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+            <state />
+          </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="1" selection-start="646" selection-end="646" vertical-scroll-proportion="-1.6221805">
+            <state line="10" column="5" selection-start="308" selection-end="308" vertical-scroll-proportion="0.1905972">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology2.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/etc/topology2.ini">
+          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="11" selection-start="358" selection-end="358" vertical-scroll-proportion="32.12">
               <folding />
             </state>
           </provider>
@@ -89,7 +101,37 @@
       <file leaf-file-name="multicast_functional.ini" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="106" column="0" selection-start="1885" selection-end="2207" vertical-scroll-proportion="0.0">
+            <state line="16" column="20" selection-start="412" selection-end="412" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/etc/topology.ini">
+          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="51" column="52" selection-start="1412" selection-end="1412" vertical-scroll-proportion="-9.671053">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology1.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/etc/topology1.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="53" selection-start="631" selection-end="631" vertical-scroll-proportion="-7.0588236">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="topology_old.ini" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/etc/topology_old.ini">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="247" column="0" selection-start="5362" selection-end="5362" vertical-scroll-proportion="-72.64706">
               <folding />
             </state>
           </provider>
@@ -98,16 +140,7 @@
       <file leaf-file-name="topology_reader.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="305" column="0" selection-start="12340" selection-end="12340" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="resource_pool.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/deployment_system/resource_pool.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="8" selection-start="1974" selection-end="1974" vertical-scroll-proportion="0.0">
+            <state line="305" column="0" selection-start="12351" selection-end="12351" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -132,28 +165,30 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/etc/topology_old.ini" />
         <option value="$PROJECT_DIR$/tests/unittests/test_topology.py" />
         <option value="$PROJECT_DIR$/tests/test_configuration.py" />
         <option value="$PROJECT_DIR$/tests/unittests/test_virtual_machine.py" />
         <option value="$PROJECT_DIR$/tests/unittests/test_topology_reader.py" />
-        <option value="$PROJECT_DIR$/tests/etc/topology2.ini" />
         <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/deployment_system/virtual_machine.py" />
-        <option value="$PROJECT_DIR$/etc/multicast_functional.ini" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/lib/hatchery.py" />
         <option value="$PROJECT_DIR$/deployment_system/topology.py" />
         <option value="$PROJECT_DIR$/deployment_system/topology_reader.py" />
+        <option value="$PROJECT_DIR$/etc/multicast_functional.ini" />
+        <option value="$PROJECT_DIR$/etc/topology.ini" />
+        <option value="$PROJECT_DIR$/etc/topology1.ini" />
+        <option value="$PROJECT_DIR$/etc/topology_old.ini" />
         <option value="$PROJECT_DIR$/tests/etc/topology.ini" />
+        <option value="$PROJECT_DIR$/tests/etc/topology2.ini" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="64" />
-    <option name="y" value="-4" />
+    <option name="y" value="27" />
     <option name="width" value="1217" />
-    <option name="height" value="1029" />
+    <option name="height" value="997" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -181,6 +216,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -199,110 +235,18 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="unittests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="etc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="etc" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="deployment_system" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="recentsLimit" value="5" />
-    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -770,16 +714,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="-4" width="1217" height="1029" extended-state="6" />
+    <frame x="64" y="27" width="1217" height="997" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32914287" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24978541" sideWeight="0.62285715" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17682403" sideWeight="0.67085713" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18018788" sideWeight="0.67085713" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37714285" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
@@ -788,6 +730,8 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32914287" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -891,28 +835,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///usr/lib/python2.7/unittest/case.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="331" column="0" selection-start="10884" selection-end="10884" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/etc/topology2.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="0" selection-start="2317" selection-end="2317" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deployment_system/switch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="106" column="8" selection-start="3835" selection-end="3835" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/deployment_system/resource_pool.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="8" selection-start="1974" selection-end="1974" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state line="36" column="6" selection-start="310" selection-end="310" vertical-scroll-proportion="0.62068963" />
@@ -920,9 +842,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
@@ -944,16 +864,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/unittests/test_topology_reader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="248" column="0" selection-start="9870" selection-end="9870" vertical-scroll-proportion="0.54268295">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="106" column="0" selection-start="1885" selection-end="2207" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="248" column="0" selection-start="9870" selection-end="9870" vertical-scroll-proportion="0.54268295" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/hatchery.py">
@@ -979,14 +890,58 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/deployment_system/topology_reader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="305" column="0" selection-start="12340" selection-end="12340" vertical-scroll-proportion="0.0">
+        <state line="305" column="0" selection-start="12351" selection-end="12351" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/topology.ini">
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="52" selection-start="1412" selection-end="1412" vertical-scroll-proportion="-9.671053">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/topology1.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="53" selection-start="631" selection-end="631" vertical-scroll-proportion="-7.0588236">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/topology_old.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="247" column="0" selection-start="5362" selection-end="5362" vertical-scroll-proportion="-72.64706">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/etc/multicast_functional.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="20" selection-start="412" selection-end="412" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/etc/topology2.ini">
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="11" selection-start="358" selection-end="358" vertical-scroll-proportion="32.12">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/etc/topology.ini">
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="1" selection-start="646" selection-end="646" vertical-scroll-proportion="-1.6221805">
+        <state line="10" column="5" selection-start="308" selection-end="308" vertical-scroll-proportion="0.1905972">
           <folding />
         </state>
       </provider>
